@@ -1,0 +1,16 @@
+checkBox_LoadFromStoreAuto	True
+textBox_Store	localhost\\t\\1024\\t\\TimeSignal1\\t\\EveryDays\\t\\7:50\\t\\Station\\t\\Signal\\t\\7:50 Now\\t\\Parameter\\t\\Once\\r\\\\n\\localhost\\t\\1024\\t\\TimeSignal2\\t\\EveryDays\\t\\15:50\\t\\Station\\t\\Signal\\t\\15:50 Now\\t\\Parameter\\t\\Once\\r\\\\n\\localhost\\t\\1024\\t\\TimeSignal3\\t\\EveryDays\\t\\23:50\\t\\Station\\t\\Signal\\t\\23:50 Now\\t\\Parameter\\t\\Once\\r\\\\n\\
+checkBox1	False
+textBox_OnceJobPanelStore	localhost\\t\\1024\\t\\TestJob1\\t\\OnceAtMinutes\\t\\10\\t\\Client1\\t\\Warning\\t\\Client1_Warning Message1\\t\\Parameter\\t\\Once\\r\\\\n\\localhost\\t\\1024\\t\\TestJob2\\t\\OnceAtMinutes\\t\\10\\t\\Client1\\t\\Warning\\t\\Client1_Warning Message1\\t\\Parameter\\t\\Once\\r\\\\n\\localhost\\t\\1024\\t\\TestJob3\\t\\OnceAtMinutes\\t\\10\\t\\Client1\\t\\Warning\\t\\Client1_Warning Message1\\t\\Parameter\\t\\Once\\r\\\\n\\localhost\\t\\1024\\t\\TestJob4\\t\\OnceAtMinutes\\t\\10\\t\\Client1\\t\\Warning\\t\\Client1_Warning Message1\\t\\Parameter\\t\\Once\\r\\\\n\\localhost\\t\\1024\\t\\TestJob5\\t\\OnceAtMinutes\\t\\10\\t\\Client1\\t\\Warning\\t\\Client1_Warning Message1\\t\\Parameter\\t\\Once\\r\\\\n\\localhost\\t\\1024\\t\\TestJob6\\t\\OnceAtMinutes\\t\\10\\t\\Client1\\t\\Warning\\t\\Client1_Warning Message1\\t\\Parameter\\t\\Once\\r\\\\n\\localhost\\t\\1024\\t\\TestJob7\\t\\OnceAtSeconds\\t\\10\\t\\Client1\\t\\Warning\\t\\Client1_Warning Message1\\t\\Parameter\\t\\Once\\r\\\\n\\\\r\\\\n\\
+comboBox_ScheduleUnit	EverySeconds
+textBox_JobName	CountDown
+textBox_ClientName	Client3
+comboBox_checkStyle	Once\\r\\\\n\\
+comboBox_Status	TimeSignal
+textBox_Message	MessageFromClient3
+textBox_Parameter	Parameter
+textBox_Address	localhost
+textBox_ScheduleUnitParam	13
+textBox_PortNumber	1024
+checkBox_EnableReset	True
+textBox_ResetPortNumber	1025
