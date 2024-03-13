@@ -1,0 +1,10 @@
+textBox_ClientName	
+textBox_LockTime	
+textBox_Address	
+textBox_ClientList	
+textBox_Message3	
+textBox_Message2	
+textBox_Message1	
+textBox_HTTPPortNumber	
+textBox_LockEventPortNumber	
+textBox_Queue	
