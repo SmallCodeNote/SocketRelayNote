@@ -52,9 +52,9 @@
             // 
             // button_AddJob
             // 
-            this.button_AddJob.Location = new System.Drawing.Point(318, 10);
+            this.button_AddJob.Location = new System.Drawing.Point(347, 10);
             this.button_AddJob.Name = "button_AddJob";
-            this.button_AddJob.Size = new System.Drawing.Size(77, 22);
+            this.button_AddJob.Size = new System.Drawing.Size(48, 74);
             this.button_AddJob.TabIndex = 1;
             this.button_AddJob.Text = "<< Add";
             this.button_AddJob.UseVisualStyleBackColor = true;
@@ -65,7 +65,7 @@
             this.label_Message.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label_Message.Location = new System.Drawing.Point(6, 35);
             this.label_Message.Name = "label_Message";
-            this.label_Message.Size = new System.Drawing.Size(389, 42);
+            this.label_Message.Size = new System.Drawing.Size(335, 49);
             this.label_Message.TabIndex = 0;
             this.label_Message.Text = "Message";
             // 
