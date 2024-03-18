@@ -14,10 +14,10 @@ namespace tcpClient_HTTPcheck
 {
     public partial class ClientListView : UserControl
     {
-        TcpSocketClient tcp_clt;
-        int tcp_clt_port = 1025;
-
-        public ClientListView(string Line, TcpSocketClient tcp_clt, int tcp_clt_port)
+        //===================
+        // Constructor
+        //===================
+        public ClientListView(string Line, TcpSocketClient tcpClt)
         {
             InitializeComponent();
             LockReleaseTime = DateTime.Now;
@@ -26,60 +26,106 @@ namespace tcpClient_HTTPcheck
             timer_TimeLabelUpdate.Start();
 
             Error = false;
-            this.tcp_clt = tcp_clt;
-            this.tcp_clt_port = tcp_clt_port;
-
+            this.tcpClt = tcpClt;
+            this.tcpClt_port = PortNumber;
         }
 
-        private void textBox_Name_TextChanged(object sender, EventArgs e)
-        {
-            this.groupBox_ClientListViewTitle.Text = textBox_ClientName.Text;
-        }
+        //===================
+        // Member variable
+        //===================
+        TcpSocketClient tcpClt;
+        int tcpClt_port = 1025;
 
         public DateTime LockReleaseTime;
         public DateTime LockTime;
 
         public string SignalSourceName = "";
 
+        public string Address { get { return textBox_Address.Text; } set { textBox_Address.Text = value; } }
+        public string ClientName { get { return textBox_ClientName.Text; } set { textBox_ClientName.Text = value; } }
+        public string LockTimeString { get { return textBox_LockTime.Text; } set { textBox_LockTime.Text = value; } }
+
+        public string PortNumberString
+        {
+            get
+            {
+                return textBox_PortNumber.Text;
+            }
+            set
+            {
+                textBox_PortNumber.Text = value;
+            }
+        }
+
+        public int PortNumber
+        {
+            get
+            {
+                int b = -1;
+                if (!int.TryParse(textBox_PortNumber.Text, out b)) { b = -1; }
+                return b;
+            }
+            set
+            {
+                textBox_PortNumber.Text = value.ToString();
+            }
+        }
+        public bool Error
+        {
+            get
+            {
+                return button_StatusLamp.BackColor == Color.Red;
+            }
+            set
+            {
+                if (value) { button_StatusLamp.BackColor = Color.Red; }
+                else { button_StatusLamp.BackColor = Color.YellowGreen; }
+            }
+        }
+        public bool isOK
+        {
+            get
+            {
+                return button_StatusLamp.BackColor == Color.YellowGreen;
+            }
+            set
+            {
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(new Action<bool>(this.updateStatusLamp), value);
+                }
+                else
+                {
+                    updateStatusLamp(value);
+                }
+
+            }
+        }
+        //===================
+        // Member function
+        //===================
+        public string getContets()
+        {
+            return Address + "\t" + ClientName + "\t" + LockTimeString + "\t" + PortNumberString;
+        }
+
+        public void updateStatusLamp(bool value)
+        {
+            if (!value) { button_StatusLamp.BackColor = Color.Red; }
+            else { button_StatusLamp.BackColor = Color.YellowGreen; }
+
+        }
+
         public void setContents(string Line)
         {
             string[] cols = Line.Split('\t');
 
-            if (cols.Length > 2)
+            if (cols.Length > 3)
             {
-                textBox_Address.Text = cols[0];
-                textBox_ClientName.Text = cols[1];
-                textBox_LockTime.Text = cols[2];
-            }
-        }
-
-        public string Address { get { return textBox_Address.Text; } set { textBox_Address.Text = value; } }
-        public string ClientName { get { return textBox_ClientName.Text; } set { textBox_ClientName.Text = value; } }
-        public string LockTimeString { get { return textBox_LockTime.Text; } set { textBox_LockTime.Text = value; } }
-        public bool Error
-        {
-            get { return button_ErrorLamp.BackColor == Color.Red; }
-            set
-            {
-                if (value) { button_ErrorLamp.BackColor = Color.Red; }
-                else { button_ErrorLamp.BackColor = Color.YellowGreen; }
-            }
-        }
-
-        public string getContets()
-        {
-            string address = textBox_Address.Text;
-            string name = textBox_ClientName.Text;
-            string lockTime = textBox_LockTime.Text;
-
-            return address + "\t" + name + "\t" + LockTime;
-        }
-
-        private void LockClient()
-        {
-            if (int.TryParse(textBox_LockTime.Text, out int Minutes))
-            {
-                LockClient(Minutes);
+                Address = cols[0];
+                ClientName = cols[1];
+                LockTimeString = cols[2];
+                PortNumberString = cols[3];
             }
         }
 
@@ -89,36 +135,120 @@ namespace tcpClient_HTTPcheck
             LockReleaseTime = DateTime.Now + new TimeSpan(0, Minutes, 0);
             LabelUpdate();
 
-            await tcp_clt.StartClient(Address, tcp_clt_port, "Lock\t"+Minutes.ToString(),"UTF8");
+            if (PortNumber >= 0)
+            {
+                Task<string> clientMessageTask = tcpClt.StartClient(Address, PortNumber, "Lock\t" + Minutes.ToString(), "UTF8");
+                string clientMessage = await clientMessageTask;
+                if (clientMessage.IndexOf("OK") >= 0) { this.isOK = true; }
+                else if (clientMessage.IndexOf("NG") >= 0) { this.isOK = false; }
 
+            }
+        }
+
+        private void LockClient()
+        {
+            if (int.TryParse(LockTimeString, out int Minutes))
+            {
+                LockClient(Minutes);
+            }
+        }
+
+        private async void ReleaseClient()
+        {
+
+            if (PortNumber >= 0)
+            {
+                Task<string> clientMessageTask = tcpClt.StartClient(Address, PortNumber, "Release", "UTF8");
+                string clientMessage = await clientMessageTask;
+                if (clientMessage.IndexOf("OK") >= 0) { this.isOK = true; }
+                else if (clientMessage.IndexOf("NG") >= 0) { this.isOK = false; }
+
+                LockReleaseTime = DateTime.Now;
+                LabelUpdate();
+            }
+        }
+
+        private async void AskStatus()
+        {
+            if (PortNumber >= 0)
+            {
+                Task<string> clientMessageTask = tcpClt.StartClient(Address, PortNumber, "Status", "UTF8");
+                string clientMessage = await clientMessageTask;
+                if (clientMessage.IndexOf("OK") >= 0) { this.isOK = true; }
+                else if (clientMessage.IndexOf("NG") >= 0) { this.isOK = false; }
+            }
+        }
+
+        private void LabelUpdate()
+        {
+            if (button_Lock.Enabled)
+            {
+                if ((DateTime.Now - LockReleaseTime).TotalSeconds > 0)
+                {
+                    label_LockedFrom.Text = "- Release -";
+                    label_LockedTime.Text = "- Release -";
+                    label_ResetTime.Text = "- Release -";
+                    button_Lock.Text = "";
+                    button_Lock.BackColor = Color.YellowGreen;
+                }
+                else
+                {
+                    label_LockedFrom.Text = SignalSourceName;
+                    label_LockedTime.Text = LockTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    label_ResetTime.Text = LockReleaseTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    label_RemainingTime.Text = getElapsedTimeString(LockReleaseTime - DateTime.Now);
+
+                    button_Lock.Text = "";
+                    button_Lock.BackColor = Color.Gray;
+                }
+            }
+            else
+            {
+                button_Lock.BackColor = Color.LightGray;
+            }
+
+        }
+
+        private void ClientListView_Load(object sender, EventArgs e)
+        {
+            groupBox_ClientListViewTitle.Size = new Size(431, 91);
+            panel_Frame.Size = new Size(386, 67);
+
+            this.Size = new Size(449, 100);
+        }
+
+        public void Lock(string SignalSourceName)
+        {
+            this.SignalSourceName = SignalSourceName;
+            LockClient();
+            LabelUpdate();
+        }
+
+        public void Release()
+        {
+            ReleaseClient();
+
+            LockReleaseTime = DateTime.Now;
+            label_LockedFrom.Text = "- Release -";
+            label_LockedTime.Text = "- Release -";
+            label_ResetTime.Text = "- Release -";
+            button_Lock.Text = "";
+            button_Lock.BackColor = Color.YellowGreen;
+            label_RemainingTime.Text = "...";
+        }
+
+        //===================
+        // Event
+        //===================
+        private void textBox_Name_TextChanged(object sender, EventArgs e)
+        {
+            this.groupBox_ClientListViewTitle.Text = ClientName;
         }
 
         private void timer_TimeLabelUpdate_Tick(object sender, EventArgs e)
         {
             LabelUpdate();
-        }
-
-        private void LabelUpdate()
-        {
-            if ((DateTime.Now - LockReleaseTime).TotalSeconds > 0)
-            {
-                label_LockedFrom.Text = "- Release -";
-                label_LockedTime.Text = "- Release -";
-                label_ResetTime.Text = "- Release -";
-                button_Lock.Text = "";
-                button_Lock.BackColor = Color.YellowGreen;
-
-            }
-            else
-            {
-                label_LockedFrom.Text = SignalSourceName;
-                label_LockedTime.Text = LockTime.ToString("yyyy/MM/dd HH:mm:ss");
-                label_ResetTime.Text = LockReleaseTime.ToString("yyyy/MM/dd HH:mm:ss");
-                label_RemainingTime.Text = getElapsedTimeString(LockReleaseTime - DateTime.Now);
-
-                button_Lock.Text = "";
-                button_Lock.BackColor = Color.Gray;
-            }
+            AskStatus();
         }
 
         private void button_Lock_Click(object sender, EventArgs e)
@@ -129,27 +259,8 @@ namespace tcpClient_HTTPcheck
             }
             else
             {
-                unLock();
+                Release();
             }
-
-        }
-
-        public void Lock(string SignalSourceName)
-        {
-            this.SignalSourceName = SignalSourceName;
-            LockClient();
-            LabelUpdate();
-        }
-
-        public void unLock()
-        {
-            LockReleaseTime = DateTime.Now;
-            label_LockedFrom.Text = "- Release -";
-            label_LockedTime.Text = "- Release -";
-            label_ResetTime.Text = "- Release -";
-            button_Lock.Text = "";
-            button_Lock.BackColor = Color.YellowGreen;
-            label_RemainingTime.Text = "...";
         }
 
         private void button_PanelShift_Click(object sender, EventArgs e)
@@ -182,5 +293,14 @@ namespace tcpClient_HTTPcheck
         {
             Error = !Error;
         }
+
+        private void textBox_PortNumber_TextChanged(object sender, EventArgs e)
+        {
+            button_Lock.Enabled = int.TryParse(textBox_PortNumber.Text, out int b);
+        }
+
+
+
     }
+
 }

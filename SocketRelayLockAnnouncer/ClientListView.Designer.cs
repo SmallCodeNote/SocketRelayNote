@@ -32,6 +32,7 @@
             this.groupBox_ClientListViewTitle = new System.Windows.Forms.GroupBox();
             this.button_PanelShift = new System.Windows.Forms.Button();
             this.panel_Frame = new System.Windows.Forms.Panel();
+            this.button_StatusLamp = new System.Windows.Forms.Button();
             this.panel_Form = new System.Windows.Forms.Panel();
             this.textBox_ClientName = new System.Windows.Forms.TextBox();
             this.textBox_LockTime = new System.Windows.Forms.TextBox();
@@ -48,7 +49,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.timer_TimeLabelUpdate = new System.Windows.Forms.Timer(this.components);
-            this.button_ErrorLamp = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBox_PortNumber = new System.Windows.Forms.TextBox();
             this.groupBox_ClientListViewTitle.SuspendLayout();
             this.panel_Frame.SuspendLayout();
             this.panel_Form.SuspendLayout();
@@ -60,7 +62,7 @@
             this.groupBox_ClientListViewTitle.Controls.Add(this.panel_Frame);
             this.groupBox_ClientListViewTitle.Location = new System.Drawing.Point(3, 3);
             this.groupBox_ClientListViewTitle.Name = "groupBox_ClientListViewTitle";
-            this.groupBox_ClientListViewTitle.Size = new System.Drawing.Size(431, 90);
+            this.groupBox_ClientListViewTitle.Size = new System.Drawing.Size(431, 236);
             this.groupBox_ClientListViewTitle.TabIndex = 0;
             this.groupBox_ClientListViewTitle.TabStop = false;
             this.groupBox_ClientListViewTitle.Text = "Title";
@@ -77,22 +79,33 @@
             // 
             // panel_Frame
             // 
-            this.panel_Frame.Controls.Add(this.button_ErrorLamp);
+            this.panel_Frame.Controls.Add(this.button_StatusLamp);
             this.panel_Frame.Controls.Add(this.panel_Form);
             this.panel_Frame.Location = new System.Drawing.Point(39, 18);
             this.panel_Frame.Name = "panel_Frame";
-            this.panel_Frame.Size = new System.Drawing.Size(386, 67);
+            this.panel_Frame.Size = new System.Drawing.Size(386, 179);
             this.panel_Frame.TabIndex = 0;
+            // 
+            // button_StatusLamp
+            // 
+            this.button_StatusLamp.Location = new System.Drawing.Point(359, 3);
+            this.button_StatusLamp.Name = "button_StatusLamp";
+            this.button_StatusLamp.Size = new System.Drawing.Size(24, 24);
+            this.button_StatusLamp.TabIndex = 1;
+            this.button_StatusLamp.UseVisualStyleBackColor = true;
+            this.button_StatusLamp.Click += new System.EventHandler(this.button_ErrorLamp_Click);
             // 
             // panel_Form
             // 
             this.panel_Form.Controls.Add(this.textBox_ClientName);
+            this.panel_Form.Controls.Add(this.textBox_PortNumber);
             this.panel_Form.Controls.Add(this.textBox_LockTime);
             this.panel_Form.Controls.Add(this.textBox_Address);
             this.panel_Form.Controls.Add(this.button_Lock);
             this.panel_Form.Controls.Add(this.label_LockedFrom);
             this.panel_Form.Controls.Add(this.label5);
             this.panel_Form.Controls.Add(this.label_RemainingTime);
+            this.panel_Form.Controls.Add(this.label7);
             this.panel_Form.Controls.Add(this.label_ResetTime);
             this.panel_Form.Controls.Add(this.label6);
             this.panel_Form.Controls.Add(this.label4);
@@ -115,7 +128,7 @@
             // 
             // textBox_LockTime
             // 
-            this.textBox_LockTime.Location = new System.Drawing.Point(73, 112);
+            this.textBox_LockTime.Location = new System.Drawing.Point(262, 114);
             this.textBox_LockTime.Name = "textBox_LockTime";
             this.textBox_LockTime.Size = new System.Drawing.Size(85, 19);
             this.textBox_LockTime.TabIndex = 2;
@@ -176,7 +189,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(13, 115);
+            this.label6.Location = new System.Drawing.Point(202, 117);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(54, 12);
             this.label6.TabIndex = 0;
@@ -232,14 +245,23 @@
             this.timer_TimeLabelUpdate.Interval = 1000;
             this.timer_TimeLabelUpdate.Tick += new System.EventHandler(this.timer_TimeLabelUpdate_Tick);
             // 
-            // button_ErrorLamp
+            // label7
             // 
-            this.button_ErrorLamp.Location = new System.Drawing.Point(368, 0);
-            this.button_ErrorLamp.Name = "button_ErrorLamp";
-            this.button_ErrorLamp.Size = new System.Drawing.Size(18, 18);
-            this.button_ErrorLamp.TabIndex = 1;
-            this.button_ErrorLamp.UseVisualStyleBackColor = true;
-            this.button_ErrorLamp.Click += new System.EventHandler(this.button_ErrorLamp_Click);
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(13, 114);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(26, 12);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "Port";
+            // 
+            // textBox_PortNumber
+            // 
+            this.textBox_PortNumber.Location = new System.Drawing.Point(73, 114);
+            this.textBox_PortNumber.Name = "textBox_PortNumber";
+            this.textBox_PortNumber.Size = new System.Drawing.Size(85, 19);
+            this.textBox_PortNumber.TabIndex = 2;
+            this.textBox_PortNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.textBox_PortNumber.TextChanged += new System.EventHandler(this.textBox_PortNumber_TextChanged);
             // 
             // ClientListView
             // 
@@ -247,7 +269,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupBox_ClientListViewTitle);
             this.Name = "ClientListView";
-            this.Size = new System.Drawing.Size(449, 100);
+            this.Size = new System.Drawing.Size(449, 266);
+            this.Load += new System.EventHandler(this.ClientListView_Load);
             this.groupBox_ClientListViewTitle.ResumeLayout(false);
             this.panel_Frame.ResumeLayout(false);
             this.panel_Form.ResumeLayout(false);
@@ -277,6 +300,8 @@
         private System.Windows.Forms.TextBox textBox_LockTime;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label_RemainingTime;
-        private System.Windows.Forms.Button button_ErrorLamp;
+        private System.Windows.Forms.Button button_StatusLamp;
+        private System.Windows.Forms.TextBox textBox_PortNumber;
+        private System.Windows.Forms.Label label7;
     }
 }

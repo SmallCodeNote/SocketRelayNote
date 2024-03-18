@@ -21,6 +21,7 @@ namespace tcpServer
         /// </summary>
         public ConcurrentQueue<string> ReceivedSocketQueue;
         public int _ReceivedSocketQueueMaxSize = 1024;
+        public string ResponceMessage = "";
 
         private bool _ListeningContinueFlag;
         public int _bufferSize = 1024;
@@ -90,6 +91,7 @@ namespace tcpServer
 
                         //Responce code for client
                         var response = "received : " + request;
+                        if (ResponceMessage.Length > 0) { response = ResponceMessage; }
                         buffer = Encoding.ASCII.GetBytes(response);
                         await stream.WriteAsync(buffer, 0, buffer.Length);
                         Debug.WriteLine($"Response : {response}");
@@ -105,10 +107,10 @@ namespace tcpServer
 
                         //Responce code for client
                         var response = "received : " + request;
+                        if (ResponceMessage.Length > 0) { response = ResponceMessage; }
                         buffer = Encoding.UTF8.GetBytes(response);
                         await stream.WriteAsync(buffer, 0, buffer.Length);
                         Debug.WriteLine($"Response : {response}");
-
                     }
                 }
             }

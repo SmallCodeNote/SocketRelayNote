@@ -23,7 +23,7 @@ namespace tcpClient_HTTPcheck
         DateTime LastCheckTime;
 
         TcpSocketClient tcp_clt;
-        int portNumber_clt;
+
 
         private bool isCtrlPressed = false;
 
@@ -68,6 +68,8 @@ namespace tcpClient_HTTPcheck
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            updateClientList();
+
             string FormContents = WinFormStringCnv.ToString(this);
 
             SaveFileDialog sfd = new SaveFileDialog();
@@ -114,7 +116,7 @@ namespace tcpClient_HTTPcheck
             panel_ClietListView_Form.Controls.Clear();
             foreach (var Line in Lines)
             {
-                ClientListView clientListView = new ClientListView(Line, tcp_clt, portNumber_clt);
+                ClientListView clientListView = new ClientListView(Line, tcp_clt);
                 clientListView.Top = panelTop;
                 panel_ClietListView_Form.Controls.Add(clientListView);
 
@@ -122,6 +124,21 @@ namespace tcpClient_HTTPcheck
 
             }
             panel_ClietListView_Form.Height = panelTop;
+        }
+
+        private void updateClientList()
+        {
+            List<string> Lines = new List<string>();
+
+            foreach (var Line in panel_ClietListView_Form.Controls)
+            {
+                if (Line is ClientListView)
+                {
+                    Lines.Add(((ClientListView)Line).getContets());
+                }
+            }
+
+            textBox_ClientList.Text = string.Join("\r\n", Lines);
         }
 
         private void label_Key_Click(object sender, EventArgs e)
@@ -137,20 +154,24 @@ namespace tcpClient_HTTPcheck
 
         private void tabControl_ClientList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControl_ClientList.SelectedTab == tabPage_ClientListView)
+            if (tabControl_Main.SelectedTab == tabPage_ClientList)
             {
-                updateClientListView();
+                if (tabControl_ClientList.SelectedTab == tabPage_ClientListView)
+                {
+                    updateClientListView();
+                }
+                else
+                {
+                    updateClientList();
+                }
+
             }
+            return;
         }
 
         private void textBox_HTTPPortNumber_TextChanged(object sender, EventArgs e)
         {
             int.TryParse(textBox_HTTPPortNumber.Text, out portNumber_srv);
-        }
-
-        private void textBox_LockEventPortNumber_TextChanged(object sender, EventArgs e)
-        {
-            int.TryParse(textBox_LockEventPortNumber.Text, out portNumber_clt);
         }
 
         private void timer_WebAPIcheck_Tick(object sender, EventArgs e)
@@ -211,7 +232,7 @@ namespace tcpClient_HTTPcheck
                     {
                         if (ctrl is ClientListView)
                         {
-                            ((ClientListView)ctrl).unLock();
+                            ((ClientListView)ctrl).Release();
                         }
                     }
                 }
@@ -222,7 +243,7 @@ namespace tcpClient_HTTPcheck
                         if (ctrl is ClientListView
                             && ((ClientListView)ctrl).ClientName.IndexOf(item.Replace("target=", "")) >= 0)
                         {
-                            ((ClientListView)ctrl).unLock();
+                            ((ClientListView)ctrl).Release();
                         }
                     }
                 }
@@ -248,7 +269,7 @@ namespace tcpClient_HTTPcheck
                         if (ctrl is ClientListView
                             && ((ClientListView)ctrl).Error)
                         {
-                            ((ClientListView)ctrl).unLock();
+                            ((ClientListView)ctrl).Release();
                         }
                     }
                 }

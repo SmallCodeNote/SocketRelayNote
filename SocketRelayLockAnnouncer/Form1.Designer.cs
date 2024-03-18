@@ -50,8 +50,6 @@
             this.tabPage_SystemSetting = new System.Windows.Forms.TabPage();
             this.textBox_HTTPPortNumber = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBox_LockEventPortNumber = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.tabPage_Log = new System.Windows.Forms.TabPage();
             this.groupBox_WebAPI_Sample = new System.Windows.Forms.GroupBox();
             this.label_TestCode = new System.Windows.Forms.Label();
@@ -264,8 +262,6 @@
             // 
             this.tabPage_SystemSetting.Controls.Add(this.textBox_HTTPPortNumber);
             this.tabPage_SystemSetting.Controls.Add(this.label5);
-            this.tabPage_SystemSetting.Controls.Add(this.textBox_LockEventPortNumber);
-            this.tabPage_SystemSetting.Controls.Add(this.label4);
             this.tabPage_SystemSetting.Location = new System.Drawing.Point(4, 22);
             this.tabPage_SystemSetting.Name = "tabPage_SystemSetting";
             this.tabPage_SystemSetting.Padding = new System.Windows.Forms.Padding(3);
@@ -276,7 +272,7 @@
             // 
             // textBox_HTTPPortNumber
             // 
-            this.textBox_HTTPPortNumber.Location = new System.Drawing.Point(10, 90);
+            this.textBox_HTTPPortNumber.Location = new System.Drawing.Point(8, 29);
             this.textBox_HTTPPortNumber.Name = "textBox_HTTPPortNumber";
             this.textBox_HTTPPortNumber.Size = new System.Drawing.Size(100, 19);
             this.textBox_HTTPPortNumber.TabIndex = 1;
@@ -285,28 +281,11 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 75);
+            this.label5.Location = new System.Drawing.Point(6, 14);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(94, 12);
             this.label5.TabIndex = 0;
             this.label5.Text = "HTTPPortNumber";
-            // 
-            // textBox_LockEventPortNumber
-            // 
-            this.textBox_LockEventPortNumber.Location = new System.Drawing.Point(10, 27);
-            this.textBox_LockEventPortNumber.Name = "textBox_LockEventPortNumber";
-            this.textBox_LockEventPortNumber.Size = new System.Drawing.Size(100, 19);
-            this.textBox_LockEventPortNumber.TabIndex = 1;
-            this.textBox_LockEventPortNumber.TextChanged += new System.EventHandler(this.textBox_LockEventPortNumber_TextChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 12);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(118, 12);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "LockEventPortNumber";
             // 
             // tabPage_Log
             // 
@@ -410,7 +389,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "Form1";
-            this.Text = "tcpClient_HTTPcheck";
+            this.Text = "LockAnnouncer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
@@ -461,8 +440,6 @@
         private System.Windows.Forms.TextBox textBox_Message2;
         private System.Windows.Forms.TextBox textBox_Message1;
         private System.Windows.Forms.TabPage tabPage_SystemSetting;
-        private System.Windows.Forms.TextBox textBox_LockEventPortNumber;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBox_HTTPPortNumber;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
