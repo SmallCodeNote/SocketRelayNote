@@ -100,7 +100,7 @@
             // 
             // button_Start
             // 
-            this.button_Start.Location = new System.Drawing.Point(340, 50);
+            this.button_Start.Location = new System.Drawing.Point(341, 55);
             this.button_Start.Margin = new System.Windows.Forms.Padding(2);
             this.button_Start.Name = "button_Start";
             this.button_Start.Size = new System.Drawing.Size(86, 24);
@@ -125,7 +125,7 @@
             this.panel_StatusListFrame.Location = new System.Drawing.Point(4, 5);
             this.panel_StatusListFrame.Margin = new System.Windows.Forms.Padding(2);
             this.panel_StatusListFrame.Name = "panel_StatusListFrame";
-            this.panel_StatusListFrame.Size = new System.Drawing.Size(412, 400);
+            this.panel_StatusListFrame.Size = new System.Drawing.Size(522, 400);
             this.panel_StatusListFrame.TabIndex = 2;
             // 
             // panel_StatusList
@@ -133,7 +133,7 @@
             this.panel_StatusList.Location = new System.Drawing.Point(0, 0);
             this.panel_StatusList.Margin = new System.Windows.Forms.Padding(2);
             this.panel_StatusList.Name = "panel_StatusList";
-            this.panel_StatusList.Size = new System.Drawing.Size(375, 80);
+            this.panel_StatusList.Size = new System.Drawing.Size(491, 80);
             this.panel_StatusList.TabIndex = 0;
             // 
             // tabControl_Top
@@ -144,6 +144,7 @@
             this.tabControl_Top.Controls.Add(this.tabPage_Log);
             this.tabControl_Top.Controls.Add(this.tabPage_Test);
             this.tabControl_Top.Controls.Add(this.tabPage1);
+            this.tabControl_Top.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.tabControl_Top.Location = new System.Drawing.Point(0, 0);
             this.tabControl_Top.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl_Top.Name = "tabControl_Top";
@@ -199,10 +200,10 @@
             // 
             // button_SchedulerList
             // 
-            this.button_SchedulerList.Location = new System.Drawing.Point(511, 90);
+            this.button_SchedulerList.Location = new System.Drawing.Point(500, 80);
             this.button_SchedulerList.Margin = new System.Windows.Forms.Padding(2);
             this.button_SchedulerList.Name = "button_SchedulerList";
-            this.button_SchedulerList.Size = new System.Drawing.Size(54, 18);
+            this.button_SchedulerList.Size = new System.Drawing.Size(65, 28);
             this.button_SchedulerList.TabIndex = 6;
             this.button_SchedulerList.Text = "Load";
             this.button_SchedulerList.UseVisualStyleBackColor = true;
@@ -221,7 +222,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(220, 54);
+            this.label2.Location = new System.Drawing.Point(208, 59);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(26, 12);
@@ -261,7 +262,7 @@
             // 
             // textBox_PostTime
             // 
-            this.textBox_PostTime.Location = new System.Drawing.Point(356, 6);
+            this.textBox_PostTime.Location = new System.Drawing.Point(396, 4);
             this.textBox_PostTime.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_PostTime.Name = "textBox_PostTime";
             this.textBox_PostTime.Size = new System.Drawing.Size(72, 19);
@@ -273,7 +274,7 @@
             this.button_getDataBaseFilePath.Location = new System.Drawing.Point(398, 27);
             this.button_getDataBaseFilePath.Margin = new System.Windows.Forms.Padding(2);
             this.button_getDataBaseFilePath.Name = "button_getDataBaseFilePath";
-            this.button_getDataBaseFilePath.Size = new System.Drawing.Size(28, 18);
+            this.button_getDataBaseFilePath.Size = new System.Drawing.Size(28, 23);
             this.button_getDataBaseFilePath.TabIndex = 2;
             this.button_getDataBaseFilePath.Text = "...";
             this.button_getDataBaseFilePath.UseVisualStyleBackColor = true;

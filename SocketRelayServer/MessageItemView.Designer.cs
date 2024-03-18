@@ -51,7 +51,7 @@
             this.groupBox_ClientName.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox_ClientName.Name = "groupBox_ClientName";
             this.groupBox_ClientName.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox_ClientName.Size = new System.Drawing.Size(368, 75);
+            this.groupBox_ClientName.Size = new System.Drawing.Size(478, 75);
             this.groupBox_ClientName.TabIndex = 0;
             this.groupBox_ClientName.TabStop = false;
             this.groupBox_ClientName.Text = "ClientName";
@@ -84,11 +84,11 @@
             // 
             // label_LastMessage
             // 
-            this.label_LastMessage.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label_LastMessage.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label_LastMessage.Location = new System.Drawing.Point(143, 14);
             this.label_LastMessage.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_LastMessage.Name = "label_LastMessage";
-            this.label_LastMessage.Size = new System.Drawing.Size(221, 58);
+            this.label_LastMessage.Size = new System.Drawing.Size(331, 58);
             this.label_LastMessage.TabIndex = 1;
             this.label_LastMessage.Text = "Message";
             // 
@@ -132,7 +132,7 @@
             this.Controls.Add(this.groupBox_ClientName);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MessageItemView";
-            this.Size = new System.Drawing.Size(375, 80);
+            this.Size = new System.Drawing.Size(480, 80);
             this.groupBox_ClientName.ResumeLayout(false);
             this.groupBox_ClientName.PerformLayout();
             this.ResumeLayout(false);
