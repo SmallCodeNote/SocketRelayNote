@@ -1,0 +1,28 @@
+checkBox_check	False
+checkBox_serverAutoStart	True
+dataGridView_SchedulerList	Notice	EveryHours	0,15,30,45
+dataGridView_SchedulerList	Warning	EverySeconds	20
+dataGridView_SchedulerList	Error	EverySeconds	20
+dataGridView_SchedulerList	TimeOut	EverySeconds	30
+dataGridView_SchedulerList	TimeSignal	EverySeconds	30
+textBox_PostTime	1440
+textBox_portNumber	1024
+textBox_DataBaseFilePath	R:\LiteDB.db
+checkBox_debugModeSwitch	True
+textBox_httpTimeout	3
+textBox_ClearMessageParameter	
+textBox_TimeoutMessageParameter	voice=female&notify=6&led=30000
+dataGridView_ClientList	Client1	1,2,3	True	20	Client1 timeout.
+dataGridView_ClientList	Client2	1,2	False	20	Client2 timeout.
+dataGridView_ClientList	Client3	2	False	20	Client3 timeout.
+dataGridView_ClientList	Client4	2	False	20	timeout.
+dataGridView_ClientList	Client5	2	False	20	timeout.
+dataGridView_ClientList	Client6	2	False	20	timeout.
+dataGridView_ClientList	Client7	2	False	20	timeout.
+dataGridView_AddressList	Address1	signaltower1
+dataGridView_AddressList	Address2	signaltower2
+dataGridView_AddressList	Address3	signaltower3
+dataGridView_AddressList	Address4	signaltower4
+dataGridView_AddressList	Address5	signaltower5
+textBox_Log	Client1\\t\\2024/03/21 02:58:17\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:58:12\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:58:06\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:58:02\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:57:57\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:57:51\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:57:46\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:57:41\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:55:48\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:55:43\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:55:38\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:55:33\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:55:28\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:55:23\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:55:11\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:55:06\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:55:00\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:54:56\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:54:50\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:54:46\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:54:41\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:54:35\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:54:31\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:54:01\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:53:56\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:53:51\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:53:46\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:52:21\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:52:16\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:52:11\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:52:06\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:52:01\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:51:56\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:51:51\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:50:32\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:50:26\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:50:22\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:50:16\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:50:11\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:50:07\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:50:01\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:49:56\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:49:52\\t\\Warning\\t\\NG message\\t\\True\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:49:27\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:49:21\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:49:17\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:49:12\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:49:07\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:49:02\\t\\Notice\\t\\OK message\\t\\False\\t\\Once\\r\\\\n\\Client1\\t\\2024/03/21 02:48:58\\t\\Notice\\t\\OK message\\t\\False\\t\\Once
+textBox_queueList	03:13:06\\t\\0\\r\\\\n\\
