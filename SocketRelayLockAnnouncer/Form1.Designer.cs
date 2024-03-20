@@ -53,6 +53,7 @@
             this.tabPage_Log = new System.Windows.Forms.TabPage();
             this.groupBox_WebAPI_Sample = new System.Windows.Forms.GroupBox();
             this.label_TestCode = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.textBox_Queue = new System.Windows.Forms.TextBox();
@@ -121,7 +122,6 @@
             this.tabPage_ClientListView.TabIndex = 0;
             this.tabPage_ClientListView.Text = "View";
             this.tabPage_ClientListView.UseVisualStyleBackColor = true;
-            this.tabPage_ClientListView.Enter += new System.EventHandler(this.tabPage_ClientListView_Enter);
             // 
             // panel_ClietListView_Frame
             // 
@@ -302,6 +302,7 @@
             // groupBox_WebAPI_Sample
             // 
             this.groupBox_WebAPI_Sample.Controls.Add(this.label_TestCode);
+            this.groupBox_WebAPI_Sample.Controls.Add(this.label4);
             this.groupBox_WebAPI_Sample.Controls.Add(this.label7);
             this.groupBox_WebAPI_Sample.Controls.Add(this.label6);
             this.groupBox_WebAPI_Sample.Location = new System.Drawing.Point(8, 6);
@@ -320,6 +321,16 @@
             this.label_TestCode.TabIndex = 1;
             this.label_TestCode.Text = "http://localhost/api/Reset?all";
             this.label_TestCode.Click += new System.EventHandler(this.label_Key_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 51);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(275, 12);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "http://localhost/api/LockIfErrorFromDeviceName?all";
+            this.label4.Click += new System.EventHandler(this.label_Key_Click);
             // 
             // label7
             // 
@@ -393,8 +404,6 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.tabControl_Main.ResumeLayout(false);
             this.tabPage_ClientList.ResumeLayout(false);
             this.tabControl_ClientList.ResumeLayout(false);
@@ -451,6 +460,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.GroupBox groupBox_WebAPI_Sample;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label4;
     }
 }
 

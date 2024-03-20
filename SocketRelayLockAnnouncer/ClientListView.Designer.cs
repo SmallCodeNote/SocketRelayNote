@@ -35,12 +35,14 @@
             this.button_StatusLamp = new System.Windows.Forms.Button();
             this.panel_Form = new System.Windows.Forms.Panel();
             this.textBox_ClientName = new System.Windows.Forms.TextBox();
+            this.textBox_PortNumber = new System.Windows.Forms.TextBox();
             this.textBox_LockTime = new System.Windows.Forms.TextBox();
             this.textBox_Address = new System.Windows.Forms.TextBox();
             this.button_Lock = new System.Windows.Forms.Button();
             this.label_LockedFrom = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label_RemainingTime = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.label_ResetTime = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -49,8 +51,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.timer_TimeLabelUpdate = new System.Windows.Forms.Timer(this.components);
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBox_PortNumber = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.groupBox_ClientListViewTitle.SuspendLayout();
             this.panel_Frame.SuspendLayout();
             this.panel_Form.SuspendLayout();
@@ -107,6 +108,7 @@
             this.panel_Form.Controls.Add(this.label_RemainingTime);
             this.panel_Form.Controls.Add(this.label7);
             this.panel_Form.Controls.Add(this.label_ResetTime);
+            this.panel_Form.Controls.Add(this.label8);
             this.panel_Form.Controls.Add(this.label6);
             this.panel_Form.Controls.Add(this.label4);
             this.panel_Form.Controls.Add(this.label3);
@@ -126,11 +128,20 @@
             this.textBox_ClientName.TabIndex = 2;
             this.textBox_ClientName.TextChanged += new System.EventHandler(this.textBox_Name_TextChanged);
             // 
+            // textBox_PortNumber
+            // 
+            this.textBox_PortNumber.Location = new System.Drawing.Point(73, 114);
+            this.textBox_PortNumber.Name = "textBox_PortNumber";
+            this.textBox_PortNumber.Size = new System.Drawing.Size(85, 19);
+            this.textBox_PortNumber.TabIndex = 2;
+            this.textBox_PortNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.textBox_PortNumber.TextChanged += new System.EventHandler(this.textBox_PortNumber_TextChanged);
+            // 
             // textBox_LockTime
             // 
-            this.textBox_LockTime.Location = new System.Drawing.Point(262, 114);
+            this.textBox_LockTime.Location = new System.Drawing.Point(232, 114);
             this.textBox_LockTime.Name = "textBox_LockTime";
-            this.textBox_LockTime.Size = new System.Drawing.Size(85, 19);
+            this.textBox_LockTime.Size = new System.Drawing.Size(61, 19);
             this.textBox_LockTime.TabIndex = 2;
             this.textBox_LockTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
@@ -177,6 +188,15 @@
             this.label_RemainingTime.TabIndex = 0;
             this.label_RemainingTime.Text = "...";
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(13, 114);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(26, 12);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "Port";
+            // 
             // label_ResetTime
             // 
             this.label_ResetTime.AutoSize = true;
@@ -189,7 +209,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(202, 117);
+            this.label6.Location = new System.Drawing.Point(172, 117);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(54, 12);
             this.label6.TabIndex = 0;
@@ -245,23 +265,14 @@
             this.timer_TimeLabelUpdate.Interval = 1000;
             this.timer_TimeLabelUpdate.Tick += new System.EventHandler(this.timer_TimeLabelUpdate_Tick);
             // 
-            // label7
+            // label8
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(13, 114);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(26, 12);
-            this.label7.TabIndex = 0;
-            this.label7.Text = "Port";
-            // 
-            // textBox_PortNumber
-            // 
-            this.textBox_PortNumber.Location = new System.Drawing.Point(73, 114);
-            this.textBox_PortNumber.Name = "textBox_PortNumber";
-            this.textBox_PortNumber.Size = new System.Drawing.Size(85, 19);
-            this.textBox_PortNumber.TabIndex = 2;
-            this.textBox_PortNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.textBox_PortNumber.TextChanged += new System.EventHandler(this.textBox_PortNumber_TextChanged);
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(299, 117);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(25, 12);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "min.";
             // 
             // ClientListView
             // 
@@ -303,5 +314,6 @@
         private System.Windows.Forms.Button button_StatusLamp;
         private System.Windows.Forms.TextBox textBox_PortNumber;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
     }
 }

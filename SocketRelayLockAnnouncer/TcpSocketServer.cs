@@ -22,8 +22,6 @@ namespace tcpServer
         public ConcurrentQueue<string> ReceivedSocketQueue;
         public int _ReceivedSocketQueueMaxSize = 1024;
         public string ResponceMessage = "";
-
-        private bool _ListeningContinueFlag;
         public int _bufferSize = 1024;
 
         public TcpSocketServer()
@@ -35,25 +33,39 @@ namespace tcpServer
 
         public void StopListening()
         {
-            _ListeningContinueFlag = false;
+            cts.Cancel();
+            ListeningTask.Wait();
             return;
         }
 
-        public async Task<bool> StartListening(int port, string encoding = "ASCII")
+        private Task ListeningTask;
+        private static CancellationTokenSource cts;
+        private static CancellationToken token;
+        public bool ListeningRun = false;
+        public void StartListening(int port, string encoding = "ASCII")
         {
-            _ListeningContinueFlag = true;
+            cts = new CancellationTokenSource();
+            token = cts.Token;
+            ListeningTask = Task.Run(() =>
+             {
+                 Listening(port, encoding);
+
+             }, token);
+        }
+
+        public void Listening(int port, string encoding = "ASCII")
+        {
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, port);
             var tcpServer = new TcpListener(localEndPoint);
 
             try
             {
-                tcpServer.Start();
-
-                while (_ListeningContinueFlag)
+                tcpServer.Start(); ListeningRun = true;
+                while (!token.IsCancellationRequested)
                 {
-                    using (var tcpClient = await tcpServer.AcceptTcpClientAsync())
+                    using (var tcpClient = tcpServer.AcceptTcpClient())
                     {
-                        var request = await ReceiveAsync(tcpClient, encoding);
+                        var request = Receive(tcpClient, encoding);
 
                         if (ReceivedSocketQueue.Count >= _ReceivedSocketQueueMaxSize) { string b = ""; ReceivedSocketQueue.TryDequeue(out b); }
                         LastReceiveTime = DateTime.Now;
@@ -61,17 +73,20 @@ namespace tcpServer
                     }
                 }
 
-                return true;
+                tcpServer.Stop(); ListeningRun = false;
+                cts.Dispose();
+
+                return;
             }
             catch (Exception ex)
             {
+                ListeningRun = false;
                 Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " " + ex.ToString());
             }
-
-            return false;
+            return;
         }
 
-        public async Task<string> ReceiveAsync(TcpClient tcpClient, string encoding = "ASCII")
+        public string Receive(TcpClient tcpClient, string encoding = "ASCII")
         {
             byte[] buffer = new byte[_bufferSize];
             string request = "";
@@ -84,7 +99,7 @@ namespace tcpServer
                     {
                         do
                         {
-                            int byteSize = await stream.ReadAsync(buffer, 0, buffer.Length);
+                            int byteSize = stream.Read(buffer, 0, buffer.Length);
                             request += Encoding.ASCII.GetString(buffer, 0, byteSize);
                         }
                         while (stream.DataAvailable);
@@ -93,14 +108,14 @@ namespace tcpServer
                         var response = "received : " + request;
                         if (ResponceMessage.Length > 0) { response = ResponceMessage; }
                         buffer = Encoding.ASCII.GetBytes(response);
-                        await stream.WriteAsync(buffer, 0, buffer.Length);
+                        stream.Write(buffer, 0, buffer.Length);
                         Debug.WriteLine($"Response : {response}");
                     }
                     else //UTF8
                     {
                         do
                         {
-                            int byteSize = await stream.ReadAsync(buffer, 0, buffer.Length);
+                            int byteSize = stream.Read(buffer, 0, buffer.Length);
                             request += Encoding.UTF8.GetString(buffer, 0, byteSize);
                         }
                         while (stream.DataAvailable);
@@ -109,7 +124,7 @@ namespace tcpServer
                         var response = "received : " + request;
                         if (ResponceMessage.Length > 0) { response = ResponceMessage; }
                         buffer = Encoding.UTF8.GetBytes(response);
-                        await stream.WriteAsync(buffer, 0, buffer.Length);
+                        stream.Write(buffer, 0, buffer.Length);
                         Debug.WriteLine($"Response : {response}");
                     }
                 }

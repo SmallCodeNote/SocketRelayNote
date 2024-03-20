@@ -25,7 +25,7 @@ namespace tcpClient_HTTPcheck
 
             timer_TimeLabelUpdate.Start();
 
-            Error = false;
+            
             this.tcpClt = tcpClt;
             this.tcpClt_port = PortNumber;
         }
@@ -70,37 +70,32 @@ namespace tcpClient_HTTPcheck
                 textBox_PortNumber.Text = value.ToString();
             }
         }
-        public bool Error
-        {
-            get
-            {
-                return button_StatusLamp.BackColor == Color.Red;
-            }
-            set
-            {
-                if (value) { button_StatusLamp.BackColor = Color.Red; }
-                else { button_StatusLamp.BackColor = Color.YellowGreen; }
-            }
-        }
-        public bool isOK
-        {
-            get
-            {
-                return button_StatusLamp.BackColor == Color.YellowGreen;
-            }
-            set
-            {
-                if (this.InvokeRequired)
-                {
-                    this.Invoke(new Action<bool>(this.updateStatusLamp), value);
-                }
-                else
-                {
-                    updateStatusLamp(value);
-                }
 
+        public bool OK
+        {
+            get { return button_StatusLamp.BackColor == Color.YellowGreen; }
+            set
+            {
+                if (this.InvokeRequired) { this.Invoke(new Action<bool>(this.updateStatusLampOK), value); }
+                else { updateStatusLampOK(value); }
             }
         }
+
+        public bool nonConnection
+        {
+            get { return button_StatusLamp.BackColor == Color.LightGray; }
+            set
+            {
+                if (this.InvokeRequired) { this.Invoke(new Action<bool>(this.updateStatusLampNonConnection), value); }
+                else { updateStatusLampNonConnection(value); }
+            }
+        }
+
+        public bool Locked
+        {
+            get { return LockReleaseTime > DateTime.Now; }
+        }
+
         //===================
         // Member function
         //===================
@@ -109,11 +104,15 @@ namespace tcpClient_HTTPcheck
             return Address + "\t" + ClientName + "\t" + LockTimeString + "\t" + PortNumberString;
         }
 
-        public void updateStatusLamp(bool value)
+        public void updateStatusLampOK(bool value)
         {
-            if (!value) { button_StatusLamp.BackColor = Color.Red; }
-            else { button_StatusLamp.BackColor = Color.YellowGreen; }
+            if (value) { button_StatusLamp.BackColor = Color.YellowGreen; }
+            else { button_StatusLamp.BackColor = Color.Red; }
+        }
 
+        public void updateStatusLampNonConnection(bool value)
+        {
+            if (value) { button_StatusLamp.BackColor = Color.LightGray; }
         }
 
         public void setContents(string Line)
@@ -139,8 +138,8 @@ namespace tcpClient_HTTPcheck
             {
                 Task<string> clientMessageTask = tcpClt.StartClient(Address, PortNumber, "Lock\t" + Minutes.ToString(), "UTF8");
                 string clientMessage = await clientMessageTask;
-                if (clientMessage.IndexOf("OK") >= 0) { this.isOK = true; }
-                else if (clientMessage.IndexOf("NG") >= 0) { this.isOK = false; }
+                if (clientMessage.IndexOf("OK") >= 0) { this.OK = true; }
+                else if (clientMessage.IndexOf("NG") >= 0) { this.OK = false; }
 
             }
         }
@@ -155,27 +154,28 @@ namespace tcpClient_HTTPcheck
 
         private async void ReleaseClient()
         {
-
             if (PortNumber >= 0)
             {
                 Task<string> clientMessageTask = tcpClt.StartClient(Address, PortNumber, "Release", "UTF8");
                 string clientMessage = await clientMessageTask;
-                if (clientMessage.IndexOf("OK") >= 0) { this.isOK = true; }
-                else if (clientMessage.IndexOf("NG") >= 0) { this.isOK = false; }
+                if (clientMessage.IndexOf("OK") >= 0) { this.OK = true; }
+                else if (clientMessage.IndexOf("NG") >= 0) { this.OK = false; }
 
                 LockReleaseTime = DateTime.Now;
                 LabelUpdate();
             }
         }
 
-        private async void AskStatus()
+        private async void AskStatusToClient()
         {
             if (PortNumber >= 0)
             {
                 Task<string> clientMessageTask = tcpClt.StartClient(Address, PortNumber, "Status", "UTF8");
                 string clientMessage = await clientMessageTask;
-                if (clientMessage.IndexOf("OK") >= 0) { this.isOK = true; }
-                else if (clientMessage.IndexOf("NG") >= 0) { this.isOK = false; }
+                if (clientMessage.IndexOf("OK") >= 0) { this.OK = true; }
+                else if (clientMessage.IndexOf("NG") >= 0) { this.OK = false; }
+                else { this.nonConnection = true; }
+
             }
         }
 
@@ -183,15 +183,7 @@ namespace tcpClient_HTTPcheck
         {
             if (button_Lock.Enabled)
             {
-                if ((DateTime.Now - LockReleaseTime).TotalSeconds > 0)
-                {
-                    label_LockedFrom.Text = "- Release -";
-                    label_LockedTime.Text = "- Release -";
-                    label_ResetTime.Text = "- Release -";
-                    button_Lock.Text = "";
-                    button_Lock.BackColor = Color.YellowGreen;
-                }
-                else
+                if (Locked)
                 {
                     label_LockedFrom.Text = SignalSourceName;
                     label_LockedTime.Text = LockTime.ToString("yyyy/MM/dd HH:mm:ss");
@@ -200,6 +192,14 @@ namespace tcpClient_HTTPcheck
 
                     button_Lock.Text = "";
                     button_Lock.BackColor = Color.Gray;
+                }
+                else
+                {
+                    label_LockedFrom.Text = "- Release -";
+                    label_LockedTime.Text = "- Release -";
+                    label_ResetTime.Text = "- Release -";
+                    button_Lock.Text = "";
+                    button_Lock.BackColor = Color.YellowGreen;
                 }
             }
             else
@@ -248,7 +248,7 @@ namespace tcpClient_HTTPcheck
         private void timer_TimeLabelUpdate_Tick(object sender, EventArgs e)
         {
             LabelUpdate();
-            AskStatus();
+            AskStatusToClient();
         }
 
         private void button_Lock_Click(object sender, EventArgs e)
@@ -291,15 +291,13 @@ namespace tcpClient_HTTPcheck
 
         private void button_ErrorLamp_Click(object sender, EventArgs e)
         {
-            Error = !Error;
+            OK = !OK;
         }
 
         private void textBox_PortNumber_TextChanged(object sender, EventArgs e)
         {
             button_Lock.Enabled = int.TryParse(textBox_PortNumber.Text, out int b);
         }
-
-
 
     }
 
