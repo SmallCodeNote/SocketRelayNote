@@ -34,7 +34,7 @@ namespace tcpClient
 
         }
 
-        private async void Form1_Load(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
              string paramFilename = Path.Combine(thisExeDirPath, "_param.txt");
             if (File.Exists(paramFilename))
@@ -46,12 +46,11 @@ namespace tcpClient
 
             if (checkBox_EnableReset.Checked)
             {
-                if (!int.TryParse(textBox_ResetPortNumber.Text, out int portNumber)
-                    || !await tcp_Reset.StartListening(portNumber, "UTF8"))
+                if (!int.TryParse(textBox_ResetPortNumber.Text, out int portNumber))
                 {
-                    toolStripStatusLabel_Timer.Text = "TCP Listening Start Error";
-                    return;
+                    tcp_Reset.StartListening(portNumber, "UTF8");
                 }
+
             }
 
         }
@@ -435,6 +434,16 @@ namespace tcpClient
             else if (!ClientLocked)
             {
                 toolStripStatusLabel_TimerReset.Text = "Client Unlock";
+            }
+
+            if (tcp_Reset.ListeningRun)
+            {
+                toolStripStatusLabel_TimerReset.Text += " / ListeningRun";
+            }
+            else
+            {
+                toolStripStatusLabel_TimerReset.Text += " / ListeningStop";
+
             }
 
             if (checkBox_EnableReset.Checked) { timer_CommandPortListening.Start(); }
