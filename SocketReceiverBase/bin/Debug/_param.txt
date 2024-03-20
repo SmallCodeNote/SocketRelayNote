@@ -1,1 +1,14 @@
-textBox_PortNumber	1026
+textBox_MessageNG	NG message
+textBox_MessageServerPort	1024
+textBox_MessageOK	OK message
+textBox_IntervalNG	5000
+textBox_StatusNG	Warning
+textBox_ParameterNG	voice=female&notify=6&led=10000
+textBox_ParameterOK	voice=female&notify=6&led=00100
+textBox_CheckStyleNG	Once
+textBox_StatusOK	Notice
+textBox_CheckStyleOK	Once
+textBox_IntervalOK	5000
+textBox_clientName	Client1
+textBox_PortNumber	1027
+textBox_MessageServerAddress	localhost
