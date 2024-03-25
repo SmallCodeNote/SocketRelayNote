@@ -47,6 +47,7 @@ namespace SocketSignalServer
             _LiteDBconnectionString.Connection = ConnectionType.Shared;
 
             clientList = new List<ClientData>();
+
         }
 
         //===================
@@ -69,6 +70,25 @@ namespace SocketSignalServer
         //===================
         // Member function
         //===================
+        private void DebugOutDirPathReset(string targetDir)
+        {
+            if (targetDir == "{ExecutablePath}") { targetDir = Path.GetDirectoryName(Application.ExecutablePath); }
+
+            if (Directory.Exists(targetDir))
+            {
+                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd") + ".txt");
+                if (!Directory.Exists(Path.GetDirectoryName(outFilename))) { Directory.CreateDirectory(Path.GetDirectoryName(outFilename)); };
+
+                DefaultTraceListener dtl = (DefaultTraceListener)Debug.Listeners["Default"];
+                dtl.LogFileName = outFilename;
+            }
+            else if (textBox_DebugOutDirPath.Text.Length > 1)
+            {
+                MessageBox.Show("DebugOutDirPath Not Found.\r\n[" + textBox_DebugOutDirPath.Text + "]", "Directory Not Found.", MessageBoxButtons.OK);
+            }
+
+        }
+
         private void clearControlCollection(System.Windows.Forms.Control.ControlCollection cc)
         {
             for (int i = 0; i < cc.Count; i++) { cc[i].Dispose(); }
@@ -77,35 +97,36 @@ namespace SocketSignalServer
 
         private void updateStatusList()
         {
-            _LiteDBconnectionString.Filename = textBox_DataBaseFilePath.Text;
+            if (!File.Exists(textBox_DataBaseFilePath.Text)) return;
 
-            if (!File.Exists(_LiteDBconnectionString.Filename)) return;
-
-            //ILiteCollection<SocketMessage> col;
-            using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+            try
             {
-                var col = litedb.GetCollection<SocketMessage>("table_Message");
-
-
-                foreach (MessageItemView messageItemView in panel_StatusList.Controls)
+                _LiteDBconnectionString.Filename = textBox_DataBaseFilePath.Text;
+                using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                 {
-                    try
+                    var col = litedb.GetCollection<SocketMessage>("table_Message");
+                    foreach (MessageItemView messageItemView in panel_StatusList.Controls)
                     {
-                        string clientName = messageItemView.groupBox_ClientName.Text;
-                        //ILiteQueryable<SocketMessage> query = col.Query().Where(x => x.clientName == clientName).OrderBy(x => x.connectTime, 0);
-                        var query = col.Query().Where(x => x.clientName == clientName).OrderBy(x => x.connectTime, 0).ToList();
-
-                        if (query.Count() > 0)
+                        try
                         {
-                            SocketMessage socketMessage = query.First();
-                            messageItemView.setItems(socketMessage);
+                            string clientName = messageItemView.groupBox_ClientName.Text;
+                            var query = col.Query().Where(x => x.clientName == clientName).OrderBy(x => x.connectTime, 0).ToList();
+                            if (query.Count() > 0)
+                            {
+                                SocketMessage socketMessage = query.First();
+                                messageItemView.setItems(socketMessage);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
-                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
             }
         }
 
@@ -203,19 +224,17 @@ namespace SocketSignalServer
                     string parameter = cols.Length > 4 ? cols[4] : "";
                     string checkStyle = cols.Length > 5 ? cols[5] : "Once";
 
+                    SocketMessage socketMessage = new SocketMessage(connectTime, clientName, status, message, parameter, checkStyle);
+                    string key = socketMessage.Key();
+
                     try
                     {
-                        SocketMessage socketMessage = new SocketMessage(connectTime, clientName, status, message, parameter, checkStyle);
-                        string key = socketMessage.Key();
-
                         _LiteDBconnectionString.Filename = dbFilename;
-
                         using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                         {
                             ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
                             col.Insert(key, socketMessage);
                         }
-
                     }
                     catch (Exception ex)
                     {
@@ -232,18 +251,15 @@ namespace SocketSignalServer
         {
             for (int retryCount = 0; retryCount < _dbOpenRetryCountMax; retryCount++)
             {
+                string dbFilename = textBox_DataBaseFilePath.Text;
+                if (!File.Exists(dbFilename)) break;
+
                 try
                 {
-                    string dbFilename = textBox_DataBaseFilePath.Text;
-
-                    if (!File.Exists(dbFilename)) break;
                     _LiteDBconnectionString.Filename = dbFilename;
-                    ILiteCollection<SocketMessage> col;
-
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
-                        col = litedb.GetCollection<SocketMessage>("table_Message");
-
+                        ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
 
                         foreach (var target in clientList)
                         {
@@ -257,17 +273,18 @@ namespace SocketSignalServer
                                 noticeTransmitter.AddNotice(target, latestNoticeRecord);
                             }
                         }
-
                     }
                     break;
                 }
                 catch (Exception ex)
                 {
-                    Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry:" + retryCount.ToString());
-                    Debug.WriteLine(ex.ToString());
+                    if (retryCount == _dbOpenRetryCountMax - 1)
+                    {
+                        Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
+                        Debug.WriteLine(ex.ToString());
+                        break;
+                    }
                     Thread.Sleep(100);
-
-                    if (retryCount == _dbOpenRetryCountMax - 1) throw;
                 }
             }
         }
@@ -276,18 +293,15 @@ namespace SocketSignalServer
         {
             for (int retryCount = 0; retryCount < _dbOpenRetryCountMax; retryCount++)
             {
+                string dbFilename = textBox_DataBaseFilePath.Text;
+                if (!File.Exists(dbFilename)) break;
+
                 try
                 {
-                    string dbFilename = textBox_DataBaseFilePath.Text;
-                    if (!File.Exists(dbFilename)) break;
-
                     _LiteDBconnectionString.Filename = dbFilename;
-
-                    //ILiteCollection<SocketMessage> col;
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
                         var col = litedb.GetCollection<SocketMessage>("table_Message");
-
 
                         foreach (var target in clientList)
                         {
@@ -320,18 +334,19 @@ namespace SocketSignalServer
                                 noticeTransmitter.AddNotice(target, timeoutMessage);
                                 target.lastTimeoutDetectedTime = DateTime.Now;
                             }
-
                         }
                     }
                     break;
-
                 }
                 catch (Exception ex)
                 {
-                    Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry:" + retryCount.ToString());
-                    Debug.WriteLine(ex.ToString());
+                    if (retryCount == _dbOpenRetryCountMax - 1)
+                    {
+                        Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
+                        Debug.WriteLine(ex.ToString());
+                        break;
+                    }
                     Thread.Sleep(100);
-                    if (retryCount == _dbOpenRetryCountMax - 1) throw;
                 }
             }
         }
@@ -348,6 +363,8 @@ namespace SocketSignalServer
                 WinFormStringCnv.setControlFromString(this, File.ReadAllText(paramFilename));
             }
 
+            DebugOutDirPathReset(textBox_DebugOutDirPath.Text);
+
             ClientListInitialize();
             AddressListInitialize();
             SchedulerInitialize();
@@ -362,9 +379,7 @@ namespace SocketSignalServer
                     portNumber = int.Parse(textBox_portNumber.Text);
                     button_Start.Text = "Stop";
                     timer_UpdateList.Start();
-
                     tcpSrv.StartListening(portNumber, "UTF8");
-                    
                 }
                 catch (Exception ex)
                 {
@@ -485,14 +500,12 @@ namespace SocketSignalServer
 
         private void tabPage_Log_Enter(object sender, EventArgs e)
         {
+            string dbFilename = textBox_DataBaseFilePath.Text;
+            if (!File.Exists(dbFilename)) return;
+
             try
             {
-                string dbFilename = textBox_DataBaseFilePath.Text;
-                if (!File.Exists(dbFilename)) return;
-
                 _LiteDBconnectionString.Filename = dbFilename;
-
-                //ILiteCollection<SocketMessage> col;
                 using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                 {
                     var col = litedb.GetCollection<SocketMessage>("table_Message");
@@ -556,17 +569,23 @@ namespace SocketSignalServer
             string dbFilename = textBox_DataBaseFilePath.Text;
             if (!File.Exists(dbFilename)) return;
 
-            _LiteDBconnectionString.Filename = dbFilename;
-
-            using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+            try
             {
-                for (DateTime connectTime = DateTime.Parse("2020/01/01"); connectTime < DateTime.Parse("2024/01/31"); connectTime += TP)
+                _LiteDBconnectionString.Filename = dbFilename;
+                using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                 {
-                    SocketMessage socketMessage = new SocketMessage(connectTime, "Test", "Test", "Test", "parameterTest");
-                    ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
+                    for (DateTime connectTime = DateTime.Parse("2020/01/01"); connectTime < DateTime.Parse("2024/01/31"); connectTime += TP)
+                    {
+                        SocketMessage socketMessage = new SocketMessage(connectTime, "Test", "Test", "Test", "parameterTest");
+                        ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
 
-                    col.Insert(socketMessage.Key(), socketMessage);
+                        col.Insert(socketMessage.Key(), socketMessage);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
             }
         }
 
@@ -666,6 +685,16 @@ namespace SocketSignalServer
 
             label_IntervalSelectorNow.Text = Clipboard.GetText();
 
+        }
+
+        private void button_DebugOutDirPathReset_Click(object sender, EventArgs e)
+        {
+            DebugOutDirPathReset(textBox_DebugOutDirPath.Text);
+        }
+
+        private void label_DebugOutDirPath_Click(object sender, EventArgs e)
+        {
+            textBox_DebugOutDirPath.Text = "{ExecutablePath}";
         }
     }
 

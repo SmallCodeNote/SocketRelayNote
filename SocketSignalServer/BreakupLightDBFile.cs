@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -49,55 +50,62 @@ namespace SocketSignalServer
             _LightDB_ConnectionString.Filename = dbFilename;
 
             TimeSpan timeSpan = new TimeSpan(0, backupIntervalMinute, 0);
-
-            using (LiteDatabase litedb = new LiteDatabase(_LightDB_ConnectionString))
+            try
             {
-                var col = litedb.GetCollection<SocketMessage>(TableName);
-
-                var result = col.Query()
-                    .Where(x => x.connectTime < (DateTime)(DateTime.Now - timeSpan))
-                    .OrderBy(x => x.connectTime)
-                    ;
-
-                List<SocketMessage> resultQueryList = result.ToList();
-
-                DateTime minTime = result.First().connectTime;
-                DateTime maxTime = result.Offset(result.Count() - 1).First().connectTime;
-
-                TimeSpan fileTimeSpan = new TimeSpan(31, 0, 0, 0);
-                DateTime fileTime0 = DateTime.Parse(minTime.ToString("yyyy/MM/01"));
-                DateTime fileTime1 = DateTime.Parse((fileTime0 + fileTimeSpan).ToString("yyyy/MM/01"));
-
-                do
+                using (LiteDatabase litedb = new LiteDatabase(_LightDB_ConnectionString))
                 {
-                    string backupFilePath = Path.Combine(backupDirTopPath, fileTime0.ToString("yyyy"), fileTime0.ToString("yyyyMM")) + ".db";
-                    string backupFileDir = Path.GetDirectoryName(backupFilePath);
+                    var col = litedb.GetCollection<SocketMessage>(TableName);
 
-                    if (!Directory.Exists(backupFileDir)) Directory.CreateDirectory(backupFileDir);
-
-                    var backupQueryList = resultQueryList
-                        .Where(x => x.connectTime < fileTime1 && x.connectTime >= fileTime0)
+                    var result = col.Query()
+                        .Where(x => x.connectTime < (DateTime)(DateTime.Now - timeSpan))
+                        .OrderBy(x => x.connectTime)
                         ;
 
-                    using (LiteDatabase litedbBackup = new LiteDatabase(backupFilePath))
-                    {
-                        var colbk = litedbBackup.GetCollection<SocketMessage>(TableName);
-                        foreach (SocketMessage skm in backupQueryList)
-                        {
-                            colbk.Insert(skm.Key(), skm);
-                            col.Delete(skm.Key());
+                    List<SocketMessage> resultQueryList = result.ToList();
 
+                    DateTime minTime = result.First().connectTime;
+                    DateTime maxTime = result.Offset(result.Count() - 1).First().connectTime;
+
+                    TimeSpan fileTimeSpan = new TimeSpan(31, 0, 0, 0);
+                    DateTime fileTime0 = DateTime.Parse(minTime.ToString("yyyy/MM/01"));
+                    DateTime fileTime1 = DateTime.Parse((fileTime0 + fileTimeSpan).ToString("yyyy/MM/01"));
+
+                    do
+                    {
+                        string backupFilePath = Path.Combine(backupDirTopPath, fileTime0.ToString("yyyy"), fileTime0.ToString("yyyyMM")) + ".db";
+                        string backupFileDir = Path.GetDirectoryName(backupFilePath);
+
+                        if (!Directory.Exists(backupFileDir)) Directory.CreateDirectory(backupFileDir);
+                        var backupQueryList = resultQueryList.Where(x => x.connectTime < fileTime1 && x.connectTime >= fileTime0);
+                        try
+                        {
+                            using (LiteDatabase litedbBackup = new LiteDatabase(backupFilePath))
+                            {
+                                var colbk = litedbBackup.GetCollection<SocketMessage>(TableName);
+                                foreach (SocketMessage skm in backupQueryList)
+                                {
+                                    colbk.Insert(skm.Key(), skm);
+                                    col.Delete(skm.Key());
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " " + ex.ToString());
                         }
 
-                    }
+                        fileTime0 = fileTime1;
+                        fileTime1 = DateTime.Parse((fileTime1 + fileTimeSpan).ToString("yyyy/MM/01"));
 
-                    fileTime0 = fileTime1;
-                    fileTime1 = DateTime.Parse((fileTime1 + fileTimeSpan).ToString("yyyy/MM/01"));
+                        if (fileTime1 > maxTime) fileTime1 = maxTime;
 
-                    if (fileTime1 > maxTime) fileTime1 = maxTime;
+                    } while (fileTime0 < maxTime);
 
-                } while (fileTime0 < maxTime);
-
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " " + ex.ToString());
             }
 
         }

@@ -37,6 +37,7 @@ namespace SocketSignalServer
             this.noticeTransmitter = noticeTransmitter;
 
             this._LiteDBconnectionString = LiteDBconnectionString;
+            this._LiteDBconnectionString.Connection = ConnectionType.Shared;
 
         }
 
@@ -70,28 +71,35 @@ namespace SocketSignalServer
         {
             _message.check = checkBox_check.Checked;
 
-            using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+            try
             {
-                var col = litedb.GetCollection<SocketMessage>("table_Message");
-
-                try
+                using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                 {
-                    var record = col.FindOne(x => x.connectTime == this._message.connectTime && x.clientName == this._message.clientName && x.status == this._message.status);
-                    string key = this._message.clientName + "_" + this._message.connectTime.ToString("yyyy/MM/dd HH:mm:ss.fff");
-                    record.check = checkBox_check.Checked;
-                    col.Update(key, record);
+                    var col = litedb.GetCollection<SocketMessage>("table_Message");
 
-                    foreach (var q in _noticeList_CheckChange)
+                    try
                     {
-                        noticeTransmitter.NoticeQueue.Enqueue(q);
+                        var record = col.FindOne(x => x.connectTime == this._message.connectTime && x.clientName == this._message.clientName && x.status == this._message.status);
+                        string key = this._message.clientName + "_" + this._message.connectTime.ToString("yyyy/MM/dd HH:mm:ss.fff");
+                        record.check = checkBox_check.Checked;
+                        col.Update(key, record);
+
+                        foreach (var q in _noticeList_CheckChange)
+                        {
+                            noticeTransmitter.NoticeQueue.Enqueue(q);
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " " + ex.ToString());
                     }
 
                 }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " " + ex.ToString());
-                }
-
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " " + ex.ToString());
             }
         }
 
@@ -131,11 +139,13 @@ namespace SocketSignalServer
                 }
                 catch (Exception ex)
                 {
-                    Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry:" + retryCount.ToString());
-                    Debug.WriteLine(ex.ToString());
+                    if (retryCount == _retryCountMax - 1)
+                    {
+                        Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
+                        Debug.WriteLine(ex.ToString());
+                        break;
+                    }
                     Thread.Sleep(100);
-
-                    if (retryCount == _retryCountMax - 1) throw;
 
                 }
             }

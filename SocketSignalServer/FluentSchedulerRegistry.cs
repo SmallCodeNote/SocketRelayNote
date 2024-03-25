@@ -188,14 +188,13 @@ namespace SocketSignalServer
                     }
                     catch (Exception ex)
                     {
-                        Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry:" + retryCount.ToString());
-                        Debug.WriteLine(ex.ToString());
-                        Thread.Sleep(100);
-
                         if (retryCount == _retryMax - 1)
                         {
-                            throw;
+                            Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
+                            Debug.WriteLine(ex.ToString());
+                            break;
                         }
+                        Thread.Sleep(100);
                     }
                 }
 

@@ -92,6 +92,9 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer_updateStatus = new System.Windows.Forms.Timer(this.components);
+            this.label_DebugOutDirPath = new System.Windows.Forms.Label();
+            this.textBox_DebugOutDirPath = new System.Windows.Forms.TextBox();
+            this.button_DebugOutDirPathReset = new System.Windows.Forms.Button();
             this.panel_StatusListFrame.SuspendLayout();
             this.tabControl_Top.SuspendLayout();
             this.tabPage_Status.SuspendLayout();
@@ -181,13 +184,16 @@
             this.tabPage_Setting.Controls.Add(this.button_SchedulerList);
             this.tabPage_Setting.Controls.Add(this.label5);
             this.tabPage_Setting.Controls.Add(this.label2);
+            this.tabPage_Setting.Controls.Add(this.button_DebugOutDirPathReset);
             this.tabPage_Setting.Controls.Add(this.button_Start);
             this.tabPage_Setting.Controls.Add(this.dataGridView_SchedulerList);
             this.tabPage_Setting.Controls.Add(this.textBox_PostTime);
             this.tabPage_Setting.Controls.Add(this.textBox_portNumber);
             this.tabPage_Setting.Controls.Add(this.button_getDataBaseFilePath);
             this.tabPage_Setting.Controls.Add(this.label4);
+            this.tabPage_Setting.Controls.Add(this.label_DebugOutDirPath);
             this.tabPage_Setting.Controls.Add(this.label1);
+            this.tabPage_Setting.Controls.Add(this.textBox_DebugOutDirPath);
             this.tabPage_Setting.Controls.Add(this.textBox_DataBaseFilePath);
             this.tabPage_Setting.Location = new System.Drawing.Point(4, 22);
             this.tabPage_Setting.Margin = new System.Windows.Forms.Padding(2);
@@ -284,7 +290,7 @@
             this.dataGridView_SchedulerList.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView_SchedulerList.Name = "dataGridView_SchedulerList";
             this.dataGridView_SchedulerList.RowTemplate.Height = 24;
-            this.dataGridView_SchedulerList.Size = new System.Drawing.Size(556, 286);
+            this.dataGridView_SchedulerList.Size = new System.Drawing.Size(556, 270);
             this.dataGridView_SchedulerList.TabIndex = 3;
             this.dataGridView_SchedulerList.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_SchedulerList_CellValueChanged);
             // 
@@ -721,6 +727,36 @@
             this.timer_updateStatus.Interval = 1000;
             this.timer_updateStatus.Tick += new System.EventHandler(this.timer_updateStatus_Tick);
             // 
+            // label_DebugOutDirPath
+            // 
+            this.label_DebugOutDirPath.AutoSize = true;
+            this.label_DebugOutDirPath.Location = new System.Drawing.Point(7, 385);
+            this.label_DebugOutDirPath.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_DebugOutDirPath.Name = "label_DebugOutDirPath";
+            this.label_DebugOutDirPath.Size = new System.Drawing.Size(93, 12);
+            this.label_DebugOutDirPath.TabIndex = 1;
+            this.label_DebugOutDirPath.Text = "DebugOutDirPath";
+            this.label_DebugOutDirPath.Click += new System.EventHandler(this.label_DebugOutDirPath_Click);
+            // 
+            // textBox_DebugOutDirPath
+            // 
+            this.textBox_DebugOutDirPath.Location = new System.Drawing.Point(104, 382);
+            this.textBox_DebugOutDirPath.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_DebugOutDirPath.Name = "textBox_DebugOutDirPath";
+            this.textBox_DebugOutDirPath.Size = new System.Drawing.Size(411, 19);
+            this.textBox_DebugOutDirPath.TabIndex = 0;
+            // 
+            // button_DebugOutDirPathReset
+            // 
+            this.button_DebugOutDirPathReset.Location = new System.Drawing.Point(519, 379);
+            this.button_DebugOutDirPathReset.Margin = new System.Windows.Forms.Padding(2);
+            this.button_DebugOutDirPathReset.Name = "button_DebugOutDirPathReset";
+            this.button_DebugOutDirPathReset.Size = new System.Drawing.Size(46, 24);
+            this.button_DebugOutDirPathReset.TabIndex = 0;
+            this.button_DebugOutDirPathReset.Text = "Reset";
+            this.button_DebugOutDirPathReset.UseVisualStyleBackColor = true;
+            this.button_DebugOutDirPathReset.Click += new System.EventHandler(this.button_DebugOutDirPathReset_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -814,6 +850,9 @@
         private System.Windows.Forms.CheckBox checkBox_debugModeSwitch;
         private System.Windows.Forms.Label label_IntervalSelector;
         private System.Windows.Forms.Label label_IntervalSelectorNow;
+        private System.Windows.Forms.Label label_DebugOutDirPath;
+        private System.Windows.Forms.TextBox textBox_DebugOutDirPath;
+        private System.Windows.Forms.Button button_DebugOutDirPathReset;
     }
 }
 
