@@ -18,12 +18,25 @@ namespace SocketSignalServer
     public partial class MessageItemView : UserControl
     {
         public SocketMessage _message;
-        
+
         private ConnectionString _LiteDBconnectionString;
 
         NoticeTransmitter noticeTransmitter;
         public List<NoticeMessage> _noticeList_CheckChange;
-        
+
+        /// <summary>
+        /// database open retry period in second.
+        /// </summary>
+        public double retryPeriod { get { return (_retryCountMax * _retryWait) / 1000.0; } set { _retryCountMax = (int)((value * 1000.0) / _retryWait); } }
+        private int _retryCountMax = 60;
+
+        /// <summary>
+        /// retry wait in millisecond.
+        /// </summary>
+        public int retryWait { get { return _retryWait; } set { double retryPeriodBuff = retryPeriod; _retryWait = value; retryPeriod = retryPeriodBuff; } }
+        private int _retryWait = 500;
+
+        private Random random;
 
         public MessageItemView(NoticeTransmitter noticeTransmitter, ConnectionString LiteDBconnectionString)
         {
@@ -39,21 +52,18 @@ namespace SocketSignalServer
             this._LiteDBconnectionString = LiteDBconnectionString;
             this._LiteDBconnectionString.Connection = ConnectionType.Shared;
 
+            random = new Random();
         }
 
         public void setItems(SocketMessage message)
         {
             _message = message;
-            
-            
             this.groupBox_ClientName.Text = message.clientName;
             this.label_Status.Text = message.status.ToString();
             this.label_LastConnectTime.Text = message.connectTime.ToString("yyyy/MM/dd HH:mm:ss");
             this.label_ElapsedTime.Text = getElapsedTimeString(DateTime.Now - message.connectTime);
             this.label_LastMessage.Text = message.message;
             this.checkBox_check.Checked = message.check;
-            
-
         }
 
         public string getElapsedTimeString(TimeSpan elapsedTime)
@@ -71,14 +81,14 @@ namespace SocketSignalServer
         {
             _message.check = checkBox_check.Checked;
 
-            try
+            for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
             {
-                using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+                try
                 {
-                    var col = litedb.GetCollection<SocketMessage>("table_Message");
-
-                    try
+                    using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
+                        var col = litedb.GetCollection<SocketMessage>("table_Message");
+
                         var record = col.FindOne(x => x.connectTime == this._message.connectTime && x.clientName == this._message.clientName && x.status == this._message.status);
                         string key = this._message.clientName + "_" + this._message.connectTime.ToString("yyyy/MM/dd HH:mm:ss.fff");
                         record.check = checkBox_check.Checked;
@@ -88,25 +98,24 @@ namespace SocketSignalServer
                         {
                             noticeTransmitter.NoticeQueue.Enqueue(q);
                         }
-
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " " + ex.ToString());
-                    }
-
+                    break;
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " " + ex.ToString());
+                catch (Exception ex)
+                {
+                    if (retryCount == _retryCountMax - 1)
+                    {
+                        Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
+                        Debug.WriteLine(ex.ToString());
+                        break;
+                    }
+                    Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
+                }
             }
         }
 
         private void button_AllCheck_Click(object sender, EventArgs e)
         {
-            int _retryCountMax = 10;
-
             for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
             {
                 try
@@ -125,17 +134,13 @@ namespace SocketSignalServer
                                 record.check = true;
                                 col.Update(record.Key(), record);
                             }
-
                         }
                         catch (Exception ex)
                         {
                             Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " " + ex.ToString());
                         }
-
                     }
-
                     break;
-
                 }
                 catch (Exception ex)
                 {
@@ -145,12 +150,9 @@ namespace SocketSignalServer
                         Debug.WriteLine(ex.ToString());
                         break;
                     }
-                    Thread.Sleep(100);
-
+                    Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
                 }
             }
-
-
         }
     }
 }

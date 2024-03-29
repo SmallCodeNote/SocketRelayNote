@@ -48,6 +48,7 @@ namespace SocketSignalServer
 
             clientList = new List<ClientData>();
 
+            random = new Random();
         }
 
         //===================
@@ -65,7 +66,21 @@ namespace SocketSignalServer
         DateTime LastCheckTime;
 
         ConnectionString _LiteDBconnectionString;
-        static int _dbOpenRetryCountMax = 10;
+
+        /// <summary>
+        /// database open retry period in second.
+        /// </summary>
+        public double retryPeriod { get { return (_retryCountMax * _retryWait) / 1000.0; } set { _retryCountMax = (int)((value * 1000.0) / _retryWait); } }
+        private int _retryCountMax = 60;
+
+        /// <summary>
+        /// retry wait in millisecond.
+        /// </summary>
+        public int retryWait { get { return _retryWait; } set { double retryPeriodBuff = retryPeriod; _retryWait = value; retryPeriod = retryPeriodBuff; } }
+        private int _retryWait = 500;
+
+        private Random random;
+
 
         //===================
         // Member function
@@ -73,10 +88,9 @@ namespace SocketSignalServer
         private void DebugOutDirPathReset(string targetDir)
         {
             if (targetDir == "{ExecutablePath}") { targetDir = Path.GetDirectoryName(Application.ExecutablePath); }
-
             if (Directory.Exists(targetDir))
             {
-                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd") + ".txt");
+                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd"), DateTime.Now.ToString("yyyyMMdd_HHmm") + ".txt");
                 if (!Directory.Exists(Path.GetDirectoryName(outFilename))) { Directory.CreateDirectory(Path.GetDirectoryName(outFilename)); };
 
                 DefaultTraceListener dtl = (DefaultTraceListener)Debug.Listeners["Default"];
@@ -86,7 +100,19 @@ namespace SocketSignalServer
             {
                 MessageBox.Show("DebugOutDirPath Not Found.\r\n[" + textBox_DebugOutDirPath.Text + "]", "Directory Not Found.", MessageBoxButtons.OK);
             }
+        }
 
+        private void DebugOutFilenameReset(string targetDir)
+        {
+            if (targetDir == "{ExecutablePath}") { targetDir = Path.GetDirectoryName(Application.ExecutablePath); }
+            if (Directory.Exists(targetDir))
+            {
+                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd"), DateTime.Now.ToString("yyyyMMdd_HHmm") + ".txt");
+                if (!Directory.Exists(Path.GetDirectoryName(outFilename))) { Directory.CreateDirectory(Path.GetDirectoryName(outFilename)); };
+
+                DefaultTraceListener dtl = (DefaultTraceListener)Debug.Listeners["Default"];
+                if (dtl.LogFileName != outFilename) { dtl.LogFileName = outFilename; };
+            }
         }
 
         private void clearControlCollection(System.Windows.Forms.Control.ControlCollection cc)
@@ -98,16 +124,16 @@ namespace SocketSignalServer
         private void updateStatusList()
         {
             if (!File.Exists(textBox_DataBaseFilePath.Text)) return;
+            _LiteDBconnectionString.Filename = textBox_DataBaseFilePath.Text;
 
-            try
+            for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
             {
-                _LiteDBconnectionString.Filename = textBox_DataBaseFilePath.Text;
-                using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+                try
                 {
-                    var col = litedb.GetCollection<SocketMessage>("table_Message");
-                    foreach (MessageItemView messageItemView in panel_StatusList.Controls)
+                    using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
-                        try
+                        var col = litedb.GetCollection<SocketMessage>("table_Message");
+                        foreach (MessageItemView messageItemView in panel_StatusList.Controls)
                         {
                             string clientName = messageItemView.groupBox_ClientName.Text;
                             var query = col.Query().Where(x => x.clientName == clientName).OrderBy(x => x.connectTime, 0).ToList();
@@ -117,16 +143,19 @@ namespace SocketSignalServer
                                 messageItemView.setItems(socketMessage);
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
-                        }
                     }
+                    break;
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
+                catch (Exception ex)
+                {
+                    if (retryCount == _retryCountMax - 1)
+                    {
+                        Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
+                        Debug.WriteLine(ex.ToString());
+                        break;
+                    }
+                    Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
+                }
             }
         }
 
@@ -210,7 +239,6 @@ namespace SocketSignalServer
             {
                 queueList.Add(receivedSocketMessage);
                 string[] cols = receivedSocketMessage.Split('\t');
-
                 string dbFilename = textBox_DataBaseFilePath.Text;
 
                 if (cols.Length >= 4 && File.Exists(dbFilename))
@@ -226,30 +254,38 @@ namespace SocketSignalServer
 
                     SocketMessage socketMessage = new SocketMessage(connectTime, clientName, status, message, parameter, checkStyle);
                     string key = socketMessage.Key();
+                    _LiteDBconnectionString.Filename = dbFilename;
 
-                    try
+                    for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
                     {
-                        _LiteDBconnectionString.Filename = dbFilename;
-                        using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+                        try
                         {
-                            ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
-                            col.Insert(key, socketMessage);
+                            using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+                            {
+                                ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
+                                col.Insert(key, socketMessage);
+                            }
+                            break;
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
+                        catch (Exception ex)
+                        {
+                            if (retryCount == _retryCountMax - 1)
+                            {
+                                Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
+                                Debug.WriteLine(ex.ToString());
+                                break;
+                            }
+                            Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
+                        }
                     }
                 }
             }
-
             textBox_queueList.Text += "\t" + string.Join("\r\n\t", queueList.ToArray());
-
         }
 
         private void checkNoticeDataFromDataBase_and_AddNotice()
         {
-            for (int retryCount = 0; retryCount < _dbOpenRetryCountMax; retryCount++)
+            for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
             {
                 string dbFilename = textBox_DataBaseFilePath.Text;
                 if (!File.Exists(dbFilename)) break;
@@ -278,27 +314,27 @@ namespace SocketSignalServer
                 }
                 catch (Exception ex)
                 {
-                    if (retryCount == _dbOpenRetryCountMax - 1)
+                    if (retryCount == _retryCountMax - 1)
                     {
                         Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
                         Debug.WriteLine(ex.ToString());
                         break;
                     }
-                    Thread.Sleep(100);
+                    Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
                 }
             }
         }
 
         private void checkTimeoutFromDataBase_and_AddNotice()
         {
-            for (int retryCount = 0; retryCount < _dbOpenRetryCountMax; retryCount++)
+            for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
             {
                 string dbFilename = textBox_DataBaseFilePath.Text;
                 if (!File.Exists(dbFilename)) break;
+                _LiteDBconnectionString.Filename = dbFilename;
 
                 try
                 {
-                    _LiteDBconnectionString.Filename = dbFilename;
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
                         var col = litedb.GetCollection<SocketMessage>("table_Message");
@@ -340,13 +376,13 @@ namespace SocketSignalServer
                 }
                 catch (Exception ex)
                 {
-                    if (retryCount == _dbOpenRetryCountMax - 1)
+                    if (retryCount == _retryCountMax - 1)
                     {
                         Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
                         Debug.WriteLine(ex.ToString());
                         break;
                     }
-                    Thread.Sleep(100);
+                    Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
                 }
             }
         }
@@ -441,7 +477,6 @@ namespace SocketSignalServer
                 toolStripStatusLabel1.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
                 timer_UpdateList.Start();
 
-
                 if (tcpSrv.ListeningRun)
                 {
                     toolStripStatusLabel1.Text += " / TCP Listening Run";
@@ -503,36 +538,46 @@ namespace SocketSignalServer
             string dbFilename = textBox_DataBaseFilePath.Text;
             if (!File.Exists(dbFilename)) return;
 
-            try
+            for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
             {
-                _LiteDBconnectionString.Filename = dbFilename;
-                using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+                try
                 {
-                    var col = litedb.GetCollection<SocketMessage>("table_Message");
+                    _LiteDBconnectionString.Filename = dbFilename;
+                    using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+                    {
+                        var col = litedb.GetCollection<SocketMessage>("table_Message");
 
-                    try
-                    {
-                        var query = col.Query().OrderBy(x => x.connectTime, 0).ToList().Take(50).ToList();
-                        if (query.Count() > 0)
+                        try
                         {
-                            List<string> Lines = new List<string>();
-                            foreach (SocketMessage socketMessage in query.ToArray())
+                            var query = col.Query().OrderBy(x => x.connectTime, 0).ToList().Take(50).ToList();
+                            if (query.Count() > 0)
                             {
-                                Lines.Add(socketMessage.ToString());
+                                List<string> Lines = new List<string>();
+                                foreach (SocketMessage socketMessage in query.ToArray())
+                                {
+                                    Lines.Add(socketMessage.ToString());
+                                }
+                                textBox_Log.Text = String.Join("\r\n", Lines.ToArray());
                             }
-                            textBox_Log.Text = String.Join("\r\n", Lines.ToArray());
+                            label_LogUpdateTime.Text = "Log Update ... " + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
                         }
-                        label_LogUpdateTime.Text = "Log Update ... " + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
-                    }
+                    break;
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
+                catch (Exception ex)
+                {
+                    if (retryCount == _retryCountMax - 1)
+                    {
+                        Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
+                        Debug.WriteLine(ex.ToString());
+                        break;
+                    }
+                    Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
+                }
             }
         }
 

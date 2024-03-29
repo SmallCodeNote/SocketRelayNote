@@ -18,7 +18,6 @@ namespace SocketSignalServer
         public DateTime lastAccessTime;
         public DateTime lastTimeoutDetectedTime;
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -48,7 +47,6 @@ namespace SocketSignalServer
             lastAccessTime = DateTime.Now;
             lastTimeoutDetectedTime = DateTime.MinValue;
         }
-
     }
 
     public class AddressBook
@@ -58,13 +56,10 @@ namespace SocketSignalServer
         public AddressBook(string[] Lines)
         {
             addressBook = new Dictionary<string, AddressInfo>();
-
             for (int i = 1; i <= Lines.Length; i++)
             {
                 addressBook.Add(i.ToString(), new AddressInfo(Lines[i - 1]));
-
             }
-
         }
 
         public List<AddressInfo> getAddress(string keyIndexList)
@@ -77,13 +72,9 @@ namespace SocketSignalServer
             {
                 if (addressBook.ContainsKey(key)) result.Add(addressBook[key]);
             }
-
             return result;
-
         }
-
     }
-
 
     public class AddressInfo
     {
@@ -96,15 +87,11 @@ namespace SocketSignalServer
 
             address = cols[0];
             addressName = cols.Length > 1 ? cols[1] : "";
-
         }
 
         public override string ToString()
         {
             return address;
         }
-
     }
-
-
 }
