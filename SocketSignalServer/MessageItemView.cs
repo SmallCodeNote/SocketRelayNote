@@ -57,15 +57,23 @@ namespace SocketSignalServer
 
         public void setItems(SocketMessage message)
         {
-            _message = message;
-            this.groupBox_ClientName.Text = message.clientName;
-            this.label_Status.Text = message.status.ToString();
-            this.label_LastConnectTime.Text = message.connectTime.ToString("yyyy/MM/dd HH:mm:ss");
-            this.label_ElapsedTime.Text = getElapsedTimeString(DateTime.Now - message.connectTime);
-            this.label_LastMessage.Text = message.message;
-            this.checkBox_check.Checked = message.check;
-        }
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => setItems(message)));
+            }
+            else
+            {
+                _message = message;
+                this.groupBox_ClientName.Text = message.clientName;
+                this.label_Status.Text = message.status.ToString();
+                this.label_LastConnectTime.Text = message.connectTime.ToString("yyyy/MM/dd HH:mm:ss");
+                this.label_ElapsedTime.Text = getElapsedTimeString(DateTime.Now - message.connectTime);
+                this.label_LastMessage.Text = message.message;
+                this.checkBox_check.Checked = message.check;
+            }
 
+            return;
+        }
         public string getElapsedTimeString(TimeSpan elapsedTime)
         {
             if (elapsedTime.TotalDays >= 365) { return (elapsedTime.TotalDays / 365.2425).ToString("0") + " year"; }
@@ -80,6 +88,7 @@ namespace SocketSignalServer
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             _message.check = checkBox_check.Checked;
+            _LiteDBconnectionString.Connection = ConnectionType.Shared;
 
             for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
             {
@@ -94,10 +103,6 @@ namespace SocketSignalServer
                         record.check = checkBox_check.Checked;
                         col.Update(key, record);
 
-                        foreach (var q in _noticeList_CheckChange)
-                        {
-                            noticeTransmitter.NoticeQueue.Enqueue(q);
-                        }
                     }
                     break;
                 }
@@ -116,6 +121,8 @@ namespace SocketSignalServer
 
         private void button_AllCheck_Click(object sender, EventArgs e)
         {
+            _LiteDBconnectionString.Connection = ConnectionType.Shared;
+
             for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
             {
                 try
@@ -123,22 +130,17 @@ namespace SocketSignalServer
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
                         ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
-                        try
-                        {
-                            var records = col.Query()
-                                .Where(x => x.clientName == this._message.clientName && x.check == false)
-                                .ToList();
 
-                            foreach (var record in records)
-                            {
-                                record.check = true;
-                                col.Update(record.Key(), record);
-                            }
-                        }
-                        catch (Exception ex)
+                        var records = col.Query()
+                            .Where(x => x.clientName == this._message.clientName && x.check == false)
+                            .ToList();
+
+                        foreach (var record in records)
                         {
-                            Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " " + ex.ToString());
+                            record.check = true;
+                            col.Update(record.Key(), record);
                         }
+
                     }
                     break;
                 }
