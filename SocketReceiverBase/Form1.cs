@@ -56,10 +56,11 @@ namespace SocketReceiverBase
 
         DateTime LastCheckTime;
 
-        public bool Locked { get { return (DateTime.Now - LockReleaseTime).TotalSeconds < 0; } }
+        public bool Locked { get { return DateTime.Now < LockReleaseTime; } }
 
         public bool OK
         {
+
             get
             {
                 return button_StatusChange.BackColor == Color.YellowGreen;
@@ -93,18 +94,6 @@ namespace SocketReceiverBase
             {
                 textBox_PortNumber.Text = value.ToString();
             }
-        }
-
-        public string MessageSeverAddress
-        {
-            get { return textBox_MessageServerAddress.Text; }
-            set { textBox_MessageServerAddress.Text = value; }
-        }
-
-        public int MessageServerPort
-        {
-            get { int b = -1; if (!int.TryParse(textBox_MessageServerPort.Text, out b)) b = -1; return b; }
-            set { textBox_MessageServerPort.Text = value.ToString(); }
         }
 
         public string ClientName
@@ -178,7 +167,7 @@ namespace SocketReceiverBase
 
         private void LabelUpdate()
         {
-            if ((DateTime.Now - LockReleaseTime).TotalSeconds > 0)
+            if (DateTime.Now > LockReleaseTime)
             {
                 label_LockedFrom.Text = "- Release -";
                 label_LockedTime.Text = "- Release -";
@@ -210,6 +199,52 @@ namespace SocketReceiverBase
             return "now";
         }
 
+        private void update_tabPage_View()
+        {
+
+            string[] Lines = textBox_ServerList.Text.Replace("\r\n", "\n").Trim('\n').Split('\n');
+
+            if (textBox_ServerList.Text != "" && Lines.Length > 0)
+            {
+                panel_View.Controls.Clear();
+            }
+            else { return; }
+
+            int TopPosition = 0;
+            foreach (var Line in Lines)
+            {
+                if (Line.Split('\t').Length < 3) continue;
+                ServerInfo serverInfo = new ServerInfo(Line);
+                serverInfo.Top = TopPosition;
+                TopPosition += serverInfo.Height;
+                panel_View.Controls.Add(serverInfo);
+            }
+            panel_View.Height = TopPosition;
+        }
+
+        private string ServerInfoViewToString()
+        {
+            List<string> Lines = new List<string>();
+            foreach (var ctrl in panel_View.Controls)
+            {
+                if (ctrl is ServerInfo)
+                {
+                    Lines.Add(((ServerInfo)ctrl).ToString());
+                }
+            }
+            return string.Join("\r\n", Lines.ToArray());
+        }
+
+        private void SendMessageForServers(string request)
+        {
+            foreach (var ctrl in panel_View.Controls)
+            {
+                if (ctrl is ServerInfo)
+                {
+                    ((ServerInfo)ctrl).SendMessage(request);
+                }
+            }
+        }
         //===================
         // Event
         //===================
@@ -230,6 +265,7 @@ namespace SocketReceiverBase
                 }
             }
 
+            update_tabPage_View();
 
             tcpClt = new TcpSocketClient();
 
@@ -304,65 +340,74 @@ namespace SocketReceiverBase
                         LockReleaseTime = DateTime.Now;
 
                     }
-
                 }
                 LastCheckTime = DateTime.Now;
-
             }
-
             timer_UpdateQueue.Start();
-
         }
 
         private void timer_SendMessage_Tick(object sender, EventArgs e)
         {
             timer_SendMessage.Stop();
-
             if (OK)
             {
                 OK = true;
 
-                string request =  ClientName
-                    + "\t" + StatusOK
-                    + "\t" + MessageOK
-                    + "\t" + ParameterOK
-                    + "\t" + CheckStyleOK;
+                string request =
+                    ClientName + "\t" +
+                    StatusOK + "\t" +
+                    MessageOK + "\t" +
+                    ParameterOK + "\t" +
+                    CheckStyleOK;
 
-                int messageServerPort = MessageServerPort;
-
-                if (messageServerPort >= 1024)
-                {
-                    Task task = tcpClt.StartClient(MessageSeverAddress, messageServerPort, request);
-                    
-                }
-
+                SendMessageForServers(request);
             }
             else
             {
                 OK = false;
+                string request = "";
 
-                string request =  ClientName
-                    + "\t" + StatusNG
-                    + "\t" + MessageNG
-                    + "\t" + ParameterNG
-                    + "\t" + CheckStyleNG;
-
-                int messageServerPort = MessageServerPort;
-
-                if (messageServerPort >= 1024)
+                if (Locked)
                 {
-                    Task task = tcpClt.StartClient(MessageSeverAddress, messageServerPort, request);
+                    request =
+                        ClientName + "\t" +
+                        StatusOK + "\t" +
+                        MessageNG + "\t" +
+                        ParameterNG + "\t" +
+                        CheckStyleNG;
                 }
-            }
+                else
+                {
+                    request =
+                        ClientName + "\t" +
+                        StatusNG + "\t" +
+                        MessageNG + "\t" +
+                        ParameterNG + "\t" +
+                        CheckStyleNG;
 
+                }
+                SendMessageForServers(request);
+            }
             timer_SendMessage.Start();
         }
 
         private void button_Restrart_Click(object sender, EventArgs e)
         {
             tcpSrv.StopListening();
-
             tcpSrv.StartListening(PortNumberSrv, "UTF8");
         }
+
+        private void tabControl_ServerInfo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl_ServerInfo.SelectedTab == tabPage_View)
+            {
+                update_tabPage_View();
+            }
+            else if (tabControl_ServerInfo.SelectedTab == tabPage_List)
+            {
+                textBox_ServerList.Text = ServerInfoViewToString();
+            }
+        }
+
     }
 }
