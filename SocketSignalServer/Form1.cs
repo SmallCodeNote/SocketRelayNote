@@ -49,6 +49,8 @@ namespace SocketSignalServer
             clientList = new List<ClientData>();
 
             random = new Random();
+
+
         }
 
         //===================
@@ -90,7 +92,7 @@ namespace SocketSignalServer
             if (targetDir == "{ExecutablePath}") { targetDir = Path.GetDirectoryName(Application.ExecutablePath); }
             if (Directory.Exists(targetDir))
             {
-                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd"), DateTime.Now.ToString("yyyyMMdd_HHmm") + ".txt");
+                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd"), DateTime.Now.ToString("yyyyMMdd_HHmm").Substring(0, 12) + "0.txt");
                 if (!Directory.Exists(Path.GetDirectoryName(outFilename))) { Directory.CreateDirectory(Path.GetDirectoryName(outFilename)); };
 
                 DefaultTraceListener dtl = (DefaultTraceListener)Debug.Listeners["Default"];
@@ -107,7 +109,7 @@ namespace SocketSignalServer
             if (targetDir == "{ExecutablePath}") { targetDir = Path.GetDirectoryName(Application.ExecutablePath); }
             if (Directory.Exists(targetDir))
             {
-                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd"), DateTime.Now.ToString("yyyyMMdd_HHmm") + ".txt");
+                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd"), DateTime.Now.ToString("yyyyMMdd_HHmm").Substring(0,12) + "0.txt");
                 if (!Directory.Exists(Path.GetDirectoryName(outFilename))) { Directory.CreateDirectory(Path.GetDirectoryName(outFilename)); };
 
                 DefaultTraceListener dtl = (DefaultTraceListener)Debug.Listeners["Default"];
@@ -125,6 +127,7 @@ namespace SocketSignalServer
         {
             if (!File.Exists(textBox_DataBaseFilePath.Text)) return;
             _LiteDBconnectionString.Filename = textBox_DataBaseFilePath.Text;
+            _LiteDBconnectionString.Connection = ConnectionType.Shared;
 
             for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
             {
@@ -255,6 +258,7 @@ namespace SocketSignalServer
                     SocketMessage socketMessage = new SocketMessage(connectTime, clientName, status, message, parameter, checkStyle);
                     string key = socketMessage.Key();
                     _LiteDBconnectionString.Filename = dbFilename;
+                    _LiteDBconnectionString.Connection = ConnectionType.Shared;
 
                     for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
                     {
@@ -285,14 +289,15 @@ namespace SocketSignalServer
 
         private void checkNoticeDataFromDataBase_and_AddNotice()
         {
+            string dbFilename = textBox_DataBaseFilePath.Text;
+            if (!File.Exists(dbFilename)) return;
+            _LiteDBconnectionString.Filename = dbFilename;
+            _LiteDBconnectionString.Connection = ConnectionType.Shared;
+
             for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
             {
-                string dbFilename = textBox_DataBaseFilePath.Text;
-                if (!File.Exists(dbFilename)) break;
-
                 try
                 {
-                    _LiteDBconnectionString.Filename = dbFilename;
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
                         ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
@@ -327,12 +332,14 @@ namespace SocketSignalServer
 
         private void checkTimeoutFromDataBase_and_AddNotice()
         {
+            string dbFilename = textBox_DataBaseFilePath.Text;
+            if (!File.Exists(dbFilename)) return;
+
+            _LiteDBconnectionString.Filename = dbFilename;
+            _LiteDBconnectionString.Connection = ConnectionType.Shared;
+
             for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
             {
-                string dbFilename = textBox_DataBaseFilePath.Text;
-                if (!File.Exists(dbFilename)) break;
-                _LiteDBconnectionString.Filename = dbFilename;
-
                 try
                 {
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
@@ -398,13 +405,16 @@ namespace SocketSignalServer
             {
                 WinFormStringCnv.setControlFromString(this, File.ReadAllText(paramFilename));
             }
-
+            
             DebugOutDirPathReset(textBox_DebugOutDirPath.Text);
 
+            
             ClientListInitialize();
             AddressListInitialize();
             SchedulerInitialize();
+
             timer_updateStatus.Start();
+            timer_DebugFilepathUpdate.Start();
 
             int.TryParse(textBox_httpTimeout.Text, out noticeTransmitter.httpTimeout);
 
@@ -426,6 +436,7 @@ namespace SocketSignalServer
             {
                 tabPage_Status.Select();
             }
+
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -457,10 +468,11 @@ namespace SocketSignalServer
 
         private void timer_UpdateList_Tick(object sender, EventArgs e)
         {
+
+
             timer_UpdateList.Stop();
 
             textBox_queueList.Text = DateTime.Now.ToString("HH:mm:ss") + "\t" + tcpSrv.ReceivedSocketQueue.Count.ToString() + "\r\n";
-
 
             if ((tcpSrv.LastReceiveTime - LastCheckTime).TotalSeconds > 0 && tcpSrv.ReceivedSocketQueue.Count > 0)
             {
@@ -493,7 +505,6 @@ namespace SocketSignalServer
             {
                 toolStripStatusLabel1.Text = "Stop TCP Listener.";
             }
-
 
         }
 
@@ -537,12 +548,13 @@ namespace SocketSignalServer
         {
             string dbFilename = textBox_DataBaseFilePath.Text;
             if (!File.Exists(dbFilename)) return;
+            _LiteDBconnectionString.Filename = dbFilename;
+            _LiteDBconnectionString.Connection = ConnectionType.Shared;
 
             for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
             {
                 try
                 {
-                    _LiteDBconnectionString.Filename = dbFilename;
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
                         var col = litedb.GetCollection<SocketMessage>("table_Message");
@@ -613,10 +625,11 @@ namespace SocketSignalServer
 
             string dbFilename = textBox_DataBaseFilePath.Text;
             if (!File.Exists(dbFilename)) return;
+            _LiteDBconnectionString.Filename = dbFilename;
+            _LiteDBconnectionString.Connection = ConnectionType.Shared;
 
             try
             {
-                _LiteDBconnectionString.Filename = dbFilename;
                 using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                 {
                     for (DateTime connectTime = DateTime.Parse("2020/01/01"); connectTime < DateTime.Parse("2024/01/31"); connectTime += TP)
@@ -667,13 +680,12 @@ namespace SocketSignalServer
 
         private void timer_updateStatus_Tick(object sender, EventArgs e)
         {
-            timer_updateStatus.Stop();
             if (tabControl_Top.SelectedTab == tabPage_Status)
             {
-                updateStatusList();
-
+                    timer_updateStatus.Stop();
+                    updateStatusList();
+                    timer_updateStatus.Start();
             }
-            timer_updateStatus.Start();
         }
 
         private void checkBox_debugModeSwitch_CheckedChanged(object sender, EventArgs e)
@@ -740,6 +752,13 @@ namespace SocketSignalServer
         private void label_DebugOutDirPath_Click(object sender, EventArgs e)
         {
             textBox_DebugOutDirPath.Text = "{ExecutablePath}";
+        }
+
+        private void timer_DebugFilepathUpdate_Tick(object sender, EventArgs e)
+        {
+            timer_DebugFilepathUpdate.Stop();
+            DebugOutFilenameReset(textBox_DebugOutDirPath.Text);
+            timer_DebugFilepathUpdate.Start();
         }
     }
 
