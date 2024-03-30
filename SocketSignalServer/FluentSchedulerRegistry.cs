@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -162,6 +163,9 @@ namespace SocketSignalServer
         {
             return new Action(delegate ()
             {
+                if (!File.Exists(_LiteDBconnectionString.Filename)) return;
+                _LiteDBconnectionString.Connection = ConnectionType.Shared;
+
                 //== Retry DataBaseOpen Loop
                 for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
                 {
