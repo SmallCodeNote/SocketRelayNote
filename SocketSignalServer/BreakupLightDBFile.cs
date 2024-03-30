@@ -37,7 +37,7 @@ namespace SocketSignalServer
             _LiteDBconnectionString = new ConnectionString();
             _LiteDBconnectionString.Connection = ConnectionType.Shared;
 
-            //JobManager.Initialize();
+            JobManager.Initialize();
             job = () =>
             {
                 BreakupLightDBFile_byMonthFile(dbFilename, backupIntervalMinute);
@@ -53,7 +53,10 @@ namespace SocketSignalServer
 
         public void BreakupLightDB_byMonthFile(string dbFilename, string backupDirTopPath, int backupIntervalMinute)
         {
+            if (!File.Exists(dbFilename)) return;
             _LiteDBconnectionString.Filename = dbFilename;
+            _LiteDBconnectionString.Connection = ConnectionType.Shared;
+
             TimeSpan timeSpan = new TimeSpan(0, backupIntervalMinute, 0);
 
             for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
