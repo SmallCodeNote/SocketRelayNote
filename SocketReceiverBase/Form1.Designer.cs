@@ -70,18 +70,19 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tabControl_ServerInfo = new System.Windows.Forms.TabControl();
             this.tabPage_View = new System.Windows.Forms.TabPage();
-            this.tabPage_List = new System.Windows.Forms.TabPage();
             this.panel_Frame = new System.Windows.Forms.Panel();
             this.panel_View = new System.Windows.Forms.Panel();
+            this.tabPage_List = new System.Windows.Forms.TabPage();
             this.textBox_ServerList = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl_ServerInfo.SuspendLayout();
             this.tabPage_View.SuspendLayout();
-            this.tabPage_List.SuspendLayout();
             this.panel_Frame.SuspendLayout();
+            this.tabPage_List.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_StatusChange
@@ -449,21 +450,10 @@
             this.tabPage_View.Location = new System.Drawing.Point(4, 4);
             this.tabPage_View.Name = "tabPage_View";
             this.tabPage_View.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_View.Size = new System.Drawing.Size(726, 230);
+            this.tabPage_View.Size = new System.Drawing.Size(557, 230);
             this.tabPage_View.TabIndex = 0;
             this.tabPage_View.Text = "View";
             this.tabPage_View.UseVisualStyleBackColor = true;
-            // 
-            // tabPage_List
-            // 
-            this.tabPage_List.Controls.Add(this.textBox_ServerList);
-            this.tabPage_List.Location = new System.Drawing.Point(4, 4);
-            this.tabPage_List.Name = "tabPage_List";
-            this.tabPage_List.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_List.Size = new System.Drawing.Size(557, 230);
-            this.tabPage_List.TabIndex = 1;
-            this.tabPage_List.Text = "List";
-            this.tabPage_List.UseVisualStyleBackColor = true;
             // 
             // panel_Frame
             // 
@@ -472,7 +462,7 @@
             this.panel_Frame.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel_Frame.Location = new System.Drawing.Point(3, 3);
             this.panel_Frame.Name = "panel_Frame";
-            this.panel_Frame.Size = new System.Drawing.Size(720, 224);
+            this.panel_Frame.Size = new System.Drawing.Size(551, 224);
             this.panel_Frame.TabIndex = 0;
             // 
             // panel_View
@@ -482,16 +472,28 @@
             this.panel_View.Size = new System.Drawing.Size(697, 147);
             this.panel_View.TabIndex = 0;
             // 
+            // tabPage_List
+            // 
+            this.tabPage_List.Controls.Add(this.label3);
+            this.tabPage_List.Controls.Add(this.textBox_ServerList);
+            this.tabPage_List.Location = new System.Drawing.Point(4, 4);
+            this.tabPage_List.Name = "tabPage_List";
+            this.tabPage_List.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_List.Size = new System.Drawing.Size(557, 230);
+            this.tabPage_List.TabIndex = 1;
+            this.tabPage_List.Text = "List";
+            this.tabPage_List.UseVisualStyleBackColor = true;
+            // 
             // textBox_ServerList
             // 
             this.textBox_ServerList.AcceptsReturn = true;
             this.textBox_ServerList.AcceptsTab = true;
-            this.textBox_ServerList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox_ServerList.Location = new System.Drawing.Point(3, 3);
+            this.textBox_ServerList.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.textBox_ServerList.Location = new System.Drawing.Point(3, 18);
             this.textBox_ServerList.Multiline = true;
             this.textBox_ServerList.Name = "textBox_ServerList";
             this.textBox_ServerList.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox_ServerList.Size = new System.Drawing.Size(551, 224);
+            this.textBox_ServerList.Size = new System.Drawing.Size(551, 209);
             this.textBox_ServerList.TabIndex = 0;
             this.textBox_ServerList.WordWrap = false;
             // 
@@ -503,6 +505,15 @@
             this.label15.Size = new System.Drawing.Size(374, 12);
             this.label15.TabIndex = 13;
             this.label15.Text = "request = {ClientName}\\t{Status}\\t{Message}\\t{Parameter}\\t{CheckStyle}";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(386, 3);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(168, 12);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "{ServerName}\\t{Address}\\t{Port}";
             // 
             // Form1
             // 
@@ -527,9 +538,9 @@
             this.groupBox2.PerformLayout();
             this.tabControl_ServerInfo.ResumeLayout(false);
             this.tabPage_View.ResumeLayout(false);
+            this.panel_Frame.ResumeLayout(false);
             this.tabPage_List.ResumeLayout(false);
             this.tabPage_List.PerformLayout();
-            this.panel_Frame.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -582,6 +593,7 @@
         private System.Windows.Forms.TabPage tabPage_List;
         private System.Windows.Forms.TextBox textBox_ServerList;
         private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label3;
     }
 }
 

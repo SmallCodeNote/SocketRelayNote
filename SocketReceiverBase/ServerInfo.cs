@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 using tcpClient;
 
-namespace SocketReceiverBase
+namespace ServerInfoUserControl
 {
     public partial class ServerInfo : UserControl
     {
@@ -112,7 +112,7 @@ namespace SocketReceiverBase
                     label_LatestAnswer.Text = value;
                     label_LatestAnswerTime.Text = DateTime.Now.ToString("MM/dd HH:mm:ss");
 
-                    if (value == "") { button_Lamp.BackColor = Color.Red; label_LatestAnswerTime.Text += " (TimeOut)"; } else { button_Lamp.BackColor = Color.YellowGreen; }
+                    if (value == "") { button_Lamp.BackColor = Color.Red; label_LatestAnswerTime.Text += " (TimeOut)"; } else if(value != "Connecting...") { button_Lamp.BackColor = Color.YellowGreen; }
                 }
             }
         }
@@ -139,6 +139,7 @@ namespace SocketReceiverBase
         {
             if (Port >= 1024)
             {
+                LatestAnswer = "Connecting...";
                 LatestAnswer = await tcpClt.StartClient(Address, Port, request, "UTF8");
             }
         }

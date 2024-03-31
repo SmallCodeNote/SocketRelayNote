@@ -13,6 +13,7 @@ using WinFormStringCnvClass;
 
 using tcpServer;
 using tcpClient;
+using ServerInfoUserControl;
 
 namespace SocketReceiverBase
 {
@@ -201,24 +202,26 @@ namespace SocketReceiverBase
 
         private void update_tabPage_View()
         {
-
             string[] Lines = textBox_ServerList.Text.Replace("\r\n", "\n").Trim('\n').Split('\n');
-
-            if (textBox_ServerList.Text != "" && Lines.Length > 0)
-            {
-                panel_View.Controls.Clear();
-            }
-            else { return; }
 
             int TopPosition = 0;
             foreach (var Line in Lines)
             {
-                if (Line.Split('\t').Length < 3) continue;
+                if (Line == "" || Line[0] == '#' || Line.Split('\t').Length < 3) continue;
                 ServerInfo serverInfo = new ServerInfo(Line);
                 serverInfo.Top = TopPosition;
                 TopPosition += serverInfo.Height;
                 panel_View.Controls.Add(serverInfo);
             }
+
+            if (panel_View.Controls.Count == 0)
+            {
+                ServerInfo serverInfo = new ServerInfo("", "", -1);
+                serverInfo.Top = TopPosition;
+                TopPosition += serverInfo.Height;
+                panel_View.Controls.Add(serverInfo);
+            }
+
             panel_View.Height = TopPosition;
         }
 

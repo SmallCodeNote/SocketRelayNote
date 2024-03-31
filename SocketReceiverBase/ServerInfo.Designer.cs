@@ -1,4 +1,4 @@
-﻿namespace SocketReceiverBase
+﻿namespace ServerInfoUserControl
 {
     partial class ServerInfo
     {
