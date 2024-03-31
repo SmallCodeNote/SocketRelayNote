@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 15 for Windows Desktop
+VisualStudioVersion = 15.0.34112.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AliveMonitoring", "AliveMonitoring\AliveMonitoring.csproj", "{8B4D40B9-077C-4A01-9A4F-16AC98C17289}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8B4D40B9-077C-4A01-9A4F-16AC98C17289}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B4D40B9-077C-4A01-9A4F-16AC98C17289}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B4D40B9-077C-4A01-9A4F-16AC98C17289}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B4D40B9-077C-4A01-9A4F-16AC98C17289}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7EFB3269-E5D7-43E4-899E-409D7F158D32}
+	EndGlobalSection
+EndGlobal
