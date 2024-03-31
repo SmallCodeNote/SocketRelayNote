@@ -95,7 +95,10 @@ namespace SocketSignalServer
                                     var colbk = litedbBackup.GetCollection<SocketMessage>(TableName);
                                     foreach (SocketMessage skm in backupQueryList)
                                     {
-                                        colbk.Insert(skm.Key(), skm);
+                                        if (colbk.FindById(skm.Key()) == null)
+                                        {
+                                            colbk.Insert(skm.Key(), skm);
+                                        }
                                         col.Delete(skm.Key());
                                     }
                                 }

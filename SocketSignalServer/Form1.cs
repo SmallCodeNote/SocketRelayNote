@@ -36,7 +36,7 @@ namespace SocketSignalServer
 
             tcpSrv = new TcpSocketServer();
 
-            noticeTransmitter = new NoticeTransmitter(checkBox_debugModeSwitch.Checked);
+            noticeTransmitter = new NoticeTransmitter(checkBox_voiceOffSwitch.Checked);
             noticeTransmitter.StartNoticeCheck();
 
             thisExeDirPath = Path.GetDirectoryName(Application.ExecutablePath);
@@ -50,13 +50,17 @@ namespace SocketSignalServer
 
             random = new Random();
 
-
+            icon_voiceON = Properties.Resources.VoiceON048;
+            icon_voiceOFF = Properties.Resources.VoiceOFF048;
         }
 
         //===================
         // Member variable
         //===================
         string thisExeDirPath;
+        Bitmap icon_voiceON;
+        Bitmap icon_voiceOFF;
+
 
         TcpSocketServer tcpSrv;
         int portNumber;
@@ -109,7 +113,7 @@ namespace SocketSignalServer
             if (targetDir == "{ExecutablePath}") { targetDir = Path.GetDirectoryName(Application.ExecutablePath); }
             if (Directory.Exists(targetDir))
             {
-                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd"), DateTime.Now.ToString("yyyyMMdd_HHmm").Substring(0,12) + "0.txt");
+                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd"), DateTime.Now.ToString("yyyyMMdd_HHmm").Substring(0, 12) + "0.txt");
                 if (!Directory.Exists(Path.GetDirectoryName(outFilename))) { Directory.CreateDirectory(Path.GetDirectoryName(outFilename)); };
 
                 DefaultTraceListener dtl = (DefaultTraceListener)Debug.Listeners["Default"];
@@ -267,7 +271,10 @@ namespace SocketSignalServer
                             using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                             {
                                 ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
-                                col.Insert(key, socketMessage);
+                                if (col.FindById(key) == null)
+                                {
+                                    col.Insert(key, socketMessage);
+                                }
                             }
                             break;
                         }
@@ -405,10 +412,10 @@ namespace SocketSignalServer
             {
                 WinFormStringCnv.setControlFromString(this, File.ReadAllText(paramFilename));
             }
-            
-            DebugOutDirPathReset(textBox_DebugOutDirPath.Text);
 
-            
+            DebugOutDirPathReset(textBox_DebugOutDirPath.Text);
+            checkBox_voiceOffSwitch_CheckedChanged();
+
             ClientListInitialize();
             AddressListInitialize();
             SchedulerInitialize();
@@ -682,15 +689,24 @@ namespace SocketSignalServer
         {
             if (tabControl_Top.SelectedTab == tabPage_Status)
             {
-                    timer_updateStatus.Stop();
-                    updateStatusList();
-                    timer_updateStatus.Start();
+                timer_updateStatus.Stop();
+                updateStatusList();
+                timer_updateStatus.Start();
             }
         }
 
-        private void checkBox_debugModeSwitch_CheckedChanged(object sender, EventArgs e)
+        private void checkBox_voiceOffSwitch_CheckedChanged(object sender = null, EventArgs e = null)
         {
-            noticeTransmitter._debug = checkBox_debugModeSwitch.Checked;
+            noticeTransmitter._voiceOFF = checkBox_voiceOffSwitch.Checked;
+
+            if (checkBox_voiceOffSwitch.Checked)
+            {
+                toolStripDropDownButton_VoiceSwitch.Image = icon_voiceOFF;
+            }
+            else
+            {
+                toolStripDropDownButton_VoiceSwitch.Image = icon_voiceON;
+            }
         }
 
         private void dataGridView_ClientList_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -760,6 +776,19 @@ namespace SocketSignalServer
             DebugOutFilenameReset(textBox_DebugOutDirPath.Text);
             timer_DebugFilepathUpdate.Start();
         }
-    }
 
+        private void toolStripDropDownButton_VoiceSwitch_Click(object sender, EventArgs e)
+        {
+
+
+            if (toolStripDropDownButton_VoiceSwitch.Image == icon_voiceOFF)
+            {
+                checkBox_voiceOffSwitch.Checked = false;
+            }
+            else
+            {
+                checkBox_voiceOffSwitch.Checked = true;
+            }
+        }
+    }
 }

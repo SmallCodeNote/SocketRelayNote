@@ -97,7 +97,6 @@ namespace SocketSignalServer
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
                         var col = litedb.GetCollection<SocketMessage>("table_Message");
-
                         var record = col.FindOne(x => x.connectTime == this._message.connectTime && x.clientName == this._message.clientName && x.status == this._message.status);
                         string key = this._message.clientName + "_" + this._message.connectTime.ToString("yyyy/MM/dd HH:mm:ss.fff");
                         record.check = checkBox_check.Checked;

@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.button_Start = new System.Windows.Forms.Button();
             this.textBox_portNumber = new System.Windows.Forms.TextBox();
@@ -62,7 +62,7 @@
             this.textBox_DebugOutDirPath = new System.Windows.Forms.TextBox();
             this.textBox_DataBaseFilePath = new System.Windows.Forms.TextBox();
             this.tabPage_NotifySetting = new System.Windows.Forms.TabPage();
-            this.checkBox_debugModeSwitch = new System.Windows.Forms.CheckBox();
+            this.checkBox_voiceOffSwitch = new System.Windows.Forms.CheckBox();
             this.textBox_httpTimeout = new System.Windows.Forms.TextBox();
             this.textBox_ClearMessageParameter = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -93,6 +93,7 @@
             this.textBox_queueList = new System.Windows.Forms.TextBox();
             this.timer_UpdateList = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripDropDownButton_VoiceSwitch = new System.Windows.Forms.ToolStripDropDownButton();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer_updateStatus = new System.Windows.Forms.Timer(this.components);
             this.timer_DebugFilepathUpdate = new System.Windows.Forms.Timer(this.components);
@@ -277,27 +278,27 @@
             // 
             // dataGridView_SchedulerList
             // 
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView_SchedulerList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView_SchedulerList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView_SchedulerList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_SchedulerList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn1,
             this.Column_Interval,
             this.Column_IntervalAt});
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView_SchedulerList.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView_SchedulerList.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView_SchedulerList.Location = new System.Drawing.Point(9, 108);
             this.dataGridView_SchedulerList.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView_SchedulerList.Name = "dataGridView_SchedulerList";
@@ -391,7 +392,7 @@
             // 
             // tabPage_NotifySetting
             // 
-            this.tabPage_NotifySetting.Controls.Add(this.checkBox_debugModeSwitch);
+            this.tabPage_NotifySetting.Controls.Add(this.checkBox_voiceOffSwitch);
             this.tabPage_NotifySetting.Controls.Add(this.textBox_httpTimeout);
             this.tabPage_NotifySetting.Controls.Add(this.textBox_ClearMessageParameter);
             this.tabPage_NotifySetting.Controls.Add(this.label9);
@@ -413,18 +414,18 @@
             this.tabPage_NotifySetting.Text = "NotifySetting";
             this.tabPage_NotifySetting.UseVisualStyleBackColor = true;
             // 
-            // checkBox_debugModeSwitch
+            // checkBox_voiceOffSwitch
             // 
-            this.checkBox_debugModeSwitch.AutoSize = true;
-            this.checkBox_debugModeSwitch.Checked = true;
-            this.checkBox_debugModeSwitch.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_debugModeSwitch.Location = new System.Drawing.Point(432, 378);
-            this.checkBox_debugModeSwitch.Name = "checkBox_debugModeSwitch";
-            this.checkBox_debugModeSwitch.Size = new System.Drawing.Size(97, 16);
-            this.checkBox_debugModeSwitch.TabIndex = 13;
-            this.checkBox_debugModeSwitch.Text = "debugModeON";
-            this.checkBox_debugModeSwitch.UseVisualStyleBackColor = true;
-            this.checkBox_debugModeSwitch.CheckedChanged += new System.EventHandler(this.checkBox_debugModeSwitch_CheckedChanged);
+            this.checkBox_voiceOffSwitch.AutoSize = true;
+            this.checkBox_voiceOffSwitch.Checked = true;
+            this.checkBox_voiceOffSwitch.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_voiceOffSwitch.Location = new System.Drawing.Point(270, 255);
+            this.checkBox_voiceOffSwitch.Name = "checkBox_voiceOffSwitch";
+            this.checkBox_voiceOffSwitch.Size = new System.Drawing.Size(73, 16);
+            this.checkBox_voiceOffSwitch.TabIndex = 13;
+            this.checkBox_voiceOffSwitch.Text = "voiceOFF";
+            this.checkBox_voiceOffSwitch.UseVisualStyleBackColor = true;
+            this.checkBox_voiceOffSwitch.CheckedChanged += new System.EventHandler(this.checkBox_voiceOffSwitch_CheckedChanged);
             // 
             // textBox_httpTimeout
             // 
@@ -495,14 +496,14 @@
             // 
             // dataGridView_ClientList
             // 
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle9.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView_ClientList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView_ClientList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView_ClientList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_ClientList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column_ClientList_Name,
@@ -510,14 +511,14 @@
             this.Column_needCheck,
             this.Column_Timeout,
             this.Column_TimeOutMessage});
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView_ClientList.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView_ClientList.DefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView_ClientList.Location = new System.Drawing.Point(11, 23);
             this.dataGridView_ClientList.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView_ClientList.Name = "dataGridView_ClientList";
@@ -588,26 +589,26 @@
             // 
             // dataGridView_AddressList
             // 
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle11.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            dataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView_AddressList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView_AddressList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.dataGridView_AddressList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_AddressList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ColumnAddress,
             this.Column_AddressName});
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle12.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView_AddressList.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView_AddressList.DefaultCellStyle = dataGridViewCellStyle6;
             this.dataGridView_AddressList.Location = new System.Drawing.Point(11, 274);
             this.dataGridView_AddressList.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView_AddressList.Name = "dataGridView_AddressList";
@@ -739,18 +740,31 @@
             // 
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripDropDownButton_VoiceSwitch,
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 468);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 464);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(593, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(593, 26);
             this.statusStrip1.TabIndex = 5;
             this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripDropDownButton_VoiceSwitch
+            // 
+            this.toolStripDropDownButton_VoiceSwitch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripDropDownButton_VoiceSwitch.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripDropDownButton_VoiceSwitch.Image = global::SocketSignalServer.Properties.Resources.VoiceON048;
+            this.toolStripDropDownButton_VoiceSwitch.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton_VoiceSwitch.Name = "toolStripDropDownButton_VoiceSwitch";
+            this.toolStripDropDownButton_VoiceSwitch.ShowDropDownArrow = false;
+            this.toolStripDropDownButton_VoiceSwitch.Size = new System.Drawing.Size(24, 24);
+            this.toolStripDropDownButton_VoiceSwitch.Text = "toolStripDropDownButton1";
+            this.toolStripDropDownButton_VoiceSwitch.Click += new System.EventHandler(this.toolStripDropDownButton_VoiceSwitch_Click);
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(16, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(16, 21);
             this.toolStripStatusLabel1.Text = "...";
             // 
             // timer_updateStatus
@@ -852,13 +866,14 @@
         private System.Windows.Forms.TextBox textBox_queueList;
         private System.Windows.Forms.CheckBox checkBox_serverAutoStart;
         private System.Windows.Forms.Timer timer_updateStatus;
-        private System.Windows.Forms.CheckBox checkBox_debugModeSwitch;
+        private System.Windows.Forms.CheckBox checkBox_voiceOffSwitch;
         private System.Windows.Forms.Label label_IntervalSelector;
         private System.Windows.Forms.Label label_IntervalSelectorNow;
         private System.Windows.Forms.Label label_DebugOutDirPath;
         private System.Windows.Forms.TextBox textBox_DebugOutDirPath;
         private System.Windows.Forms.Button button_DebugOutDirPathReset;
         private System.Windows.Forms.Timer timer_DebugFilepathUpdate;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton_VoiceSwitch;
     }
 }
 
