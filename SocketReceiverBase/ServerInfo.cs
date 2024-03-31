@@ -43,6 +43,7 @@ namespace ServerInfoUserControl
         // Member variable
         //===================
         TcpSocketClient tcpClt;
+        public int TimeOutCount = 0;
 
         public string Address
         {
@@ -112,10 +113,12 @@ namespace ServerInfoUserControl
                     label_LatestAnswer.Text = value;
                     label_LatestAnswerTime.Text = DateTime.Now.ToString("MM/dd HH:mm:ss");
 
-                    if (value == "") { button_Lamp.BackColor = Color.Red; label_LatestAnswerTime.Text += " (TimeOut)"; } else if(value != "Connecting...") { button_Lamp.BackColor = Color.YellowGreen; }
+                    if (value == "") { button_Lamp.BackColor = Color.Red; label_LatestAnswerTime.Text += " (TimeOut x" + TimeOutCount.ToString() + ")"; } else if (value != "Connecting...") { button_Lamp.BackColor = Color.YellowGreen; }
                 }
             }
         }
+
+        public bool Alive { get { return button_Lamp.BackColor != Color.Red; } }
 
         //===================
         // Member function
@@ -141,6 +144,7 @@ namespace ServerInfoUserControl
             {
                 LatestAnswer = "Connecting...";
                 LatestAnswer = await tcpClt.StartClient(Address, Port, request, "UTF8");
+                if (LatestAnswer == "") { TimeOutCount++; } else { TimeOutCount = 0; }
             }
         }
 
