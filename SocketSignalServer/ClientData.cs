@@ -64,15 +64,27 @@ namespace SocketSignalServer
 
         public List<AddressInfo> getAddress(string keyIndexList)
         {
-            string[] keyIndexSet = keyIndexList.Split(',');
-
-            List<AddressInfo> result = new List<AddressInfo>();
-
-            foreach (string key in keyIndexSet)
+            if (keyIndexList == "" || keyIndexList == "ALL")
             {
-                if (addressBook.ContainsKey(key)) result.Add(addressBook[key]);
+                List<AddressInfo> result = new List<AddressInfo>();
+
+                foreach (var addValue in addressBook)
+                {
+                    result.Add(addValue.Value);
+                }
+                return result;
             }
-            return result;
+            else
+            {
+                string[] keyIndexSet = keyIndexList.Split(',');
+                List<AddressInfo> result = new List<AddressInfo>();
+
+                foreach (string key in keyIndexSet)
+                {
+                    if (addressBook.ContainsKey(key)) result.Add(addressBook[key]);
+                }
+                return result;
+            }
         }
     }
 
@@ -91,7 +103,7 @@ namespace SocketSignalServer
 
         public override string ToString()
         {
-            return address;
+            return address + ":" + addressName;
         }
     }
 }

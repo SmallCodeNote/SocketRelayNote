@@ -29,14 +29,14 @@ namespace SocketSignalServer
         public int _threadSleepLength = 100;
 
         public int httpTimeout = 3;
-        public bool _debug = true;
+        public bool _voiceOFF = true;
 
-        public NoticeTransmitter(bool debug = true)
+        public NoticeTransmitter(bool voiceOFF = true)
         {
             NoticeQueue = new ConcurrentQueue<NoticeMessage>();
             NoticeRunningDictionary = new ConcurrentDictionary<string, NoticeMessageHandling>();
 
-            this._debug = debug;
+            this._voiceOFF = voiceOFF;
         }
 
         public bool AddNotice(NoticeMessage notice)
@@ -103,7 +103,7 @@ namespace SocketSignalServer
                         NoticeMessage b;
                         if (NoticeQueue.TryDequeue(out b))
                         {
-                            NoticeMessageHandling handling = new NoticeMessageHandling(b, httpTimeout, _debug);
+                            NoticeMessageHandling handling = new NoticeMessageHandling(b, httpTimeout, _voiceOFF);
 
                             if (NoticeRunningDictionary.TryAdd(b.Key, handling))
                             {
@@ -119,7 +119,6 @@ namespace SocketSignalServer
                 {
                     Debug.Write(DateTime.Now.ToString("HH:mm:ss") + " " + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " ");
                     Debug.WriteLine(ex.ToString());
-
                 }
             }
 
@@ -129,6 +128,15 @@ namespace SocketSignalServer
 
     public class NoticeMessageHandling : IDisposable
     {
+        public NoticeMessageHandling(NoticeMessage notice, int timeout = 3, bool debug = true)
+        {
+            this.notice = notice;
+            httpClient = new HttpClient();
+            httpClient.Timeout = new TimeSpan(0, 0, timeout);
+
+            this._voiceOFF = debug;
+        }
+
         private HttpClient httpClient;
         public NoticeMessage notice;
 
@@ -136,7 +144,7 @@ namespace SocketSignalServer
         public int WaitNoticeFinish_Timeout = 30;
 
         public int _threadSleepLength = 100;
-        public bool _debug = true;
+        public bool _voiceOFF = true;
 
 
         public int timeout
@@ -145,29 +153,18 @@ namespace SocketSignalServer
             set { httpClient.Timeout = new TimeSpan(0, 0, value); }
         }
 
-
-        public NoticeMessageHandling(NoticeMessage notice, int timeout = 3, bool debug = true)
-        {
-            this.notice = notice;
-            httpClient = new HttpClient();
-            httpClient.Timeout = new TimeSpan(0, 0, timeout);
-
-            this._debug = debug;
-        }
-
-
         public Task StartNotice()
         {
             return Task.Run(() =>
             {
                 FinishNotice = false;
-
+                
                 if (!WaitNoticeFinish())
                 {
                     FinishNotice = true;
                     return; //notice continue check error
                 }
-
+                
                 SendNotice();
                 Thread.Sleep(timeout * 1000);  //(timeout[sec.] x 1000) [ms]
                 WaitNoticeFinish();
@@ -190,7 +187,7 @@ namespace SocketSignalServer
             Debug.Write(DateTime.Now.ToString("HH:mm:ss") + " " + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " ");
             Debug.WriteLine(url);
 
-            if (_debug) { return ""; }
+            if (_voiceOFF) { return ""; }
 
             try
             {
@@ -210,7 +207,7 @@ namespace SocketSignalServer
         {
             DateTime startTime = DateTime.Now;
 
-            if (_debug)
+            if (_voiceOFF)
             {
                 Debug.WriteLine("WaitStart_Debug " + DateTime.Now.ToString("HH:mm:ss") + " " + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " ");
                 Thread.Sleep(10000);
