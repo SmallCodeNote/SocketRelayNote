@@ -140,10 +140,12 @@ namespace SocketSignalServer
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
                         var col = litedb.GetCollection<SocketMessage>("table_Message");
+                        var dataset = col.Query().OrderBy(x => x.connectTime, 0).ToList();
                         foreach (MessageItemView messageItemView in panel_StatusList.Controls)
                         {
                             string clientName = messageItemView.groupBox_ClientName.Text;
-                            var query = col.Query().Where(x => x.clientName == clientName).OrderBy(x => x.connectTime, 0).ToList();
+                            //var query = col.Query().Where(x => x.clientName == clientName).OrderBy(x => x.connectTime, 0).ToList();
+                            var query = dataset.Where(x => x.clientName == clientName).ToList();
                             if (query.Count() > 0)
                             {
                                 SocketMessage socketMessage = query.First();
@@ -308,14 +310,19 @@ namespace SocketSignalServer
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
                         ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
+                        var dataset = col.Query()
+                                .Where(x => !x.check )
+                                .OrderByDescending(x => x.connectTime).ToArray();
 
                         foreach (var target in clientList)
                         {
+                            var latestNoticeRecord = dataset.Where(x => x.clientName == target.clientName).FirstOrDefault();
+                            /*
                             var latestNoticeRecord = col.Query()
                                 .Where(x => !x.check && x.clientName == target.clientName)
                                 .OrderByDescending(x => x.connectTime)
                                 .FirstOrDefault();
-
+                                */
                             if (latestNoticeRecord != null && latestNoticeRecord.connectTime > latestNoticeRecord.connectTime)
                             {
                                 noticeTransmitter.AddNotice(target, latestNoticeRecord);
@@ -352,19 +359,31 @@ namespace SocketSignalServer
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
                         var col = litedb.GetCollection<SocketMessage>("table_Message");
+                        var dataset0 = col.Query()
+                                .Where(x => x.status != "Timeout")
+                                .OrderByDescending(x => x.connectTime).ToArray();
+                        var dataset1 = col.Query()
+                            .Where(x => x.status == "Timeout" && !x.check)
+                            .OrderByDescending(x => x.connectTime).ToList();
+
+
 
                         foreach (var target in clientList)
                         {
                             //MessageRecord from Client
-                            var latestRecord = col.Query()
+                            var latestRecord = dataset0.Where(x => x.clientName == target.clientName).FirstOrDefault();
+                            /*var latestRecord = col.Query()
                                 .Where(x => x.clientName == target.clientName && x.status != "Timeout")
                                 .OrderByDescending(x => x.connectTime)
                                 .FirstOrDefault();
+                                */
 
                             //MessageRecord Timeout
-                            var listedTimeoutMessage = col.Query()
+                            var listedTimeoutMessage = dataset1.Where(x => x.clientName == target.clientName).OrderByDescending(x => x.connectTime).ToList();
+                            /*var listedTimeoutMessage = col.Query()
                                 .Where(x => x.clientName == target.clientName && x.status == "Timeout" && !x.check)
                                 .OrderByDescending(x => x.connectTime).ToList();
+                                */
 
                             //First Time
                             if (target.lastAccessTime == null) { target.lastAccessTime = DateTime.Now; };
@@ -380,7 +399,7 @@ namespace SocketSignalServer
 
                             if (target.timeoutCheck && flag1 && flag2)
                             {
-                                SocketMessage timeoutMessage = new SocketMessage(target.lastAccessTime, target.clientName, "Timeout", target.timeoutMessage, "", "Ever");
+                                SocketMessage timeoutMessage = new SocketMessage(target.lastAccessTime, target.clientName, "Timeout", target.timeoutMessage, "", "Once");
                                 noticeTransmitter.AddNotice(target, timeoutMessage);
                                 target.lastTimeoutDetectedTime = DateTime.Now;
                             }
@@ -431,8 +450,14 @@ namespace SocketSignalServer
                 {
                     portNumber = int.Parse(textBox_portNumber.Text);
                     button_Start.Text = "Stop";
-                    timer_UpdateList.Start();
                     tcpSrv.StartListening(portNumber, "UTF8");
+
+                    if (int.TryParse(textBox_TimeoutCheckInterval.Text, out int TimeoutCheckInterval)){
+                        timer_checkTimeout.Interval = TimeoutCheckInterval * 1000;
+                    }
+                    timer_checkTimeout.Start();
+
+                    timer_UpdateList.Start();
                 }
                 catch (Exception ex)
                 {
@@ -459,6 +484,7 @@ namespace SocketSignalServer
             {
                 button_Start.Text = "Stop";
                 timer_UpdateList.Start();
+                timer_checkTimeout.Start();
                 tcpSrv.StartListening(portNumber, "UTF8");
 
             }
@@ -473,10 +499,9 @@ namespace SocketSignalServer
             }
         }
 
+
         private void timer_UpdateList_Tick(object sender, EventArgs e)
         {
-
-
             timer_UpdateList.Stop();
 
             textBox_queueList.Text = DateTime.Now.ToString("HH:mm:ss") + "\t" + tcpSrv.ReceivedSocketQueue.Count.ToString() + "\r\n";
@@ -489,32 +514,27 @@ namespace SocketSignalServer
                 LastCheckTime = DateTime.Now;
             }
 
-            checkTimeoutFromDataBase_and_AddNotice();
+            //checkTimeoutFromDataBase_and_AddNotice();
 
             if (button_Start.Text != "Start")
             {
                 toolStripStatusLabel1.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-                timer_UpdateList.Start();
 
                 if (tcpSrv.ListeningRun)
                 {
                     toolStripStatusLabel1.Text += " / TCP Listening Run";
-
                 }
                 else
                 {
                     toolStripStatusLabel1.Text += " / TCP Listening Stop";
-
                 }
-
+                timer_UpdateList.Start();
             }
             else
             {
                 toolStripStatusLabel1.Text = "Stop TCP Listener.";
             }
-
         }
-
 
         private void button_getDataBaseFilePath_Click(object sender, EventArgs e)
         {
@@ -529,7 +549,6 @@ namespace SocketSignalServer
 
         private void tabPage_Status_Enter(object sender, EventArgs e)
         {
-
             int ClientCount = dataGridView_ClientList.Rows.Count - 1;
             panel_StatusList.Height = ClientCount * 100;
 
@@ -545,7 +564,6 @@ namespace SocketSignalServer
                     ((MessageItemView)panel_StatusList.Controls[i]).groupBox_ClientName.Text = dataGridView_ClientList.Rows[i].Cells[0].Value.ToString();
 
                     TopBuff += panel_StatusList.Controls[i].Height;
-
                 }
                 updateStatusList();
             }
@@ -609,6 +627,12 @@ namespace SocketSignalServer
         private void button_ClientListLoad_Click(object sender, EventArgs e)
         {
             ClientListInitialize();
+
+            if (int.TryParse(textBox_TimeoutCheckInterval.Text, out int TimeoutCheckInterval))
+            {
+                timer_checkTimeout.Interval = TimeoutCheckInterval * 1000;
+            }
+
         }
 
         private void button_AddressListLoad_Click(object sender, EventArgs e)
@@ -689,9 +713,7 @@ namespace SocketSignalServer
         {
             if (tabControl_Top.SelectedTab == tabPage_Status)
             {
-                timer_updateStatus.Stop();
                 updateStatusList();
-                timer_updateStatus.Start();
             }
         }
 
@@ -772,15 +794,11 @@ namespace SocketSignalServer
 
         private void timer_DebugFilepathUpdate_Tick(object sender, EventArgs e)
         {
-            timer_DebugFilepathUpdate.Stop();
             DebugOutFilenameReset(textBox_DebugOutDirPath.Text);
-            timer_DebugFilepathUpdate.Start();
         }
 
         private void toolStripDropDownButton_VoiceSwitch_Click(object sender, EventArgs e)
         {
-
-
             if (toolStripDropDownButton_VoiceSwitch.Image == icon_voiceOFF)
             {
                 checkBox_voiceOffSwitch.Checked = false;
@@ -789,6 +807,25 @@ namespace SocketSignalServer
             {
                 checkBox_voiceOffSwitch.Checked = true;
             }
+        }
+
+        private void timer_checkTimeout_Tick(object sender, EventArgs e)
+        {
+            timer_checkTimeout.Stop();
+
+            checkTimeoutFromDataBase_and_AddNotice();
+
+            if (button_Start.Text != "Start")
+            {
+                timer_checkTimeout.Start();
+            }
+
+        }
+
+        private void textBox_TimeoutCheckInterval_TextChanged(object sender, EventArgs e)
+        {
+            button_ClientListLoad.Enabled = true;
+            button_ClientListLoad.BackColor = Color.GreenYellow;
         }
     }
 }

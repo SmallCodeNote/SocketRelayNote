@@ -97,6 +97,9 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer_updateStatus = new System.Windows.Forms.Timer(this.components);
             this.timer_DebugFilepathUpdate = new System.Windows.Forms.Timer(this.components);
+            this.timer_checkTimeout = new System.Windows.Forms.Timer(this.components);
+            this.label10 = new System.Windows.Forms.Label();
+            this.textBox_TimeoutCheckInterval = new System.Windows.Forms.TextBox();
             this.panel_StatusListFrame.SuspendLayout();
             this.tabControl_Top.SuspendLayout();
             this.tabPage_Status.SuspendLayout();
@@ -393,6 +396,7 @@
             // tabPage_NotifySetting
             // 
             this.tabPage_NotifySetting.Controls.Add(this.checkBox_voiceOffSwitch);
+            this.tabPage_NotifySetting.Controls.Add(this.textBox_TimeoutCheckInterval);
             this.tabPage_NotifySetting.Controls.Add(this.textBox_httpTimeout);
             this.tabPage_NotifySetting.Controls.Add(this.textBox_ClearMessageParameter);
             this.tabPage_NotifySetting.Controls.Add(this.label9);
@@ -401,6 +405,7 @@
             this.tabPage_NotifySetting.Controls.Add(this.label7);
             this.tabPage_NotifySetting.Controls.Add(this.button_ClientListLoad);
             this.tabPage_NotifySetting.Controls.Add(this.dataGridView_ClientList);
+            this.tabPage_NotifySetting.Controls.Add(this.label10);
             this.tabPage_NotifySetting.Controls.Add(this.label3);
             this.tabPage_NotifySetting.Controls.Add(this.button_AddressListLoad);
             this.tabPage_NotifySetting.Controls.Add(this.label6);
@@ -733,7 +738,7 @@
             // 
             // timer_UpdateList
             // 
-            this.timer_UpdateList.Interval = 10000;
+            this.timer_UpdateList.Interval = 1000;
             this.timer_UpdateList.Tick += new System.EventHandler(this.timer_UpdateList_Tick);
             // 
             // statusStrip1
@@ -774,7 +779,34 @@
             // 
             // timer_DebugFilepathUpdate
             // 
+            this.timer_DebugFilepathUpdate.Interval = 1000;
             this.timer_DebugFilepathUpdate.Tick += new System.EventHandler(this.timer_DebugFilepathUpdate_Tick);
+            // 
+            // timer_checkTimeout
+            // 
+            this.timer_checkTimeout.Interval = 10000;
+            this.timer_checkTimeout.Tick += new System.EventHandler(this.timer_checkTimeout_Tick);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(277, 9);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(148, 12);
+            this.label10.TabIndex = 7;
+            this.label10.Text = "TimeoutCheckInterval (sec.)";
+            // 
+            // textBox_TimeoutCheckInterval
+            // 
+            this.textBox_TimeoutCheckInterval.Location = new System.Drawing.Point(429, 2);
+            this.textBox_TimeoutCheckInterval.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_TimeoutCheckInterval.Name = "textBox_TimeoutCheckInterval";
+            this.textBox_TimeoutCheckInterval.Size = new System.Drawing.Size(43, 19);
+            this.textBox_TimeoutCheckInterval.TabIndex = 12;
+            this.textBox_TimeoutCheckInterval.Text = "10";
+            this.textBox_TimeoutCheckInterval.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.textBox_TimeoutCheckInterval.TextChanged += new System.EventHandler(this.textBox_TimeoutCheckInterval_TextChanged);
             // 
             // Form1
             // 
@@ -874,6 +906,9 @@
         private System.Windows.Forms.Button button_DebugOutDirPathReset;
         private System.Windows.Forms.Timer timer_DebugFilepathUpdate;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton_VoiceSwitch;
+        private System.Windows.Forms.Timer timer_checkTimeout;
+        private System.Windows.Forms.TextBox textBox_TimeoutCheckInterval;
+        private System.Windows.Forms.Label label10;
     }
 }
 
