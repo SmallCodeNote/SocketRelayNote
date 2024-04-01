@@ -174,14 +174,18 @@ namespace SocketSignalServer
                         using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                         {
                             ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
+                            var dataset =
+                                   col.Query().Where(x => x.status == targetStatusName && !x.check)
+                                              .OrderByDescending(x => x.connectTime).ToArray();
                             foreach (var targetClient in clientList)
                             {
                                 //get Latest unchecked message 
-                                var latestTargetClientRecord_haveTargetStatusName =
+                                var latestTargetClientRecord_haveTargetStatusName = dataset.Where(x => x.clientName == targetClient.clientName).FirstOrDefault();
+                                /*var latestTargetClientRecord_haveTargetStatusName =
                                     col.Query().Where(x => x.clientName == targetClient.clientName && x.status == targetStatusName && !x.check)
                                                .OrderByDescending(x => x.connectTime)
                                                .FirstOrDefault();
-
+                                               */
                                 if (latestTargetClientRecord_haveTargetStatusName != null)
                                 {
                                     noticeTransmitter.AddNotice(targetClient, latestTargetClientRecord_haveTargetStatusName);
