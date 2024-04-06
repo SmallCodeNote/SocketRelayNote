@@ -63,6 +63,7 @@
             this.textBox_DataBaseFilePath = new System.Windows.Forms.TextBox();
             this.tabPage_NotifySetting = new System.Windows.Forms.TabPage();
             this.checkBox_voiceOffSwitch = new System.Windows.Forms.CheckBox();
+            this.textBox_TimeoutCheckInterval = new System.Windows.Forms.TextBox();
             this.textBox_httpTimeout = new System.Windows.Forms.TextBox();
             this.textBox_ClearMessageParameter = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -76,6 +77,7 @@
             this.Column_needCheck = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Column_Timeout = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column_TimeOutMessage = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label10 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.button_AddressListLoad = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
@@ -95,11 +97,9 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripDropDownButton_VoiceSwitch = new System.Windows.Forms.ToolStripDropDownButton();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.timer_updateStatus = new System.Windows.Forms.Timer(this.components);
+            this.timer_updateStatusTab = new System.Windows.Forms.Timer(this.components);
             this.timer_DebugFilepathUpdate = new System.Windows.Forms.Timer(this.components);
             this.timer_checkTimeout = new System.Windows.Forms.Timer(this.components);
-            this.label10 = new System.Windows.Forms.Label();
-            this.textBox_TimeoutCheckInterval = new System.Windows.Forms.TextBox();
             this.panel_StatusListFrame.SuspendLayout();
             this.tabControl_Top.SuspendLayout();
             this.tabPage_Status.SuspendLayout();
@@ -432,6 +432,17 @@
             this.checkBox_voiceOffSwitch.UseVisualStyleBackColor = true;
             this.checkBox_voiceOffSwitch.CheckedChanged += new System.EventHandler(this.checkBox_voiceOffSwitch_CheckedChanged);
             // 
+            // textBox_TimeoutCheckInterval
+            // 
+            this.textBox_TimeoutCheckInterval.Location = new System.Drawing.Point(429, 2);
+            this.textBox_TimeoutCheckInterval.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_TimeoutCheckInterval.Name = "textBox_TimeoutCheckInterval";
+            this.textBox_TimeoutCheckInterval.Size = new System.Drawing.Size(43, 19);
+            this.textBox_TimeoutCheckInterval.TabIndex = 12;
+            this.textBox_TimeoutCheckInterval.Text = "10";
+            this.textBox_TimeoutCheckInterval.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.textBox_TimeoutCheckInterval.TextChanged += new System.EventHandler(this.textBox_TimeoutCheckInterval_TextChanged);
+            // 
             // textBox_httpTimeout
             // 
             this.textBox_httpTimeout.Location = new System.Drawing.Point(450, 274);
@@ -560,6 +571,16 @@
             this.Column_TimeOutMessage.HeaderText = "TimeOutMessage";
             this.Column_TimeOutMessage.Name = "Column_TimeOutMessage";
             this.Column_TimeOutMessage.Width = 250;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(277, 9);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(148, 12);
+            this.label10.TabIndex = 7;
+            this.label10.Text = "TimeoutCheckInterval (sec.)";
             // 
             // label3
             // 
@@ -772,10 +793,10 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(16, 21);
             this.toolStripStatusLabel1.Text = "...";
             // 
-            // timer_updateStatus
+            // timer_updateStatusTab
             // 
-            this.timer_updateStatus.Interval = 1000;
-            this.timer_updateStatus.Tick += new System.EventHandler(this.timer_updateStatus_Tick);
+            this.timer_updateStatusTab.Interval = 1000;
+            this.timer_updateStatusTab.Tick += new System.EventHandler(this.timer_updateStatusTab_Tick);
             // 
             // timer_DebugFilepathUpdate
             // 
@@ -786,27 +807,6 @@
             // 
             this.timer_checkTimeout.Interval = 10000;
             this.timer_checkTimeout.Tick += new System.EventHandler(this.timer_checkTimeout_Tick);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(277, 9);
-            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(148, 12);
-            this.label10.TabIndex = 7;
-            this.label10.Text = "TimeoutCheckInterval (sec.)";
-            // 
-            // textBox_TimeoutCheckInterval
-            // 
-            this.textBox_TimeoutCheckInterval.Location = new System.Drawing.Point(429, 2);
-            this.textBox_TimeoutCheckInterval.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox_TimeoutCheckInterval.Name = "textBox_TimeoutCheckInterval";
-            this.textBox_TimeoutCheckInterval.Size = new System.Drawing.Size(43, 19);
-            this.textBox_TimeoutCheckInterval.TabIndex = 12;
-            this.textBox_TimeoutCheckInterval.Text = "10";
-            this.textBox_TimeoutCheckInterval.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.textBox_TimeoutCheckInterval.TextChanged += new System.EventHandler(this.textBox_TimeoutCheckInterval_TextChanged);
             // 
             // Form1
             // 
@@ -897,7 +897,7 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TextBox textBox_queueList;
         private System.Windows.Forms.CheckBox checkBox_serverAutoStart;
-        private System.Windows.Forms.Timer timer_updateStatus;
+        private System.Windows.Forms.Timer timer_updateStatusTab;
         private System.Windows.Forms.CheckBox checkBox_voiceOffSwitch;
         private System.Windows.Forms.Label label_IntervalSelector;
         private System.Windows.Forms.Label label_IntervalSelectorNow;

@@ -17,28 +17,7 @@ namespace SocketSignalServer
 {
     public partial class MessageItemView : UserControl
     {
-        public SocketMessage _message;
-
-        private ConnectionString _LiteDBconnectionString;
-
-        NoticeTransmitter noticeTransmitter;
-        public List<NoticeMessage> _noticeList_CheckChange;
-
-        /// <summary>
-        /// database open retry period in second.
-        /// </summary>
-        public double retryPeriod { get { return (_retryCountMax * _retryWait) / 1000.0; } set { _retryCountMax = (int)((value * 1000.0) / _retryWait); } }
-        private int _retryCountMax = 60;
-
-        /// <summary>
-        /// retry wait in millisecond.
-        /// </summary>
-        public int retryWait { get { return _retryWait; } set { double retryPeriodBuff = retryPeriod; _retryWait = value; retryPeriod = retryPeriodBuff; } }
-        private int _retryWait = 500;
-
-        private Random random;
-
-        public MessageItemView(NoticeTransmitter noticeTransmitter, ConnectionString LiteDBconnectionString)
+        public MessageItemView()
         {
             InitializeComponent();
 
@@ -46,34 +25,34 @@ namespace SocketSignalServer
             this.label_LastConnectTime.Text = "";
             this.label_ElapsedTime.Text = "";
             this.label_LastMessage.Text = "";
+            _socketMessage = new SocketMessage();
 
-            this.noticeTransmitter = noticeTransmitter;
-
-            this._LiteDBconnectionString = LiteDBconnectionString;
-            this._LiteDBconnectionString.Connection = ConnectionType.Shared;
-
-            random = new Random();
         }
 
-        public void setItems(SocketMessage message)
+        private SocketMessage _socketMessage;
+
+        public SocketMessage socketMessage
         {
-            if (this.InvokeRequired)
+            get { return _socketMessage; }
+            set
             {
-                this.Invoke((Action)(() => setItems(message)));
+                _socketMessage = value;
+                clientName = value.clientName;
+                status = value.status;
+                message = value.message;
+                check = value.check;
+                connectTime = value.connectTime;
             }
-            else
-            {
-                _message = message;
-                this.groupBox_ClientName.Text = message.clientName;
-                this.label_Status.Text = message.status.ToString();
-                this.label_LastConnectTime.Text = message.connectTime.ToString("yyyy/MM/dd HH:mm:ss");
-                this.label_ElapsedTime.Text = getElapsedTimeString(DateTime.Now - message.connectTime);
-                this.label_LastMessage.Text = message.message;
-                this.checkBox_check.Checked = message.check;
-            }
-
-            return;
         }
+
+        public DateTime connectTime { get { return _socketMessage.connectTime; }    set { if (this.InvokeRequired) { this.Invoke((Action)(() => connectTime = value)); }else { _socketMessage.connectTime = value; this.label_ElapsedTime.Text = getElapsedTimeString(DateTime.Now - _socketMessage.connectTime); this.label_LastConnectTime.Text = _socketMessage.connectTime.ToString("yyyy/MM/dd HH:mm:ss"); } } }
+        public string clientName {      get { return _socketMessage.clientName; }   set { if (this.InvokeRequired) { this.Invoke((Action)(() => clientName = value)); } else { _socketMessage.clientName = value; this.groupBox_ClientName.Text = value; } } }
+        public string status {          get { return _socketMessage.status; }       set { if (this.InvokeRequired) { this.Invoke((Action)(() => status = value)); }     else { _socketMessage.status = value; this.label_Status.Text = value; } } }
+        public string message {         get { return _socketMessage.message; }      set { if (this.InvokeRequired) { this.Invoke((Action)(() => message = value)); }    else { _socketMessage.message = value; this.label_LastMessage.Text = value; } } }
+        public bool check {             get { return _socketMessage.check; }        set { if (this.InvokeRequired) { this.Invoke((Action)(() => check = value)); }      else { _socketMessage.check = value; this.checkBox_check.Checked = value; } } }
+        public string checkStyle {      get { return _socketMessage.checkStyle; }   set { if (this.InvokeRequired) { this.Invoke((Action)(() => checkStyle = value)); } else { _socketMessage.checkStyle = value;  } } }
+        public string parameter {       get { return _socketMessage.parameter; }    set { if (this.InvokeRequired) { this.Invoke((Action)(() => parameter = value)); }  else { _socketMessage.parameter = value; } } }
+
         public string getElapsedTimeString(TimeSpan elapsedTime)
         {
             if (elapsedTime.TotalDays >= 365) { return (elapsedTime.TotalDays / 365.2425).ToString("0") + " year"; }
@@ -87,73 +66,12 @@ namespace SocketSignalServer
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            _message.check = checkBox_check.Checked;
-            _LiteDBconnectionString.Connection = ConnectionType.Shared;
-
-            for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
-            {
-                try
-                {
-                    using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
-                    {
-                        var col = litedb.GetCollection<SocketMessage>("table_Message");
-                        var record = col.FindOne(x => x.connectTime == this._message.connectTime && x.clientName == this._message.clientName && x.status == this._message.status);
-                        string key = this._message.clientName + "_" + this._message.connectTime.ToString("yyyy/MM/dd HH:mm:ss.fff");
-                        record.check = checkBox_check.Checked;
-                        col.Update(key, record);
-
-                    }
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    if (retryCount == _retryCountMax - 1)
-                    {
-                        Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
-                        Debug.WriteLine(ex.ToString());
-                        break;
-                    }
-                    Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
-                }
-            }
+            check = checkBox_check.Checked;
         }
 
         private void button_AllCheck_Click(object sender, EventArgs e)
         {
-            _LiteDBconnectionString.Connection = ConnectionType.Shared;
 
-            for (int retryCount = 0; retryCount < _retryCountMax; retryCount++)
-            {
-                try
-                {
-                    using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
-                    {
-                        ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
-
-                        var records = col.Query()
-                            .Where(x => x.clientName == this._message.clientName && x.check == false)
-                            .ToList();
-
-                        foreach (var record in records)
-                        {
-                            record.check = true;
-                            col.Update(record.Key(), record);
-                        }
-
-                    }
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    if (retryCount == _retryCountMax - 1)
-                    {
-                        Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
-                        Debug.WriteLine(ex.ToString());
-                        break;
-                    }
-                    Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
-                }
-            }
         }
     }
 }

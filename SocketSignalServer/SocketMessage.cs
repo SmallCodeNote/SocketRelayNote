@@ -33,6 +33,19 @@ namespace SocketSignalServer
             this.parameter = parameter;
         }
 
+        public SocketMessage()
+        {
+            this.connectTime = DateTime.Now;
+            this.clientName = "";
+            this.status = "";
+            this.message = "";
+            this.check = false;
+            this.checkStyle = "Once";
+            this.parameter = "";
+        }
+
+
+
         public string Key()
         {
             return clientName + "_" + connectTime.ToString("yyyy/MM/dd HH:mm:ss.fff");

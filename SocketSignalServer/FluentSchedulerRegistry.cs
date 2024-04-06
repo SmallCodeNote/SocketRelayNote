@@ -143,7 +143,7 @@ namespace SocketSignalServer
         /// <summary>
         /// retry wait in millisecond.
         /// </summary>
-        public int retryWait { get { return _retryWait; } set { double retryPeriodBuff = retryPeriod;  _retryWait = value; retryPeriod = retryPeriodBuff; } }
+        public int retryWait { get { return _retryWait; } set { double retryPeriodBuff = retryPeriod; _retryWait = value; retryPeriod = retryPeriodBuff; } }
         private int _retryWait = 500;
 
         private Random random;
@@ -171,34 +171,48 @@ namespace SocketSignalServer
                 {
                     try
                     {
+                        SocketMessage[] dataset;
+                        SocketMessage[] datasetOnce;
+                        List<SocketMessage> records = new List<SocketMessage>();
+
                         using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                         {
+                            Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
+
                             ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
-                            var dataset =
+                            dataset =
                                    col.Query().Where(x => x.status == targetStatusName && !x.check)
                                               .OrderByDescending(x => x.connectTime).ToArray();
-                            foreach (var targetClient in clientList)
+                            datasetOnce = col.Query().Where(x => x.status == targetStatusName && !x.check && x.checkStyle == "Once").ToArray();
+                        }
+
+                        foreach (var targetClient in clientList)
+                        {
+                            //get Latest unchecked message 
+                            var latestTargetClientRecord_haveTargetStatusName = dataset.Where(x => x.clientName == targetClient.clientName).FirstOrDefault();
+                            
+                            if (latestTargetClientRecord_haveTargetStatusName != null)
                             {
-                                //get Latest unchecked message 
-                                var latestTargetClientRecord_haveTargetStatusName = dataset.Where(x => x.clientName == targetClient.clientName).FirstOrDefault();
-                                /*var latestTargetClientRecord_haveTargetStatusName =
-                                    col.Query().Where(x => x.clientName == targetClient.clientName && x.status == targetStatusName && !x.check)
-                                               .OrderByDescending(x => x.connectTime)
-                                               .FirstOrDefault();
-                                               */
-                                if (latestTargetClientRecord_haveTargetStatusName != null)
-                                {
-                                    noticeTransmitter.AddNotice(targetClient, latestTargetClientRecord_haveTargetStatusName);
-                                }
-                                //style==Once Message check update
-                                var records = col.Query().Where(x => x.clientName == targetClient.clientName && x.status == targetStatusName && !x.check && x.checkStyle == "Once").ToList();
-                                foreach (var record in records)
-                                {
-                                    record.check = true;
-                                    col.Update(record.Key(), record);
-                                }
+                                noticeTransmitter.AddNotice(targetClient, latestTargetClientRecord_haveTargetStatusName);
+                            }
+                            
+                            //style==Once Message check update
+                            records.AddRange(datasetOnce.Where(x => x.clientName == targetClient.clientName).ToList());
+                        }
+
+                        using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+                        {
+                            Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
+
+                            ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
+
+                            foreach (var record in records)
+                            {
+                                record.check = true;
+                                col.Update(record.Key(), record);
                             }
                         }
+
                         LastRunTime = DateTime.Now;
                         break;
                     }

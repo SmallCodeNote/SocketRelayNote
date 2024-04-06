@@ -127,7 +127,18 @@ namespace SocketSignalServer
             cc.Clear();
         }
 
-        private void updateStatusList()
+        private void updatePanel_StatusList(SocketMessage socketMessage)
+        {
+            foreach (MessageItemView messageItemView in panel_StatusList.Controls)
+            {
+                if (messageItemView.clientName == socketMessage.clientName)
+                {
+                    messageItemView.socketMessage = socketMessage;
+                }
+            }
+        }
+
+        private void updateStatusTab()
         {
             if (!File.Exists(textBox_DataBaseFilePath.Text)) return;
             _LiteDBconnectionString.Filename = textBox_DataBaseFilePath.Text;
@@ -137,20 +148,27 @@ namespace SocketSignalServer
             {
                 try
                 {
+                    List<SocketMessage> colQuery;
+                    List<SocketMessage> dataset;
+
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
+                        Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
+
                         var col = litedb.GetCollection<SocketMessage>("table_Message");
-                        var dataset = col.Query().OrderBy(x => x.connectTime, 0).ToList();
-                        foreach (MessageItemView messageItemView in panel_StatusList.Controls)
+                        colQuery = col.Query().ToList();
+                    }
+
+                    dataset = colQuery.OrderByDescending(x => x.connectTime).ToList();
+
+                    foreach (MessageItemView messageItemView in panel_StatusList.Controls)
+                    {
+                        string clientName = messageItemView.groupBox_ClientName.Text;
+                        var query = dataset.Where(x => x.clientName == clientName).ToList();
+                        if (query.Count() > 0)
                         {
-                            string clientName = messageItemView.groupBox_ClientName.Text;
-                            //var query = col.Query().Where(x => x.clientName == clientName).OrderBy(x => x.connectTime, 0).ToList();
-                            var query = dataset.Where(x => x.clientName == clientName).ToList();
-                            if (query.Count() > 0)
-                            {
-                                SocketMessage socketMessage = query.First();
-                                messageItemView.setItems(socketMessage);
-                            }
+                            SocketMessage socketMessage = query.First();
+                            messageItemView.socketMessage = socketMessage;
                         }
                     }
                     break;
@@ -190,7 +208,6 @@ namespace SocketSignalServer
                     ClientData cd = new ClientData(code, addressBook.getAddress(addressKeys));
 
                     if (cd.clientName != "") clientList.Add(cd);
-
                 }
                 catch (Exception ex)
                 {
@@ -250,7 +267,8 @@ namespace SocketSignalServer
                 string[] cols = receivedSocketMessage.Split('\t');
                 string dbFilename = textBox_DataBaseFilePath.Text;
 
-                if (cols.Length >= 4 && File.Exists(dbFilename))
+                //if (cols.Length >= 4 && File.Exists(dbFilename))
+                if (cols.Length >= 4)
                 {
                     DateTime connectTime;
                     if (DateTime.TryParse(cols[0], out connectTime)) { connectTime = DateTime.Now; } else { continue; }
@@ -262,6 +280,8 @@ namespace SocketSignalServer
                     string checkStyle = cols.Length > 5 ? cols[5] : "Once";
 
                     SocketMessage socketMessage = new SocketMessage(connectTime, clientName, status, message, parameter, checkStyle);
+                    updatePanel_StatusList(socketMessage);
+
                     string key = socketMessage.Key();
                     _LiteDBconnectionString.Filename = dbFilename;
                     _LiteDBconnectionString.Connection = ConnectionType.Shared;
@@ -272,6 +292,9 @@ namespace SocketSignalServer
                         {
                             using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                             {
+                                Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
+
+
                                 ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
                                 if (col.FindById(key) == null)
                                 {
@@ -284,7 +307,7 @@ namespace SocketSignalServer
                         {
                             if (retryCount == _retryCountMax - 1)
                             {
-                                Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
+                                Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
                                 Debug.WriteLine(ex.ToString());
                                 break;
                             }
@@ -307,28 +330,28 @@ namespace SocketSignalServer
             {
                 try
                 {
+                    SocketMessage[] dataset;
+
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
-                        ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
-                        var dataset = col.Query()
-                                .Where(x => !x.check )
-                                .OrderByDescending(x => x.connectTime).ToArray();
+                        Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
 
-                        foreach (var target in clientList)
+                        ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
+                        dataset = col.Query()
+                                .Where(x => !x.check)
+                                .OrderByDescending(x => x.connectTime).ToArray();
+                    }
+
+                    foreach (var target in clientList)
+                    {
+                        var latestNoticeRecord = dataset.Where(x => x.clientName == target.clientName).FirstOrDefault();
+
+                        if (latestNoticeRecord != null && latestNoticeRecord.connectTime > latestNoticeRecord.connectTime)
                         {
-                            var latestNoticeRecord = dataset.Where(x => x.clientName == target.clientName).FirstOrDefault();
-                            /*
-                            var latestNoticeRecord = col.Query()
-                                .Where(x => !x.check && x.clientName == target.clientName)
-                                .OrderByDescending(x => x.connectTime)
-                                .FirstOrDefault();
-                                */
-                            if (latestNoticeRecord != null && latestNoticeRecord.connectTime > latestNoticeRecord.connectTime)
-                            {
-                                noticeTransmitter.AddNotice(target, latestNoticeRecord);
-                            }
+                            noticeTransmitter.AddNotice(target, latestNoticeRecord);
                         }
                     }
+
                     break;
                 }
                 catch (Exception ex)
@@ -356,55 +379,49 @@ namespace SocketSignalServer
             {
                 try
                 {
+                    SocketMessage[] dataset0;
+                    SocketMessage[] dataset1;
+
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
+                        Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
+
                         var col = litedb.GetCollection<SocketMessage>("table_Message");
-                        var dataset0 = col.Query()
+                        dataset0 = col.Query()
                                 .Where(x => x.status != "Timeout")
                                 .OrderByDescending(x => x.connectTime).ToArray();
-                        var dataset1 = col.Query()
+                        dataset1 = col.Query()
                             .Where(x => x.status == "Timeout" && !x.check)
-                            .OrderByDescending(x => x.connectTime).ToList();
+                            .OrderByDescending(x => x.connectTime).ToArray();
+                    }
 
+                    foreach (var clientTarget in clientList)
+                    {
+                        //MessageRecord from Client
+                        var latestRecord = dataset0.Where(x => x.clientName == clientTarget.clientName).FirstOrDefault();
 
+                        //MessageRecord Timeout
+                        var listedTimeoutMessage = dataset1.Where(x => x.clientName == clientTarget.clientName).OrderByDescending(x => x.connectTime).ToList();
+                        if (clientTarget.lastAccessTime == null) { clientTarget.lastAccessTime = DateTime.Now; };//First Time
 
-                        foreach (var target in clientList)
+                        //Acccess Time Update
+                        if (latestRecord != null && clientTarget.lastAccessTime < latestRecord.connectTime)
                         {
-                            //MessageRecord from Client
-                            var latestRecord = dataset0.Where(x => x.clientName == target.clientName).FirstOrDefault();
-                            /*var latestRecord = col.Query()
-                                .Where(x => x.clientName == target.clientName && x.status != "Timeout")
-                                .OrderByDescending(x => x.connectTime)
-                                .FirstOrDefault();
-                                */
+                            clientTarget.lastAccessTime = latestRecord.connectTime;
+                        };
 
-                            //MessageRecord Timeout
-                            var listedTimeoutMessage = dataset1.Where(x => x.clientName == target.clientName).OrderByDescending(x => x.connectTime).ToList();
-                            /*var listedTimeoutMessage = col.Query()
-                                .Where(x => x.clientName == target.clientName && x.status == "Timeout" && !x.check)
-                                .OrderByDescending(x => x.connectTime).ToList();
-                                */
+                        bool flag1 = (DateTime.Now - clientTarget.lastAccessTime).TotalSeconds > clientTarget.timeoutLength;
+                        bool flag2 = listedTimeoutMessage.Count == 0;
 
-                            //First Time
-                            if (target.lastAccessTime == null) { target.lastAccessTime = DateTime.Now; };
-
-                            //Acccess Time Update
-                            if (latestRecord != null && target.lastAccessTime < latestRecord.connectTime)
-                            {
-                                target.lastAccessTime = latestRecord.connectTime;
-                            };
-
-                            bool flag1 = (DateTime.Now - target.lastAccessTime).TotalSeconds > target.timeoutLength;
-                            bool flag2 = listedTimeoutMessage.Count == 0;
-
-                            if (target.timeoutCheck && flag1 && flag2)
-                            {
-                                SocketMessage timeoutMessage = new SocketMessage(target.lastAccessTime, target.clientName, "Timeout", target.timeoutMessage, "", "Once");
-                                noticeTransmitter.AddNotice(target, timeoutMessage);
-                                target.lastTimeoutDetectedTime = DateTime.Now;
-                            }
+                        if (clientTarget.timeoutCheck && flag1 && flag2)
+                        {
+                            SocketMessage timeoutMessage = new SocketMessage(clientTarget.lastAccessTime, clientTarget.clientName, "Timeout", clientTarget.timeoutMessage, "", "Once");
+                            timeoutMessage.parameter = textBox_TimeoutMessageParameter.Text;
+                            noticeTransmitter.AddNotice(clientTarget, timeoutMessage);
+                            clientTarget.lastTimeoutDetectedTime = DateTime.Now;
                         }
                     }
+
                     break;
                 }
                 catch (Exception ex)
@@ -439,7 +456,7 @@ namespace SocketSignalServer
             AddressListInitialize();
             SchedulerInitialize();
 
-            timer_updateStatus.Start();
+            timer_updateStatusTab.Start();
             timer_DebugFilepathUpdate.Start();
 
             int.TryParse(textBox_httpTimeout.Text, out noticeTransmitter.httpTimeout);
@@ -452,7 +469,8 @@ namespace SocketSignalServer
                     button_Start.Text = "Stop";
                     tcpSrv.StartListening(portNumber, "UTF8");
 
-                    if (int.TryParse(textBox_TimeoutCheckInterval.Text, out int TimeoutCheckInterval)){
+                    if (int.TryParse(textBox_TimeoutCheckInterval.Text, out int TimeoutCheckInterval))
+                    {
                         timer_checkTimeout.Interval = TimeoutCheckInterval * 1000;
                     }
                     timer_checkTimeout.Start();
@@ -546,7 +564,6 @@ namespace SocketSignalServer
 
         }
 
-
         private void tabPage_Status_Enter(object sender, EventArgs e)
         {
             int ClientCount = dataGridView_ClientList.Rows.Count - 1;
@@ -559,13 +576,14 @@ namespace SocketSignalServer
                 int TopBuff = 0;
                 for (int i = 0; i < ClientCount; i++)
                 {
-                    panel_StatusList.Controls.Add(new MessageItemView(noticeTransmitter, _LiteDBconnectionString));
+                    MessageItemView messageItemView = new MessageItemView();
+                    panel_StatusList.Controls.Add(messageItemView);
                     panel_StatusList.Controls[i].Top = TopBuff;
-                    ((MessageItemView)panel_StatusList.Controls[i]).groupBox_ClientName.Text = dataGridView_ClientList.Rows[i].Cells[0].Value.ToString();
+                    ((MessageItemView)panel_StatusList.Controls[i]).clientName = dataGridView_ClientList.Rows[i].Cells[0].Value.ToString();
 
                     TopBuff += panel_StatusList.Controls[i].Height;
                 }
-                updateStatusList();
+                updateStatusTab();
             }
         }
 
@@ -580,29 +598,27 @@ namespace SocketSignalServer
             {
                 try
                 {
+                    List<SocketMessage> query;
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
-                        var col = litedb.GetCollection<SocketMessage>("table_Message");
+                        Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
 
-                        try
-                        {
-                            var query = col.Query().OrderBy(x => x.connectTime, 0).ToList().Take(50).ToList();
-                            if (query.Count() > 0)
-                            {
-                                List<string> Lines = new List<string>();
-                                foreach (SocketMessage socketMessage in query.ToArray())
-                                {
-                                    Lines.Add(socketMessage.ToString());
-                                }
-                                textBox_Log.Text = String.Join("\r\n", Lines.ToArray());
-                            }
-                            label_LogUpdateTime.Text = "Log Update ... " + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
-                        }
+                        var col = litedb.GetCollection<SocketMessage>("table_Message");
+                        query = col.Query().OrderBy(x => x.connectTime, 0).ToList().Take(50).ToList();
                     }
+
+                    if (query.Count() > 0)
+                    {
+                        List<string> Lines = new List<string>();
+                        foreach (SocketMessage socketMessage in query.ToArray())
+                        {
+                            Lines.Add(socketMessage.ToString());
+                        }
+                        textBox_Log.Text = String.Join("\r\n", Lines.ToArray());
+                    }
+
+                    label_LogUpdateTime.Text = "Log Update ... " + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+
                     break;
                 }
                 catch (Exception ex)
@@ -627,12 +643,10 @@ namespace SocketSignalServer
         private void button_ClientListLoad_Click(object sender, EventArgs e)
         {
             ClientListInitialize();
-
             if (int.TryParse(textBox_TimeoutCheckInterval.Text, out int TimeoutCheckInterval))
             {
                 timer_checkTimeout.Interval = TimeoutCheckInterval * 1000;
             }
-
         }
 
         private void button_AddressListLoad_Click(object sender, EventArgs e)
@@ -663,11 +677,12 @@ namespace SocketSignalServer
             {
                 using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                 {
+                    Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name);
+
                     for (DateTime connectTime = DateTime.Parse("2020/01/01"); connectTime < DateTime.Parse("2024/01/31"); connectTime += TP)
                     {
                         SocketMessage socketMessage = new SocketMessage(connectTime, "Test", "Test", "Test", "parameterTest");
                         ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
-
                         col.Insert(socketMessage.Key(), socketMessage);
                     }
                 }
@@ -709,11 +724,11 @@ namespace SocketSignalServer
             }
         }
 
-        private void timer_updateStatus_Tick(object sender, EventArgs e)
+        private void timer_updateStatusTab_Tick(object sender, EventArgs e)
         {
             if (tabControl_Top.SelectedTab == tabPage_Status)
             {
-                updateStatusList();
+                updateStatusTab();
             }
         }
 

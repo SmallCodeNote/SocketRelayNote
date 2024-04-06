@@ -182,7 +182,7 @@ namespace SocketSignalServer
 
             if (speech.Length == 0 && parameter.Length == 0) return "";
            
-            string url = @"http://" + notice.address + @"/api/control?" + speech + separator + parameter;
+            string url = @"http://" + notice.address + @"/api/control?" + parameter + separator + speech;
 
             Debug.Write(DateTime.Now.ToString("HH:mm:ss") + " " + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " ");
             Debug.WriteLine(url);

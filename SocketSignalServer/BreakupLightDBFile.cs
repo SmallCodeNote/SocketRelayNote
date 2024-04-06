@@ -65,6 +65,8 @@ namespace SocketSignalServer
                 {
                     using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                     {
+                        Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
+
                         var col = litedb.GetCollection<SocketMessage>(TableName);
 
                         var result = col.Query()
@@ -92,6 +94,8 @@ namespace SocketSignalServer
                             {
                                 using (LiteDatabase litedbBackup = new LiteDatabase(backupFilePath))
                                 {
+                                    Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
+
                                     var colbk = litedbBackup.GetCollection<SocketMessage>(TableName);
                                     foreach (SocketMessage skm in backupQueryList)
                                     {
