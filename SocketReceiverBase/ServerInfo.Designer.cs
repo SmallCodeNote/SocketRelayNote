@@ -35,12 +35,13 @@
             this.label_LatestAnswer = new System.Windows.Forms.Label();
             this.button_Lamp = new System.Windows.Forms.Button();
             this.groupBox_ServerInfo = new System.Windows.Forms.GroupBox();
+            this.label_LatestAnswerTime = new System.Windows.Forms.Label();
+            this.button_Shift = new System.Windows.Forms.Button();
             this.panel_Frame = new System.Windows.Forms.Panel();
             this.panel = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
             this.textBox_ServerName = new System.Windows.Forms.TextBox();
-            this.button_Shift = new System.Windows.Forms.Button();
-            this.label_LatestAnswerTime = new System.Windows.Forms.Label();
+            this.button_DeleteThis = new System.Windows.Forms.Button();
             this.groupBox_ServerInfo.SuspendLayout();
             this.panel_Frame.SuspendLayout();
             this.panel.SuspendLayout();
@@ -71,6 +72,7 @@
             this.textBox_Address.Size = new System.Drawing.Size(191, 19);
             this.textBox_Address.TabIndex = 2;
             this.textBox_Address.Text = "localhost";
+            this.textBox_Address.TextChanged += new System.EventHandler(this.textBox_Address_TextChanged);
             // 
             // textBox_Port
             // 
@@ -78,6 +80,7 @@
             this.textBox_Port.Name = "textBox_Port";
             this.textBox_Port.Size = new System.Drawing.Size(63, 19);
             this.textBox_Port.TabIndex = 3;
+            this.textBox_Port.TextChanged += new System.EventHandler(this.textBox_Port_TextChanged);
             // 
             // label_LatestAnswer
             // 
@@ -98,6 +101,7 @@
             // 
             // groupBox_ServerInfo
             // 
+            this.groupBox_ServerInfo.Controls.Add(this.button_DeleteThis);
             this.groupBox_ServerInfo.Controls.Add(this.button_Lamp);
             this.groupBox_ServerInfo.Controls.Add(this.label_LatestAnswerTime);
             this.groupBox_ServerInfo.Controls.Add(this.button_Shift);
@@ -109,6 +113,26 @@
             this.groupBox_ServerInfo.TabIndex = 5;
             this.groupBox_ServerInfo.TabStop = false;
             this.groupBox_ServerInfo.Text = "ServerName";
+            // 
+            // label_LatestAnswerTime
+            // 
+            this.label_LatestAnswerTime.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label_LatestAnswerTime.Font = new System.Drawing.Font("MS UI Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label_LatestAnswerTime.Location = new System.Drawing.Point(220, 0);
+            this.label_LatestAnswerTime.Name = "label_LatestAnswerTime";
+            this.label_LatestAnswerTime.Size = new System.Drawing.Size(153, 15);
+            this.label_LatestAnswerTime.TabIndex = 0;
+            this.label_LatestAnswerTime.Text = "...";
+            // 
+            // button_Shift
+            // 
+            this.button_Shift.Location = new System.Drawing.Point(3, 28);
+            this.button_Shift.Name = "button_Shift";
+            this.button_Shift.Size = new System.Drawing.Size(18, 32);
+            this.button_Shift.TabIndex = 1;
+            this.button_Shift.Text = ">";
+            this.button_Shift.UseVisualStyleBackColor = true;
+            this.button_Shift.Click += new System.EventHandler(this.button_Shift_Click);
             // 
             // panel_Frame
             // 
@@ -146,26 +170,17 @@
             this.textBox_ServerName.Name = "textBox_ServerName";
             this.textBox_ServerName.Size = new System.Drawing.Size(226, 19);
             this.textBox_ServerName.TabIndex = 2;
+            this.textBox_ServerName.TextChanged += new System.EventHandler(this.textBox_ServerName_TextChanged);
             // 
-            // button_Shift
+            // button_DeleteThis
             // 
-            this.button_Shift.Location = new System.Drawing.Point(3, 28);
-            this.button_Shift.Name = "button_Shift";
-            this.button_Shift.Size = new System.Drawing.Size(18, 32);
-            this.button_Shift.TabIndex = 1;
-            this.button_Shift.Text = ">";
-            this.button_Shift.UseVisualStyleBackColor = true;
-            this.button_Shift.Click += new System.EventHandler(this.button_Shift_Click);
-            // 
-            // label_LatestAnswerTime
-            // 
-            this.label_LatestAnswerTime.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label_LatestAnswerTime.Font = new System.Drawing.Font("MS UI Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label_LatestAnswerTime.Location = new System.Drawing.Point(220, 0);
-            this.label_LatestAnswerTime.Name = "label_LatestAnswerTime";
-            this.label_LatestAnswerTime.Size = new System.Drawing.Size(174, 11);
-            this.label_LatestAnswerTime.TabIndex = 0;
-            this.label_LatestAnswerTime.Text = "...";
+            this.button_DeleteThis.Location = new System.Drawing.Point(376, 0);
+            this.button_DeleteThis.Name = "button_DeleteThis";
+            this.button_DeleteThis.Size = new System.Drawing.Size(24, 24);
+            this.button_DeleteThis.TabIndex = 5;
+            this.button_DeleteThis.Text = "X";
+            this.button_DeleteThis.UseVisualStyleBackColor = true;
+            this.button_DeleteThis.Click += new System.EventHandler(this.button_DeleteThis_Click);
             // 
             // ServerInfo
             // 
@@ -198,5 +213,6 @@
         private System.Windows.Forms.TextBox textBox_ServerName;
         private System.Windows.Forms.Button button_Shift;
         private System.Windows.Forms.Label label_LatestAnswerTime;
+        private System.Windows.Forms.Button button_DeleteThis;
     }
 }

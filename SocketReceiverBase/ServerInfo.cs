@@ -17,26 +17,24 @@ namespace ServerInfoUserControl
         //===================
         // Constructor
         //===================
-        public ServerInfo(string ServerName, string Address, int Port)
+        public ServerInfo(int Index, string ServerName, string Address, int Port)
         {
             InitializeComponent();
             tcpClt = new TcpSocketClient();
-
-            ServerInfoUpdate(ServerName, Address, Port);
+            ServerInfoUpdate(Index, ServerName, Address, Port);
         }
 
-        public ServerInfo(string Line)
+        public ServerInfo(int Index, string Line = "\t\t")
         {
             InitializeComponent();
             tcpClt = new TcpSocketClient();
 
             string[] cols = Line.Split('\t');
-
             string ServerName = cols[0];
             string Address = cols[1];
-            int Port = int.Parse(cols[2]);
+            int.TryParse(cols[2],out int Port);
 
-            ServerInfoUpdate(ServerName, Address, Port);
+            ServerInfoUpdate(Index, ServerName, Address, Port);
         }
 
         //===================
@@ -44,6 +42,10 @@ namespace ServerInfoUserControl
         //===================
         TcpSocketClient tcpClt;
         public int TimeOutCount = 0;
+        public int Index;
+
+        public Action<int> DeleteThis;
+        public Action LoadThis;
 
         public string Address
         {
@@ -124,13 +126,15 @@ namespace ServerInfoUserControl
         // Member function
         //===================
 
-        public void ServerInfoUpdate(string ServerName, string Address, int Port)
+        public void ServerInfoUpdate(int Index, string ServerName, string Address, int Port)
         {
             this.Height = 70;
 
             this.ServerName = ServerName;
             this.Address = Address;
             this.Port = Port;
+            this.Index = Index;
+
         }
 
         public override string ToString()
@@ -170,6 +174,26 @@ namespace ServerInfoUserControl
                 this.panel.Top = 0;
                 button_Shift.Text = ">";
             }
+        }
+
+        private void button_DeleteThis_Click(object sender, EventArgs e)
+        {
+            DeleteThis(Index);
+        }
+
+        private void textBox_Address_TextChanged(object sender, EventArgs e)
+        {
+            if (LoadThis != null) LoadThis();
+        }
+
+        private void textBox_Port_TextChanged(object sender, EventArgs e)
+        {
+            if (LoadThis != null) LoadThis();
+        }
+
+        private void textBox_ServerName_TextChanged(object sender, EventArgs e)
+        {
+            if (LoadThis != null) LoadThis();
         }
     }
 }

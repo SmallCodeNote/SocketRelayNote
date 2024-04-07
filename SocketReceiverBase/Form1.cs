@@ -200,35 +200,153 @@ namespace SocketReceiverBase
             return "now";
         }
 
-        private void update_tabPage_View()
+
+        private void DeleteServerLisView(int targetIndex)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => DeleteServerLisView(targetIndex)));
+            }
+            else
+            {
+                if (targetIndex < panel_ServerListView.Controls.Count)
+                {
+                    panel_ServerListView.Controls.RemoveAt(targetIndex);
+                    UpdateServerListText();
+                    UpdateLayoutServerLisView();
+                }
+            }
+        }
+        private void RefreshServerLisView()
+        {
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => RefreshServerLisView()));
+            }
+            else
+            {
+                panel_ServerListView.Controls.Clear();
+                panel_ServerListView.Height = 0;
+
+                string[] Lines = textBox_ServerList.Text.Replace("\r\n", "\n").Trim('\n').Split('\n');
+                int PositionTop = 0;
+                int ctrlIndex = 0;
+
+
+                foreach (var Line in Lines)
+                {
+                    if (Line == "") continue;
+                    var ctrl = new ServerInfo(ctrlIndex, Line);
+                    ctrl.DeleteThis = (Action<int>)((int x) => DeleteServerLisView(x));
+                    ctrl.LoadThis = (Action)(() => EnableLoadServerListView());
+                    ctrl.Top = PositionTop;
+                    PositionTop += ctrl.Height;
+                    panel_ServerListView.Controls.Add(ctrl);
+
+                    ctrlIndex++;
+                }
+                panel_ServerListView.Height = PositionTop;
+            }
+        }
+        private void EnableLoadServerListView()
+        {
+            ButtonEnable(button_LoadServerListView, true);
+        }
+
+        private void ButtonEnable(Button button, bool enable)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => ButtonEnable(button, enable)));
+            }
+            else
+            {
+                if (enable)
+                {
+                    button.Enabled = true;
+                    button.BackColor = Color.GreenYellow;
+                }
+                else
+                {
+                    button.Enabled = false;
+                    button.BackColor = Color.Transparent;
+                }
+            }
+        }
+
+        private void UpdateLayoutServerLisView()
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => UpdateLayoutServerLisView()));
+            }
+            else
+            {
+                panel_ServerListView.Height = 0;
+                int PositionTop = 0;
+                int ctrlIndex = 0;
+                foreach (ServerInfo ctrl in panel_ServerListView.Controls)
+                {
+                    ctrl.Top = PositionTop;
+                    ctrl.Index = ctrlIndex;
+                    PositionTop += ctrl.Height;
+
+                    ctrlIndex++;
+                }
+                panel_ServerListView.Height = PositionTop;
+            }
+        }
+
+        private void UpdateServerListView()
         {
             string[] Lines = textBox_ServerList.Text.Replace("\r\n", "\n").Trim('\n').Split('\n');
 
+            panel_ServerListView.Controls.Clear();
+
             int TopPosition = 0;
+            int ctrlIndex = 0;
             foreach (var Line in Lines)
             {
                 if (Line == "" || Line[0] == '#' || Line.Split('\t').Length < 3) continue;
-                ServerInfo serverInfo = new ServerInfo(Line);
+                ServerInfo serverInfo = new ServerInfo(ctrlIndex, Line); ctrlIndex++;
                 serverInfo.Top = TopPosition;
+                serverInfo.DeleteThis = (Action<int>)((int x) => DeleteServerLisView(x));
+                serverInfo.LoadThis = (Action)(() => EnableLoadServerListView());
+
                 TopPosition += serverInfo.Height;
-                panel_View.Controls.Add(serverInfo);
+                panel_ServerListView.Controls.Add(serverInfo);
             }
 
-            if (panel_View.Controls.Count == 0)
+            if (panel_ServerListView.Controls.Count == 0)
             {
-                ServerInfo serverInfo = new ServerInfo("", "", -1);
+                ServerInfo serverInfo = new ServerInfo(ctrlIndex, "", "", -1); ctrlIndex++;
                 serverInfo.Top = TopPosition;
+                serverInfo.DeleteThis = (Action<int>)((int x) => DeleteServerLisView(x));
+                serverInfo.LoadThis = (Action)(() => EnableLoadServerListView());
+
                 TopPosition += serverInfo.Height;
-                panel_View.Controls.Add(serverInfo);
+                panel_ServerListView.Controls.Add(serverInfo);
             }
 
-            panel_View.Height = TopPosition;
+            panel_ServerListView.Height = TopPosition;
+        }
+
+        private void UpdateServerListText()
+        {
+            List<string> Lines = new List<string>();
+
+            foreach(var ctrl in panel_ServerListView.Controls)
+            {
+                Lines.Add(ctrl.ToString());
+            }
+            textBox_ServerList.Text = string.Join("\r\n", Lines.ToArray());
         }
 
         private string ServerInfoViewToString()
         {
             List<string> Lines = new List<string>();
-            foreach (var ctrl in panel_View.Controls)
+            foreach (var ctrl in panel_ServerListView.Controls)
             {
                 if (ctrl is ServerInfo)
                 {
@@ -240,7 +358,7 @@ namespace SocketReceiverBase
 
         private void SendMessageForServers(string request)
         {
-            foreach (var ctrl in panel_View.Controls)
+            foreach (var ctrl in panel_ServerListView.Controls)
             {
                 if (ctrl is ServerInfo)
                 {
@@ -268,12 +386,13 @@ namespace SocketReceiverBase
                 }
             }
 
-            update_tabPage_View();
+            panel_ServerListView.Height = 0;
+            UpdateServerListView();
 
             tcpClt = new TcpSocketClient();
 
             timer_UpdateQueue.Start();
-            timer_LabelUpdate.Start();
+            timer_ServerInfoUpdate.Start();
             timer_SendMessage.Start();
             tcpSrv.StartListening(PortNumberSrv, "UTF8");
 
@@ -404,7 +523,7 @@ namespace SocketReceiverBase
         {
             if (tabControl_ServerInfo.SelectedTab == tabPage_View)
             {
-                update_tabPage_View();
+                UpdateLayoutServerLisView();
             }
             else if (tabControl_ServerInfo.SelectedTab == tabPage_List)
             {
@@ -412,5 +531,28 @@ namespace SocketReceiverBase
             }
         }
 
+        private void button_AddServerList_Click(object sender, EventArgs e)
+        {
+            int ctrlIndex = panel_ServerListView.Controls.Count;
+
+            ServerInfo ctrl = new ServerInfo(ctrlIndex);
+            ctrl.Top = panel_ServerListView.Height;
+            ctrl.DeleteThis = (Action<int>)((int x) => DeleteServerLisView(x));
+            ctrl.LoadThis = (Action)(() => EnableLoadServerListView());
+
+            panel_ServerListView.Controls.Add(ctrl);
+            panel_ServerListView.Height += ctrl.Height;
+            UpdateServerListText();
+        }
+
+        private void button_LoadServerListView_Click(object sender, EventArgs e)
+        {
+            UpdateServerListText();
+            if (int.TryParse(textBox_ServerInfoCheckInterval.Text, out int b))
+            {
+                timer_ServerInfoUpdate.Interval = b * 1000;
+            }
+            ButtonEnable(button_LoadServerListView, false);
+        }
     }
 }

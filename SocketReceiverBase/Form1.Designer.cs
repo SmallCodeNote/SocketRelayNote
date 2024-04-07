@@ -38,7 +38,7 @@
             this.label_ResetTime = new System.Windows.Forms.Label();
             this.label_RemainingTime = new System.Windows.Forms.Label();
             this.button_Lock = new System.Windows.Forms.Button();
-            this.timer_LabelUpdate = new System.Windows.Forms.Timer(this.components);
+            this.timer_ServerInfoUpdate = new System.Windows.Forms.Timer(this.components);
             this.timer_UpdateQueue = new System.Windows.Forms.Timer(this.components);
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button_Restrart = new System.Windows.Forms.Button();
@@ -70,19 +70,29 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tabControl_ServerInfo = new System.Windows.Forms.TabControl();
             this.tabPage_View = new System.Windows.Forms.TabPage();
-            this.panel_Frame = new System.Windows.Forms.Panel();
-            this.panel_View = new System.Windows.Forms.Panel();
+            this.panel_ServerListFrame = new System.Windows.Forms.Panel();
+            this.panel_ServerListView = new System.Windows.Forms.Panel();
             this.tabPage_List = new System.Windows.Forms.TabPage();
+            this.label3 = new System.Windows.Forms.Label();
             this.textBox_ServerList = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.tabControl_Main = new System.Windows.Forms.TabControl();
+            this.tabPage_MessageSetting = new System.Windows.Forms.TabPage();
+            this.tabPage_ServerSetting = new System.Windows.Forms.TabPage();
+            this.button_AddServerList = new System.Windows.Forms.Button();
+            this.button_LoadServerListView = new System.Windows.Forms.Button();
+            this.textBox_ServerInfoCheckInterval = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl_ServerInfo.SuspendLayout();
             this.tabPage_View.SuspendLayout();
-            this.panel_Frame.SuspendLayout();
+            this.panel_ServerListFrame.SuspendLayout();
             this.tabPage_List.SuspendLayout();
+            this.tabControl_Main.SuspendLayout();
+            this.tabPage_MessageSetting.SuspendLayout();
+            this.tabPage_ServerSetting.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_StatusChange
@@ -155,10 +165,10 @@
             this.button_Lock.TabIndex = 4;
             this.button_Lock.UseVisualStyleBackColor = true;
             // 
-            // timer_LabelUpdate
+            // timer_ServerInfoUpdate
             // 
-            this.timer_LabelUpdate.Interval = 1000;
-            this.timer_LabelUpdate.Tick += new System.EventHandler(this.timer_LabelUpdate_Tick_Tick);
+            this.timer_ServerInfoUpdate.Interval = 1000;
+            this.timer_ServerInfoUpdate.Tick += new System.EventHandler(this.timer_LabelUpdate_Tick_Tick);
             // 
             // timer_UpdateQueue
             // 
@@ -390,9 +400,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 572);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 495);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(699, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(788, 22);
             this.statusStrip1.TabIndex = 9;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -424,7 +434,7 @@
             this.groupBox2.Controls.Add(this.textBox_ParameterNG);
             this.groupBox2.Controls.Add(this.textBox_CheckStyleNG);
             this.groupBox2.Controls.Add(this.textBox_ParameterOK);
-            this.groupBox2.Location = new System.Drawing.Point(12, 368);
+            this.groupBox2.Location = new System.Drawing.Point(8, 21);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(674, 194);
             this.groupBox2.TabIndex = 10;
@@ -436,41 +446,41 @@
             this.tabControl_ServerInfo.Alignment = System.Windows.Forms.TabAlignment.Bottom;
             this.tabControl_ServerInfo.Controls.Add(this.tabPage_View);
             this.tabControl_ServerInfo.Controls.Add(this.tabPage_List);
-            this.tabControl_ServerInfo.Location = new System.Drawing.Point(12, 94);
+            this.tabControl_ServerInfo.Location = new System.Drawing.Point(6, 27);
             this.tabControl_ServerInfo.Name = "tabControl_ServerInfo";
             this.tabControl_ServerInfo.SelectedIndex = 0;
             this.tabControl_ServerInfo.ShowToolTips = true;
-            this.tabControl_ServerInfo.Size = new System.Drawing.Size(565, 256);
+            this.tabControl_ServerInfo.Size = new System.Drawing.Size(565, 342);
             this.tabControl_ServerInfo.TabIndex = 12;
             this.tabControl_ServerInfo.SelectedIndexChanged += new System.EventHandler(this.tabControl_ServerInfo_SelectedIndexChanged);
             // 
             // tabPage_View
             // 
-            this.tabPage_View.Controls.Add(this.panel_Frame);
+            this.tabPage_View.Controls.Add(this.panel_ServerListFrame);
             this.tabPage_View.Location = new System.Drawing.Point(4, 4);
             this.tabPage_View.Name = "tabPage_View";
             this.tabPage_View.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_View.Size = new System.Drawing.Size(557, 230);
+            this.tabPage_View.Size = new System.Drawing.Size(557, 316);
             this.tabPage_View.TabIndex = 0;
             this.tabPage_View.Text = "View";
             this.tabPage_View.UseVisualStyleBackColor = true;
             // 
-            // panel_Frame
+            // panel_ServerListFrame
             // 
-            this.panel_Frame.AutoScroll = true;
-            this.panel_Frame.Controls.Add(this.panel_View);
-            this.panel_Frame.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel_Frame.Location = new System.Drawing.Point(3, 3);
-            this.panel_Frame.Name = "panel_Frame";
-            this.panel_Frame.Size = new System.Drawing.Size(551, 224);
-            this.panel_Frame.TabIndex = 0;
+            this.panel_ServerListFrame.AutoScroll = true;
+            this.panel_ServerListFrame.Controls.Add(this.panel_ServerListView);
+            this.panel_ServerListFrame.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel_ServerListFrame.Location = new System.Drawing.Point(3, 3);
+            this.panel_ServerListFrame.Name = "panel_ServerListFrame";
+            this.panel_ServerListFrame.Size = new System.Drawing.Size(551, 310);
+            this.panel_ServerListFrame.TabIndex = 0;
             // 
-            // panel_View
+            // panel_ServerListView
             // 
-            this.panel_View.Location = new System.Drawing.Point(0, 0);
-            this.panel_View.Name = "panel_View";
-            this.panel_View.Size = new System.Drawing.Size(697, 147);
-            this.panel_View.TabIndex = 0;
+            this.panel_ServerListView.Location = new System.Drawing.Point(0, 0);
+            this.panel_ServerListView.Name = "panel_ServerListView";
+            this.panel_ServerListView.Size = new System.Drawing.Size(548, 147);
+            this.panel_ServerListView.TabIndex = 0;
             // 
             // tabPage_List
             // 
@@ -479,32 +489,10 @@
             this.tabPage_List.Location = new System.Drawing.Point(4, 4);
             this.tabPage_List.Name = "tabPage_List";
             this.tabPage_List.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_List.Size = new System.Drawing.Size(557, 230);
+            this.tabPage_List.Size = new System.Drawing.Size(557, 316);
             this.tabPage_List.TabIndex = 1;
             this.tabPage_List.Text = "List";
             this.tabPage_List.UseVisualStyleBackColor = true;
-            // 
-            // textBox_ServerList
-            // 
-            this.textBox_ServerList.AcceptsReturn = true;
-            this.textBox_ServerList.AcceptsTab = true;
-            this.textBox_ServerList.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.textBox_ServerList.Location = new System.Drawing.Point(3, 18);
-            this.textBox_ServerList.Multiline = true;
-            this.textBox_ServerList.Name = "textBox_ServerList";
-            this.textBox_ServerList.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox_ServerList.Size = new System.Drawing.Size(551, 209);
-            this.textBox_ServerList.TabIndex = 0;
-            this.textBox_ServerList.WordWrap = false;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(16, 353);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(374, 12);
-            this.label15.TabIndex = 13;
-            this.label15.Text = "request = {ClientName}\\t{Status}\\t{Message}\\t{Parameter}\\t{CheckStyle}";
             // 
             // label3
             // 
@@ -515,14 +503,112 @@
             this.label3.TabIndex = 14;
             this.label3.Text = "{ServerName}\\t{Address}\\t{Port}";
             // 
+            // textBox_ServerList
+            // 
+            this.textBox_ServerList.AcceptsReturn = true;
+            this.textBox_ServerList.AcceptsTab = true;
+            this.textBox_ServerList.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.textBox_ServerList.Location = new System.Drawing.Point(3, 18);
+            this.textBox_ServerList.Multiline = true;
+            this.textBox_ServerList.Name = "textBox_ServerList";
+            this.textBox_ServerList.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBox_ServerList.Size = new System.Drawing.Size(551, 295);
+            this.textBox_ServerList.TabIndex = 0;
+            this.textBox_ServerList.WordWrap = false;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(17, 218);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(374, 12);
+            this.label15.TabIndex = 13;
+            this.label15.Text = "request = {ClientName}\\t{Status}\\t{Message}\\t{Parameter}\\t{CheckStyle}";
+            // 
+            // tabControl_Main
+            // 
+            this.tabControl_Main.Alignment = System.Windows.Forms.TabAlignment.Right;
+            this.tabControl_Main.Controls.Add(this.tabPage_ServerSetting);
+            this.tabControl_Main.Controls.Add(this.tabPage_MessageSetting);
+            this.tabControl_Main.Location = new System.Drawing.Point(12, 94);
+            this.tabControl_Main.Multiline = true;
+            this.tabControl_Main.Name = "tabControl_Main";
+            this.tabControl_Main.SelectedIndex = 0;
+            this.tabControl_Main.Size = new System.Drawing.Size(728, 380);
+            this.tabControl_Main.TabIndex = 14;
+            // 
+            // tabPage_MessageSetting
+            // 
+            this.tabPage_MessageSetting.Controls.Add(this.groupBox2);
+            this.tabPage_MessageSetting.Controls.Add(this.label15);
+            this.tabPage_MessageSetting.Location = new System.Drawing.Point(4, 4);
+            this.tabPage_MessageSetting.Name = "tabPage_MessageSetting";
+            this.tabPage_MessageSetting.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_MessageSetting.Size = new System.Drawing.Size(702, 372);
+            this.tabPage_MessageSetting.TabIndex = 0;
+            this.tabPage_MessageSetting.Text = "Message";
+            this.tabPage_MessageSetting.UseVisualStyleBackColor = true;
+            // 
+            // tabPage_ServerSetting
+            // 
+            this.tabPage_ServerSetting.Controls.Add(this.textBox_ServerInfoCheckInterval);
+            this.tabPage_ServerSetting.Controls.Add(this.label14);
+            this.tabPage_ServerSetting.Controls.Add(this.button_AddServerList);
+            this.tabPage_ServerSetting.Controls.Add(this.button_LoadServerListView);
+            this.tabPage_ServerSetting.Controls.Add(this.tabControl_ServerInfo);
+            this.tabPage_ServerSetting.Location = new System.Drawing.Point(4, 4);
+            this.tabPage_ServerSetting.Name = "tabPage_ServerSetting";
+            this.tabPage_ServerSetting.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_ServerSetting.Size = new System.Drawing.Size(702, 372);
+            this.tabPage_ServerSetting.TabIndex = 1;
+            this.tabPage_ServerSetting.Text = "Server";
+            this.tabPage_ServerSetting.UseVisualStyleBackColor = true;
+            // 
+            // button_AddServerList
+            // 
+            this.button_AddServerList.Location = new System.Drawing.Point(511, 5);
+            this.button_AddServerList.Name = "button_AddServerList";
+            this.button_AddServerList.Size = new System.Drawing.Size(20, 20);
+            this.button_AddServerList.TabIndex = 15;
+            this.button_AddServerList.Text = "+";
+            this.button_AddServerList.UseVisualStyleBackColor = true;
+            this.button_AddServerList.Click += new System.EventHandler(this.button_AddServerList_Click);
+            // 
+            // button_LoadServerListView
+            // 
+            this.button_LoadServerListView.Location = new System.Drawing.Point(529, 5);
+            this.button_LoadServerListView.Margin = new System.Windows.Forms.Padding(2);
+            this.button_LoadServerListView.Name = "button_LoadServerListView";
+            this.button_LoadServerListView.Size = new System.Drawing.Size(42, 19);
+            this.button_LoadServerListView.TabIndex = 14;
+            this.button_LoadServerListView.Text = "Load";
+            this.button_LoadServerListView.UseVisualStyleBackColor = true;
+            this.button_LoadServerListView.Click += new System.EventHandler(this.button_LoadServerListView_Click);
+            // 
+            // textBox_ServerInfoCheckInterval
+            // 
+            this.textBox_ServerInfoCheckInterval.Location = new System.Drawing.Point(468, 5);
+            this.textBox_ServerInfoCheckInterval.Name = "textBox_ServerInfoCheckInterval";
+            this.textBox_ServerInfoCheckInterval.Size = new System.Drawing.Size(35, 19);
+            this.textBox_ServerInfoCheckInterval.TabIndex = 17;
+            this.textBox_ServerInfoCheckInterval.Text = "10";
+            this.textBox_ServerInfoCheckInterval.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(367, 8);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(101, 12);
+            this.label14.TabIndex = 16;
+            this.label14.Text = "checkInterval(sec.)";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(699, 594);
-            this.Controls.Add(this.label15);
-            this.Controls.Add(this.tabControl_ServerInfo);
-            this.Controls.Add(this.groupBox2);
+            this.ClientSize = new System.Drawing.Size(788, 517);
+            this.Controls.Add(this.tabControl_Main);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -538,9 +624,14 @@
             this.groupBox2.PerformLayout();
             this.tabControl_ServerInfo.ResumeLayout(false);
             this.tabPage_View.ResumeLayout(false);
-            this.panel_Frame.ResumeLayout(false);
+            this.panel_ServerListFrame.ResumeLayout(false);
             this.tabPage_List.ResumeLayout(false);
             this.tabPage_List.PerformLayout();
+            this.tabControl_Main.ResumeLayout(false);
+            this.tabPage_MessageSetting.ResumeLayout(false);
+            this.tabPage_MessageSetting.PerformLayout();
+            this.tabPage_ServerSetting.ResumeLayout(false);
+            this.tabPage_ServerSetting.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -556,7 +647,7 @@
         private System.Windows.Forms.Label label_ResetTime;
         private System.Windows.Forms.Label label_RemainingTime;
         private System.Windows.Forms.Button button_Lock;
-        private System.Windows.Forms.Timer timer_LabelUpdate;
+        private System.Windows.Forms.Timer timer_ServerInfoUpdate;
         private System.Windows.Forms.Timer timer_UpdateQueue;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TextBox textBox_clientName;
@@ -588,12 +679,19 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TabControl tabControl_ServerInfo;
         private System.Windows.Forms.TabPage tabPage_View;
-        private System.Windows.Forms.Panel panel_Frame;
-        private System.Windows.Forms.Panel panel_View;
+        private System.Windows.Forms.Panel panel_ServerListFrame;
+        private System.Windows.Forms.Panel panel_ServerListView;
         private System.Windows.Forms.TabPage tabPage_List;
         private System.Windows.Forms.TextBox textBox_ServerList;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TabControl tabControl_Main;
+        private System.Windows.Forms.TabPage tabPage_MessageSetting;
+        private System.Windows.Forms.TabPage tabPage_ServerSetting;
+        private System.Windows.Forms.Button button_AddServerList;
+        private System.Windows.Forms.Button button_LoadServerListView;
+        private System.Windows.Forms.TextBox textBox_ServerInfoCheckInterval;
+        private System.Windows.Forms.Label label14;
     }
 }
 
