@@ -17,9 +17,8 @@ namespace tcpClient
         TcpSocketClient tcp;
         public Form1 form1;
 
-        string address;
-        string portNumber;
-
+        string addressPortSet;
+        
         string jobName { get { return groupBox_Job.Text; } set { groupBox_Job.Text = value; } }
         string scheduleUnit { get { return label_ScheduleUnit.Text; } set { label_ScheduleUnit.Text = value; } }
         string scheduleUnitParam { get { return label_ScheduleUnitParam.Text; } set { label_ScheduleUnitParam.Text = value; } }
@@ -38,9 +37,8 @@ namespace tcpClient
             
             int colIndex = 0;
 
-            address = Cols[colIndex]; colIndex++;
-            portNumber = Cols[colIndex]; colIndex++;
-
+            addressPortSet = Cols[colIndex]; colIndex++;
+            
             jobName = Cols[colIndex]; colIndex++;
             scheduleUnit = Cols[colIndex]; colIndex++;
             scheduleUnitParam = Cols[colIndex]; colIndex++;
@@ -65,8 +63,7 @@ namespace tcpClient
         private void SchedulerInitialize()
         {
             List<string> ColList = new List<string>();
-            ColList.Add(address);
-            ColList.Add(portNumber);
+            ColList.Add(addressPortSet);
 
             ColList.Add(jobName);
             ColList.Add(scheduleUnit);

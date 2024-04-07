@@ -170,8 +170,7 @@ namespace tcpClient
         public Form1 form1;
         public TcpSocketClient tcp;
 
-        public string Address = "";
-        public int PortNumber = 1024;
+        public string AddressPortSet = "";
 
         public string JobName = "";
         public string ScheduleUnit = "";
@@ -183,12 +182,11 @@ namespace tcpClient
         public string CheckStyle = "Once";
         public DateTime createTime;
 
-        public FluentSchedulerJobParam(TcpSocketClient tcp, string address, int portNumber, string JobName, string scheduleUnit, string scheduleUnitParam, string clientName, string status, string message, string parameter, string CheckStyle)
+        public FluentSchedulerJobParam(TcpSocketClient tcp, string addressPortSet, string JobName, string scheduleUnit, string scheduleUnitParam, string clientName, string status, string message, string parameter, string CheckStyle)
         {
             this.tcp = tcp;
 
-            this.Address = address;
-            this.PortNumber = portNumber;
+            this.AddressPortSet = addressPortSet;
 
             this.JobName = JobName;
             this.ScheduleUnit = scheduleUnit;
@@ -210,8 +208,7 @@ namespace tcpClient
             this.tcp = tcp;
             int i = 0;
 
-            this.Address = cols[i]; i++;
-            this.PortNumber = int.Parse(cols[i]); i++;
+            this.AddressPortSet = cols[i]; i++;
 
             this.JobName = cols[i]; i++;
             this.ScheduleUnit = cols[i]; i++;
@@ -231,8 +228,7 @@ namespace tcpClient
             List<string> Cols = new List<string>();
 
             Cols.Add(this.JobName);
-            Cols.Add(this.Address);
-            Cols.Add(this.PortNumber.ToString());
+            Cols.Add(this.AddressPortSet);
             Cols.Add(this.ScheduleUnit);
             Cols.Add(this.ScheduleUnitParam);
             Cols.Add(this.ClientName);
@@ -262,13 +258,12 @@ namespace tcpClient
             return param.ToString();
         }
 
-        public FluentSchedulerJob(TcpSocketClient tcp, string address, int portNumber, string jobname, string scheduleUnit, string clientName, string status, string message, string parameter, string CheckStyle)
+        public FluentSchedulerJob(TcpSocketClient tcp, string addressPortSet, string jobname, string scheduleUnit, string clientName, string status, string message, string parameter, string CheckStyle)
         {
 
             param.tcp = tcp;
 
-            param.Address = address;
-            param.PortNumber = portNumber;
+            param.AddressPortSet = addressPortSet;
 
             param.JobName = jobname;
             param.ScheduleUnit = scheduleUnit;
@@ -287,7 +282,26 @@ namespace tcpClient
                 string sendMessage = param.ClientName + "\t" + param.Status + "\t" + param.Message + "\t"
                 + param.Parameter + "\t" + param.CheckStyle.ToString();
 
-                Responce = param.tcp.StartClient(param.Address, param.PortNumber, sendMessage,"UTF8").Result;
+                string[] AddresSet = param.AddressPortSet.Trim('/').Split('/');
+                List<string> responce = new List<string>();
+                List<Task<string>> task = new List<Task<string>>();
+
+                foreach (var AddressLine in AddresSet)
+                {
+                    string[] Cols = AddressLine.Split(':');
+                    if (Cols.Length > 1)
+                    {
+                        string address = Cols[0];
+                        int port = int.Parse(Cols[1]);
+
+                        task.Add(param.tcp.StartClient(address, port, sendMessage, "UTF8"));
+                    }
+                }
+
+                foreach (var t in task)
+                {
+                    responce.Add(t.Result);
+                }
 
                 if (param.ScheduleUnit.IndexOf("Once") >= 0)
                 {
@@ -301,11 +315,8 @@ namespace tcpClient
                         timeout--;
                     } while (jobCount > 0 && timeout > 0);
 
-
                 }
-
             });
-
         }
     }
 }

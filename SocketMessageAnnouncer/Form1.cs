@@ -36,7 +36,7 @@ namespace tcpClient
 
         private void Form1_Load(object sender, EventArgs e)
         {
-             string paramFilename = Path.Combine(thisExeDirPath, "_param.txt");
+            string paramFilename = Path.Combine(thisExeDirPath, "_param.txt");
             if (File.Exists(paramFilename))
             {
                 WinFormStringCnv.setControlFromString(this, File.ReadAllText(paramFilename));
@@ -67,11 +67,32 @@ namespace tcpClient
             SchedulerInitializeFromForm();
         }
 
-        private async void button_SendMessage_Click(object sender, EventArgs e)
+        private void button_SendMessage_Click(object sender, EventArgs e)
         {
             string sendMessage = textBox_ClientName.Text + "\t" + comboBox_Status.Text + "\t" + textBox_Message.Text + DateTime.Now.ToString("yyyyMMdd_HHmmss") + "\t" + textBox_Parameter.Text + "\t" + comboBox_checkStyle.Text;
-            var responce = await tcp.StartClient(textBox_Address.Text, int.Parse(textBox_PortNumber.Text), sendMessage, "UTF8");
-            label_Return.Text = responce;
+
+            string[] AddresSet = textBox_AddressPortSetting.Text.Trim('/').Split('/');
+            List<string> responce = new List<string>();
+            List<Task<string>> task = new List<Task<string>>();
+
+            foreach (var AddressLine in AddresSet)
+            {
+                string[] Cols = AddressLine.Split(':');
+                if (Cols.Length > 1)
+                {
+                    string address = Cols[0];
+                    int port = int.Parse(Cols[1]);
+
+                    task.Add(tcp.StartClient(address, port, sendMessage, "UTF8"));
+                }
+            }
+
+            foreach(var t in task)
+            {
+                responce.Add(t.Result);  
+            }
+ 
+            label_Return.Text = string.Join("/", responce.ToArray());
         }
 
         private void button_AddSchedule_Click(object sender, EventArgs e)
@@ -183,9 +204,8 @@ namespace tcpClient
             if (Cols.Length == 10)
             {
                 int colIndex = 0;
-                textBox_Address.Text = Cols[colIndex]; colIndex++;
-                textBox_PortNumber.Text = Cols[colIndex]; colIndex++;
-
+                textBox_AddressPortSetting.Text = Cols[colIndex]; colIndex++;
+                
                 textBox_JobName.Text = Cols[colIndex]; colIndex++;
                 comboBox_ScheduleUnit.Text = Cols[colIndex]; colIndex++;
                 textBox_ScheduleUnitParam.Text = Cols[colIndex]; colIndex++;
@@ -219,7 +239,7 @@ namespace tcpClient
             textBox_OnceJobPanelStore.Text += getJobStringFromEditControls() + "\r\n";
         }
 
-        public string getJobStringFromArray(string[] cols,int startImdex=0)
+        public string getJobStringFromArray(string[] cols, int startImdex = 0)
         {
             int colsIndex = startImdex;
             string Address = cols[colsIndex]; colsIndex++;
@@ -253,8 +273,7 @@ namespace tcpClient
 
         public string getJobStringFromEditControls()
         {
-            string Address = textBox_Address.Text;
-            string PortNumber = textBox_PortNumber.Text;
+            string AddressPortSetting = textBox_AddressPortSetting.Text;
 
             string JobName = textBox_JobName.Text;
             string ScheduleUnit = comboBox_ScheduleUnit.Text;
@@ -266,8 +285,7 @@ namespace tcpClient
             string CheckStyle = comboBox_checkStyle.Text;
 
             List<string> ColList = new List<string>();
-            ColList.Add(Address);
-            ColList.Add(PortNumber);
+            ColList.Add(AddressPortSetting);
 
             ColList.Add(JobName);
             ColList.Add(ScheduleUnit);
@@ -285,7 +303,7 @@ namespace tcpClient
         {
             SchedulerInitialize(getJobStringFromEditControls());
         }
-        private void SchedulerInitializeFromArray(string[] cols,int startIndex = 0)
+        private void SchedulerInitializeFromArray(string[] cols, int startIndex = 0)
         {
             SchedulerInitialize(getJobStringFromArray(cols, startIndex));
         }
@@ -318,7 +336,7 @@ namespace tcpClient
             foreach (var Line in Lines)
             {
                 string[] Cols = Line.Split('\t');
-                if (Cols.Length == 10)
+                if (Cols.Length == 9)
                 {
                     var onceJobView = new OnceJobView(tcp, Cols, this);
                     onceJobView.Top = viewTop;
@@ -424,7 +442,7 @@ namespace tcpClient
                     else if (command == "AddJob" && cols.Length == 2)
                     {
                         string Address = cols[1];
-                        SchedulerInitializeFromArray(cols,2);
+                        SchedulerInitializeFromArray(cols, 2);
                     }
                 }
 

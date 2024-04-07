@@ -31,10 +31,8 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.textBox_ClientName = new System.Windows.Forms.TextBox();
-            this.textBox_Address = new System.Windows.Forms.TextBox();
-            this.textBox_PortNumber = new System.Windows.Forms.TextBox();
+            this.textBox_AddressPortSetting = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.textBox_Message = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -112,21 +110,13 @@
             this.textBox_ClientName.Size = new System.Drawing.Size(77, 19);
             this.textBox_ClientName.TabIndex = 0;
             // 
-            // textBox_Address
+            // textBox_AddressPortSetting
             // 
-            this.textBox_Address.Location = new System.Drawing.Point(132, 115);
-            this.textBox_Address.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox_Address.Name = "textBox_Address";
-            this.textBox_Address.Size = new System.Drawing.Size(191, 19);
-            this.textBox_Address.TabIndex = 1;
-            // 
-            // textBox_PortNumber
-            // 
-            this.textBox_PortNumber.Location = new System.Drawing.Point(327, 115);
-            this.textBox_PortNumber.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox_PortNumber.Name = "textBox_PortNumber";
-            this.textBox_PortNumber.Size = new System.Drawing.Size(76, 19);
-            this.textBox_PortNumber.TabIndex = 1;
+            this.textBox_AddressPortSetting.Location = new System.Drawing.Point(132, 115);
+            this.textBox_AddressPortSetting.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_AddressPortSetting.Name = "textBox_AddressPortSetting";
+            this.textBox_AddressPortSetting.Size = new System.Drawing.Size(279, 19);
+            this.textBox_AddressPortSetting.TabIndex = 1;
             // 
             // label1
             // 
@@ -134,19 +124,9 @@
             this.label1.Location = new System.Drawing.Point(132, 101);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(47, 12);
+            this.label1.Size = new System.Drawing.Size(165, 12);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Address";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(325, 102);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(26, 12);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Port";
+            this.label1.Text = "Address:Port (/Address2:Port2)";
             // 
             // label3
             // 
@@ -501,12 +481,10 @@
             this.tabPage_Edit.Controls.Add(this.comboBox_Status);
             this.tabPage_Edit.Controls.Add(this.textBox_Message);
             this.tabPage_Edit.Controls.Add(this.textBox_Parameter);
-            this.tabPage_Edit.Controls.Add(this.label2);
-            this.tabPage_Edit.Controls.Add(this.textBox_Address);
+            this.tabPage_Edit.Controls.Add(this.textBox_AddressPortSetting);
             this.tabPage_Edit.Controls.Add(this.label6);
             this.tabPage_Edit.Controls.Add(this.textBox_ScheduleUnitParam);
             this.tabPage_Edit.Controls.Add(this.label4);
-            this.tabPage_Edit.Controls.Add(this.textBox_PortNumber);
             this.tabPage_Edit.Controls.Add(this.label7);
             this.tabPage_Edit.Controls.Add(this.label10);
             this.tabPage_Edit.Controls.Add(this.label5);
@@ -732,10 +710,8 @@
         #endregion
 
         private System.Windows.Forms.TextBox textBox_ClientName;
-        private System.Windows.Forms.TextBox textBox_Address;
-        private System.Windows.Forms.TextBox textBox_PortNumber;
+        private System.Windows.Forms.TextBox textBox_AddressPortSetting;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBox_Message;
         private System.Windows.Forms.Label label4;
