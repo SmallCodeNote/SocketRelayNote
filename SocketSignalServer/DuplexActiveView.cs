@@ -14,8 +14,9 @@ namespace SocketSignalServer
 {
     public partial class DuplexActiveView : UserControl
     {
-        TcpSocketClient tcpClient;
-
+        //===================
+        // Constructor
+        //===================
         public DuplexActiveView(int Index, string Address, int Port)
         {
             InitializeComponent();
@@ -44,10 +45,10 @@ namespace SocketSignalServer
             tcpClient = new TcpSocketClient();
         }
 
-        public override string ToString()
-        {
-            return Address + "\t" + Port.ToString();
-        }
+        //===================
+        // Member variable
+        //===================
+        TcpSocketClient tcpClient;
 
         public string Address { get { return textBox_Address.Text; } set { textBox_Address.Text = value; } }
         public int Port { get { int b = -1; if (!int.TryParse(textBox_Port.Text, out b)) { b = -1; } return b; } set { textBox_Port.Text = value.ToString(); } }
@@ -55,12 +56,24 @@ namespace SocketSignalServer
         public int Index;
 
         public Action<int> DeleteThis;
+        public Action LoadThis;
+
+        //===================
+        // Member function
+        //===================
+        public override string ToString()
+        {
+            return Address + "\t" + Port.ToString();
+        }
+
+        //===================
+        // Event
+        //===================
         private void button_DeleteThis_Click(object sender, EventArgs e)
         {
             DeleteThis(Index);
         }
 
-        public Action LoadThis;
 
         private void textBox_Address_TextChanged(object sender, EventArgs e)
         {

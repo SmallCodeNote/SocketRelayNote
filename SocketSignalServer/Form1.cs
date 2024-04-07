@@ -955,9 +955,9 @@ namespace SocketSignalServer
         private void button_AddDuplexActiveList_Click(object sender, EventArgs e)
         {
             int ctrlIndex = panel_DuplexSystemView.Controls.Count;
-
             DuplexActiveView ctrl = new DuplexActiveView(ctrlIndex);
             ctrl.DeleteThis = (Action<int>)((int x) => DeleteDuplexSystemView(ctrlIndex));
+            ctrl.LoadThis = (Action)(() => EnableLoadDuplexSystemView());
             ctrl.Top = panel_DuplexSystemView.Height;
 
             panel_DuplexSystemView.Controls.Add(ctrl);
