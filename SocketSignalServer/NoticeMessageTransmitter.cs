@@ -15,6 +15,21 @@ namespace SocketSignalServer
 {
     public class NoticeTransmitter
     {
+        //===================
+        // Constructor
+        //===================
+        public NoticeTransmitter(bool voiceOFF = true,bool isActive = false)
+        {
+            NoticeQueue = new ConcurrentQueue<NoticeMessage>();
+            NoticeRunningDictionary = new ConcurrentDictionary<string, NoticeMessageHandling>();
+
+            this.voiceOFF = voiceOFF;
+            this.isActive = isActive;
+        }
+
+        //===================
+        // Member variable
+        //===================
         /// <summary>
         /// Received Notice Queue.
         /// </summary>
@@ -28,17 +43,21 @@ namespace SocketSignalServer
         private bool _noticeCheckContinueFlag = false;
         public int _threadSleepLength = 100;
 
+        /// <summary>
+        /// timeout length (sec.)
+        /// </summary>
         public int httpTimeout = 3;
-        public bool _voiceOFF = true;
 
-        public NoticeTransmitter(bool voiceOFF = true)
-        {
-            NoticeQueue = new ConcurrentQueue<NoticeMessage>();
-            NoticeRunningDictionary = new ConcurrentDictionary<string, NoticeMessageHandling>();
+        public bool voiceOFF = true;
 
-            this._voiceOFF = voiceOFF;
-        }
+        /// <summary>
+        /// duplex system class  true:Active / false:Standby
+        /// </summary>
+        public bool isActive = false;
 
+        //===================
+        // Member function
+        //===================
         public bool AddNotice(NoticeMessage notice)
         {
             if (!NoticeRunningDictionary.ContainsKey(notice.Key))
@@ -103,7 +122,7 @@ namespace SocketSignalServer
                         NoticeMessage b;
                         if (NoticeQueue.TryDequeue(out b))
                         {
-                            NoticeMessageHandling handling = new NoticeMessageHandling(b, httpTimeout, _voiceOFF);
+                            NoticeMessageHandling handling = new NoticeMessageHandling(b, httpTimeout, voiceOFF,isActive);
 
                             if (NoticeRunningDictionary.TryAdd(b.Key, handling))
                             {
@@ -128,15 +147,22 @@ namespace SocketSignalServer
 
     public class NoticeMessageHandling : IDisposable
     {
-        public NoticeMessageHandling(NoticeMessage notice, int timeout = 3, bool debug = true)
+        //===================
+        // Constructor
+        //===================
+        public NoticeMessageHandling(NoticeMessage notice, int timeout = 3, bool voiceOFF = true, bool isActive = false)
         {
             this.notice = notice;
             httpClient = new HttpClient();
             httpClient.Timeout = new TimeSpan(0, 0, timeout);
 
-            this._voiceOFF = debug;
+            this.voiceOFF = voiceOFF;
+            this.isActive = isActive;
         }
 
+        //===================
+        // Member variable
+        //===================
         private HttpClient httpClient;
         public NoticeMessage notice;
 
@@ -144,8 +170,12 @@ namespace SocketSignalServer
         public int WaitNoticeFinish_Timeout = 30;
 
         public int _threadSleepLength = 100;
-        public bool _voiceOFF = true;
+        public bool voiceOFF = true;
 
+        /// <summary>
+        /// duplex system class  true:Active / false:Standby
+        /// </summary>
+        public bool isActive = false;
 
         public int timeout
         {
@@ -153,6 +183,9 @@ namespace SocketSignalServer
             set { httpClient.Timeout = new TimeSpan(0, 0, value); }
         }
 
+        //===================
+        // Member function
+        //===================
         public Task StartNotice()
         {
             return Task.Run(() =>
@@ -184,10 +217,10 @@ namespace SocketSignalServer
            
             string url = @"http://" + notice.address + @"/api/control?" + parameter + separator + speech;
 
-            Debug.Write(DateTime.Now.ToString("HH:mm:ss") + " " + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " ");
+            Debug.Write(DateTime.Now.ToString("HH:mm:ss") + "\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + "\t");
             Debug.WriteLine(url);
 
-            if (_voiceOFF) { return ""; }
+            if (voiceOFF || !isActive) { return ""; }
 
             try
             {
@@ -207,23 +240,19 @@ namespace SocketSignalServer
         {
             DateTime startTime = DateTime.Now;
 
-            if (_voiceOFF)
-            {
                 Debug.WriteLine("WaitStart_Debug " + DateTime.Now.ToString("HH:mm:ss") + " " + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " ");
                 Thread.Sleep(10000);
                 Debug.WriteLine("WaitEnd_Debug " + DateTime.Now.ToString("HH:mm:ss") + " " + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " ");
-                
-                return true;
-            }
+
+            string url = @"http://" + notice.address + @"/api/status?format=xml";
+            Debug.WriteLine(url);
+
+            if (voiceOFF || !isActive) { return true; }
 
             do
             {
                 try
                 {
-                    string url = @"http://" + notice.address + @"/api/status?format=xml";
-                    Debug.Write("WaitStart " + DateTime.Now.ToString("HH:mm:ss") + " " + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " ");
-                    Debug.WriteLine(url);
-
                     string pageBody = httpClient.GetStringAsync(url).Result;
 
                     XmlDocument doc = new XmlDocument();
@@ -276,7 +305,11 @@ namespace SocketSignalServer
         {
             get { return this.address + "_" + keyTime.ToString("yyyy/MM/dd HH:mm:ss.fff") + "_" + message; }
         }
-        
+
+
+        //===================
+        // Member function
+        //===================
         public NoticeMessage(string address, SocketMessage socket)
         {
             this.address = address;

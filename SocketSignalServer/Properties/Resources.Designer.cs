@@ -63,6 +63,26 @@ namespace SocketSignalServer.Properties {
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
+        internal static System.Drawing.Bitmap Active048 {
+            get {
+                object obj = ResourceManager.GetObject("Active048", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap Standby048 {
+            get {
+                object obj = ResourceManager.GetObject("Standby048", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
         internal static System.Drawing.Bitmap VoiceOFF048 {
             get {
                 object obj = ResourceManager.GetObject("VoiceOFF048", resourceCulture);

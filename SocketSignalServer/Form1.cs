@@ -138,6 +138,98 @@ namespace SocketSignalServer
             }
         }
 
+        private void DeleteDuplexSystemView(int targetIndex)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => DeleteDuplexSystemView(targetIndex)));
+            }
+            else
+            {
+                if (targetIndex < panel_DuplexSystemView.Controls.Count)
+                {
+                    panel_DuplexSystemView.Controls.RemoveAt(targetIndex);
+                    UpdateDuplexSystemText();
+                    UpdateLayoutDuplexSystemView();
+                }
+            }
+        }
+        private void RefreshDuplexSystemView()
+        {
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => RefreshDuplexSystemView()));
+            }
+            else
+            {
+                panel_DuplexSystemView.Controls.Clear();
+                panel_DuplexSystemView.Height = 0;
+
+                string[] Lines = textBox_DuplexActiveList.Text.Replace("\r\n", "\n").Trim('\n').Split('\n');
+                int PositionTop = 0;
+                int ctrlIndex = 0;
+
+
+                foreach (var Line in Lines)
+                {
+                    if (Line == "") continue;
+                    var ctrl = new DuplexActiveView(ctrlIndex, Line);
+                    ctrl.DeleteThis = (Action<int>)((int x) => DeleteDuplexSystemView(x));
+                    ctrl.LoadThis = (Action)(() => EnableLoadDuplexSystemView());
+                    ctrl.Top = PositionTop;
+                    PositionTop += ctrl.Height;
+                    panel_DuplexSystemView.Controls.Add(ctrl);
+
+                    ctrlIndex++;
+                }
+                panel_DuplexSystemView.Height = PositionTop;
+            }
+        }
+
+        private void UpdateLayoutDuplexSystemView()
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => UpdateLayoutDuplexSystemView()));
+            }
+            else
+            {
+                panel_DuplexSystemView.Height = 0;
+                int PositionTop = 0;
+                int ctrlIndex = 0;
+                foreach (DuplexActiveView ctrl in panel_DuplexSystemView.Controls)
+                {
+                    ctrl.Top = PositionTop;
+                    ctrl.Index = ctrlIndex;
+                    PositionTop += ctrl.Height;
+
+                    ctrlIndex++;
+                }
+                panel_DuplexSystemView.Height = PositionTop;
+            }
+        }
+
+        private void UpdateDuplexSystemText()
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => UpdateDuplexSystemText()));
+            }
+            else
+            {
+
+                List<string> Lines = new List<string>();
+
+                foreach (DuplexActiveView View in panel_DuplexSystemView.Controls)
+                {
+                    Lines.Add(View.ToString());
+
+                }
+                textBox_DuplexActiveList.Text = string.Join("\r\n", Lines.ToArray());
+            }
+        }
+
         private void updateStatusTab()
         {
             if (!File.Exists(textBox_DataBaseFilePath.Text)) return;
@@ -455,9 +547,20 @@ namespace SocketSignalServer
             ClientListInitialize();
             AddressListInitialize();
             SchedulerInitialize();
+            RefreshDuplexSystemView();
 
-            timer_updateStatusTab.Start();
             timer_DebugFilepathUpdate.Start();
+            timer_DuplexActiveListUpdate.Start();
+
+            if (panel_DuplexSystemView.Controls.Count > 0)
+            {
+                toolStripDropDownButton_Class.Image = Properties.Resources.Standby048;
+            }
+            else
+            {
+                toolStripDropDownButton_Class.Image = Properties.Resources.Active048;
+            }
+
 
             int.TryParse(textBox_httpTimeout.Text, out noticeTransmitter.httpTimeout);
 
@@ -466,7 +569,7 @@ namespace SocketSignalServer
                 try
                 {
                     portNumber = int.Parse(textBox_portNumber.Text);
-                    button_Start.Text = "Stop";
+                    button_Start.Text = "ServerStop";
                     tcpSrv.StartListening(portNumber, "UTF8");
 
                     if (int.TryParse(textBox_TimeoutCheckInterval.Text, out int TimeoutCheckInterval))
@@ -475,7 +578,7 @@ namespace SocketSignalServer
                     }
                     timer_checkTimeout.Start();
 
-                    timer_UpdateList.Start();
+                    timer_CheckQueue.Start();
                 }
                 catch (Exception ex)
                 {
@@ -498,29 +601,29 @@ namespace SocketSignalServer
 
         private void button_Start_Click(object sender = null, EventArgs e = null)
         {
-            if (button_Start.Text == "Start" && int.TryParse(textBox_portNumber.Text, out portNumber))
+            if (button_Start.Text == "ServerStart" && int.TryParse(textBox_portNumber.Text, out portNumber))
             {
-                button_Start.Text = "Stop";
-                timer_UpdateList.Start();
+                button_Start.Text = "ServerStop";
+                timer_CheckQueue.Start();
                 timer_checkTimeout.Start();
                 tcpSrv.StartListening(portNumber, "UTF8");
 
             }
-            else if (int.TryParse(textBox_portNumber.Text, out portNumber))
+            else if (!int.TryParse(textBox_portNumber.Text, out portNumber))
             {
                 textBox_portNumber.Select();
             }
             else
             {
                 tcpSrv.StopListening();
-                button_Start.Text = "Start";
+                button_Start.Text = "ServerStart";
             }
         }
 
 
-        private void timer_UpdateList_Tick(object sender, EventArgs e)
+        private void timer_CheckQueue_Tick(object sender, EventArgs e)
         {
-            timer_UpdateList.Stop();
+            timer_CheckQueue.Stop();
 
             textBox_queueList.Text = DateTime.Now.ToString("HH:mm:ss") + "\t" + tcpSrv.ReceivedSocketQueue.Count.ToString() + "\r\n";
 
@@ -531,10 +634,17 @@ namespace SocketSignalServer
 
                 LastCheckTime = DateTime.Now;
             }
+            else
+            {
+                if (tabControl_Top.SelectedTab == tabPage_Status)
+                {
+                    updateStatusTab();
+                }
+            }
 
             //checkTimeoutFromDataBase_and_AddNotice();
 
-            if (button_Start.Text != "Start")
+            if (button_Start.Text != "ServerStart")
             {
                 toolStripStatusLabel1.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
@@ -546,7 +656,7 @@ namespace SocketSignalServer
                 {
                     toolStripStatusLabel1.Text += " / TCP Listening Stop";
                 }
-                timer_UpdateList.Start();
+                timer_CheckQueue.Start();
             }
             else
             {
@@ -704,15 +814,22 @@ namespace SocketSignalServer
 
         private void ButtonEnable(Button button, bool enable)
         {
-            if (enable)
+            if (this.InvokeRequired)
             {
-                button.Enabled = true;
-                button.BackColor = Color.GreenYellow;
+                this.Invoke((Action)(() => ButtonEnable(button, enable)));
             }
             else
             {
-                button.Enabled = false;
-                button.BackColor = Color.Transparent;
+                if (enable)
+                {
+                    button.Enabled = true;
+                    button.BackColor = Color.GreenYellow;
+                }
+                else
+                {
+                    button.Enabled = false;
+                    button.BackColor = Color.Transparent;
+                }
             }
         }
 
@@ -724,17 +841,9 @@ namespace SocketSignalServer
             }
         }
 
-        private void timer_updateStatusTab_Tick(object sender, EventArgs e)
-        {
-            if (tabControl_Top.SelectedTab == tabPage_Status)
-            {
-                updateStatusTab();
-            }
-        }
-
         private void checkBox_voiceOffSwitch_CheckedChanged(object sender = null, EventArgs e = null)
         {
-            noticeTransmitter._voiceOFF = checkBox_voiceOffSwitch.Checked;
+            noticeTransmitter.voiceOFF = checkBox_voiceOffSwitch.Checked;
 
             if (checkBox_voiceOffSwitch.Checked)
             {
@@ -830,7 +939,7 @@ namespace SocketSignalServer
 
             checkTimeoutFromDataBase_and_AddNotice();
 
-            if (button_Start.Text != "Start")
+            if (button_Start.Text != "ServerStart")
             {
                 timer_checkTimeout.Start();
             }
@@ -841,6 +950,87 @@ namespace SocketSignalServer
         {
             button_ClientListLoad.Enabled = true;
             button_ClientListLoad.BackColor = Color.GreenYellow;
+        }
+
+        private void button_AddDuplexActiveList_Click(object sender, EventArgs e)
+        {
+            int ctrlIndex = panel_DuplexSystemView.Controls.Count;
+
+            DuplexActiveView ctrl = new DuplexActiveView(ctrlIndex);
+            ctrl.DeleteThis = (Action<int>)((int x) => DeleteDuplexSystemView(ctrlIndex));
+            ctrl.Top = panel_DuplexSystemView.Height;
+
+            panel_DuplexSystemView.Controls.Add(ctrl);
+            panel_DuplexSystemView.Height += ctrl.Height;
+            UpdateDuplexSystemText();
+
+        }
+
+        private void tabControl_DuplexSystemView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl_DuplexSystemView.SelectedTab == tabPage_DuplexSystemText)
+            {
+                UpdateDuplexSystemText();
+            }
+            else if (tabControl_DuplexSystemView.SelectedTab == tabPage_DuplexSystemView)
+            {
+
+            }
+        }
+
+        private void EnableLoadDuplexSystemView()
+        {
+            ButtonEnable(button_LoadDuplexSystemView, true);
+        }
+
+        private void button_LoadDuplexSystemView_Click(object sender, EventArgs e)
+        {
+            UpdateDuplexSystemText();
+            if (int.TryParse(textBox_DuplexActiveListCheckInterval.Text, out int b))
+            {
+                timer_DuplexActiveListUpdate.Interval = b * 1000;
+            }
+            ButtonEnable(button_LoadDuplexSystemView, false);
+        }
+
+        private void timer_DuplexActiveListUpdate_Tick(object sender, EventArgs e)
+        {
+            List<Task> taskList = new List<Task>();
+
+            foreach (DuplexActiveView ctrl in panel_DuplexSystemView.Controls)
+            {
+                ctrl.askAlive();
+            }
+
+            bool activeAlive = false;
+
+            foreach (DuplexActiveView ctrl in panel_DuplexSystemView.Controls)
+            {
+                activeAlive = activeAlive || ctrl.Alive;
+            }
+
+            noticeTransmitter.isActive = !activeAlive;
+
+            if (activeAlive)
+            {
+                toolStripStatusLabel2.Text = "StandbyMode(ActiveAlive)";
+                toolStripDropDownButton_Class.Image = Properties.Resources.Standby048;
+            }
+            else if(!activeAlive && panel_DuplexSystemView.Controls.Count>0)
+            {
+                toolStripStatusLabel2.Text = "ActiveMode(ActiveDown)";
+                toolStripDropDownButton_Class.Image = Properties.Resources.Active048;
+            }
+            else
+            {
+                toolStripStatusLabel2.Text = "ActiveMode";
+                toolStripDropDownButton_Class.Image = Properties.Resources.Active048;
+            }
+        }
+
+        private void textBox_DuplexActiveListCheckInterval_TextChanged(object sender, EventArgs e)
+        {
+            ButtonEnable(button_LoadDuplexSystemView, true);
         }
     }
 }

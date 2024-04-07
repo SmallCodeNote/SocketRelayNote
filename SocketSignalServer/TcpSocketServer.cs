@@ -14,6 +14,19 @@ namespace tcpServer
 {
     class TcpSocketServer
     {
+        //===================
+        // Constructor
+        //===================
+        public TcpSocketServer()
+        {
+            LastReceiveTime = DateTime.Now;
+            ReceivedSocketQueue = new ConcurrentQueue<string>();
+
+        }
+
+        //===================
+        // Member variable
+        //===================
         public DateTime LastReceiveTime;
 
         /// <summary>
@@ -23,25 +36,16 @@ namespace tcpServer
         public int _ReceivedSocketQueueMaxSize = 1024;
         public string ResponceMessage = "";
         public int _bufferSize = 1024;
-
-        public TcpSocketServer()
-        {
-            LastReceiveTime = DateTime.Now;
-            ReceivedSocketQueue = new ConcurrentQueue<string>();
-
-        }
-
-        public void StopListening()
-        {
-            cts.Cancel();
-            ListeningTask.Wait();
-            return;
-        }
-
+        
         private Task ListeningTask;
         private static CancellationTokenSource cts;
         private static CancellationToken token;
         public bool ListeningRun = false;
+
+
+        //===================
+        // Member function
+        //===================
         public void StartListening(int port, string encoding = "ASCII")
         {
             cts = new CancellationTokenSource();
@@ -51,6 +55,13 @@ namespace tcpServer
                  Listening(port, encoding);
 
              }, token);
+        }
+
+        public void StopListening()
+        {
+            cts.Cancel();
+            ListeningTask.Wait();
+            return;
         }
 
         public void Listening(int port, string encoding = "ASCII")

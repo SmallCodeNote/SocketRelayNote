@@ -51,6 +51,12 @@
   <ItemGroup>
     <Compile Include="BreakupLightDBFile.cs" />
     <Compile Include="ClientData.cs" />
+    <Compile Include="DuplexActiveView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DuplexActiveView.Designer.cs">
+      <DependentUpon>DuplexActiveView.cs</DependentUpon>
+    </Compile>
     <Compile Include="FluentSchedulerRegistry.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -73,8 +79,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SocketMessage.cs" />
+    <Compile Include="TcpSocketClient.cs" />
     <Compile Include="TcpSocketServer.cs" />
     <Compile Include="WinFormToString.cs" />
+    <EmbeddedResource Include="DuplexActiveView.resx">
+      <DependentUpon>DuplexActiveView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -106,6 +116,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="lighthouse.ico" />
+    <None Include="Resources\Standby048.png" />
+    <None Include="Resources\Active048.png" />
     <None Include="Resources\VoiceON048.png" />
     <None Include="Resources\VoiceOFF048.png" />
   </ItemGroup>
