@@ -20,6 +20,10 @@ namespace tcpClient
         public JobItemView()
         {
             InitializeComponent();
+            this.Height = 70;
+            groupBox_Job.Height = 70;
+            panel_Frame.Height = 50;
+
             timer_update.Start();
 
         }
@@ -38,7 +42,6 @@ namespace tcpClient
 
             groupBox_Job.Text = Cols[colIndex]; colIndex++;
             label_Address.Text = Cols[colIndex]; colIndex++;
-            label_PortNumber.Text = Cols[colIndex]; colIndex++;
             label_ScheduleUnit.Text = Cols[colIndex]; colIndex++;
             label_ScheduleUnitParam.Text = Cols[colIndex]; colIndex++;
             label_ClientName.Text = Cols[colIndex]; colIndex++;
@@ -89,6 +92,11 @@ namespace tcpClient
                 button_PanelSwitch.Text = "<";
 
             }
+        }
+
+        private void JobItemView_Load(object sender, EventArgs e)
+        {
+          
         }
     }
 
