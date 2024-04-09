@@ -129,6 +129,11 @@ namespace tcpClient_HTTPcheck
                         {
                             ((ClientListView)ctrl).Lock(SignalSourceName);
                         }
+                        else if (ctrl is ClientListView
+                           && ((ClientListView)ctrl).OK)
+                        {
+                            ((ClientListView)ctrl).Release();
+                        }
                     }
                 }
                 else if (item.IndexOf("target=") == 0)
@@ -140,6 +145,12 @@ namespace tcpClient_HTTPcheck
                             && !((ClientListView)ctrl).OK)
                         {
                             ((ClientListView)ctrl).Lock(SignalSourceName);
+                        }
+                        else if (ctrl is ClientListView
+                           && ((ClientListView)ctrl).ClientName.IndexOf(item.Replace("target=", "")) >= 0
+                           && ((ClientListView)ctrl).OK)
+                        {
+                            ((ClientListView)ctrl).Release();
                         }
                     }
                 }

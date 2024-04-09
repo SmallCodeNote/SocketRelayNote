@@ -128,6 +128,10 @@ namespace tcpClient_HTTPcheck
             }
         }
 
+        /// <summary>
+        /// send lock message ex.) Lock\t8
+        /// </summary>
+        /// <param name="Minutes"></param>
         private async void LockClient(int Minutes)
         {
             LockTime = DateTime.Now;
