@@ -14,6 +14,7 @@ using WinFormStringCnvClass;
 using tcpServer;
 using tcpClient;
 using ServerInfoUserControl;
+using SourceInfoUserControl;
 
 namespace SocketReceiverBase
 {
@@ -166,6 +167,27 @@ namespace SocketReceiverBase
             LockReleaseTime = DateTime.Now + new TimeSpan(0, Minutes, 0);
         }
 
+        private void ButtonEnable(Button button, bool enable)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => ButtonEnable(button, enable)));
+            }
+            else
+            {
+                if (enable)
+                {
+                    button.Enabled = true;
+                    button.BackColor = Color.GreenYellow;
+                }
+                else
+                {
+                    button.Enabled = false;
+                    button.BackColor = Color.Transparent;
+                }
+            }
+        }
+
         private void LabelUpdate()
         {
             if (DateTime.Now > LockReleaseTime)
@@ -201,11 +223,13 @@ namespace SocketReceiverBase
         }
 
 
-        private void DeleteServerLisView(int targetIndex)
+        //ServerList Set================================
+
+        private void DeleteServerListView(int targetIndex)
         {
             if (this.InvokeRequired)
             {
-                this.Invoke((Action)(() => DeleteServerLisView(targetIndex)));
+                this.Invoke((Action)(() => DeleteServerListView(targetIndex)));
             }
             else
             {
@@ -213,16 +237,16 @@ namespace SocketReceiverBase
                 {
                     panel_ServerListView.Controls.RemoveAt(targetIndex);
                     UpdateServerListText();
-                    UpdateLayoutServerLisView();
+                    UpdateLayoutServerListView();
                 }
             }
         }
-        private void RefreshServerLisView()
+        private void RefreshServerListView()
         {
 
             if (this.InvokeRequired)
             {
-                this.Invoke((Action)(() => RefreshServerLisView()));
+                this.Invoke((Action)(() => RefreshServerListView()));
             }
             else
             {
@@ -238,7 +262,7 @@ namespace SocketReceiverBase
                 {
                     if (Line == "") continue;
                     var ctrl = new ServerInfo(ctrlIndex, Line);
-                    ctrl.DeleteThis = (Action<int>)((int x) => DeleteServerLisView(x));
+                    ctrl.DeleteThis = (Action<int>)((int x) => DeleteServerListView(x));
                     ctrl.LoadThis = (Action)(() => EnableLoadServerListView());
                     ctrl.Top = PositionTop;
                     PositionTop += ctrl.Height;
@@ -254,32 +278,12 @@ namespace SocketReceiverBase
             ButtonEnable(button_LoadServerListView, true);
         }
 
-        private void ButtonEnable(Button button, bool enable)
-        {
-            if (this.InvokeRequired)
-            {
-                this.Invoke((Action)(() => ButtonEnable(button, enable)));
-            }
-            else
-            {
-                if (enable)
-                {
-                    button.Enabled = true;
-                    button.BackColor = Color.GreenYellow;
-                }
-                else
-                {
-                    button.Enabled = false;
-                    button.BackColor = Color.Transparent;
-                }
-            }
-        }
 
-        private void UpdateLayoutServerLisView()
+        private void UpdateLayoutServerListView()
         {
             if (this.InvokeRequired)
             {
-                this.Invoke((Action)(() => UpdateLayoutServerLisView()));
+                this.Invoke((Action)(() => UpdateLayoutServerListView()));
             }
             else
             {
@@ -311,7 +315,7 @@ namespace SocketReceiverBase
                 if (Line == "" || Line[0] == '#' || Line.Split('\t').Length < 3) continue;
                 ServerInfo serverInfo = new ServerInfo(ctrlIndex, Line); ctrlIndex++;
                 serverInfo.Top = TopPosition;
-                serverInfo.DeleteThis = (Action<int>)((int x) => DeleteServerLisView(x));
+                serverInfo.DeleteThis = (Action<int>)((int x) => DeleteServerListView(x));
                 serverInfo.LoadThis = (Action)(() => EnableLoadServerListView());
 
                 TopPosition += serverInfo.Height;
@@ -322,7 +326,7 @@ namespace SocketReceiverBase
             {
                 ServerInfo serverInfo = new ServerInfo(ctrlIndex, "", "", -1); ctrlIndex++;
                 serverInfo.Top = TopPosition;
-                serverInfo.DeleteThis = (Action<int>)((int x) => DeleteServerLisView(x));
+                serverInfo.DeleteThis = (Action<int>)((int x) => DeleteServerListView(x));
                 serverInfo.LoadThis = (Action)(() => EnableLoadServerListView());
 
                 TopPosition += serverInfo.Height;
@@ -366,6 +370,146 @@ namespace SocketReceiverBase
                 }
             }
         }
+
+
+        //SourceList Set================================
+        private void DeleteSourceListView(int targetIndex)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => DeleteSourceListView(targetIndex)));
+            }
+            else
+            {
+                if (targetIndex < panel_SourceListView.Controls.Count)
+                {
+                    panel_SourceListView.Controls.RemoveAt(targetIndex);
+                    UpdateSourceListText();
+                    UpdateLayoutSourceListView();
+                }
+            }
+        }
+        private void RefreshSourceListView()
+        {
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => RefreshSourceListView()));
+            }
+            else
+            {
+                panel_SourceListView.Controls.Clear();
+                panel_SourceListView.Height = 0;
+
+                string[] Lines = textBox_SourceList.Text.Replace("\r\n", "\n").Trim('\n').Split('\n');
+                int PositionTop = 0;
+                int ctrlIndex = 0;
+
+
+                foreach (var Line in Lines)
+                {
+                    if (Line == "") continue;
+                    var ctrl = new SourceInfo(ctrlIndex, Line);
+                    ctrl.DeleteThis = (Action<int>)((int x) => DeleteSourceListView(x));
+                    ctrl.LoadThis = (Action)(() => EnableLoadSourceListView());
+                    ctrl.Top = PositionTop;
+                    PositionTop += ctrl.Height;
+                    panel_SourceListView.Controls.Add(ctrl);
+
+                    ctrlIndex++;
+                }
+                panel_SourceListView.Height = PositionTop;
+            }
+        }
+        private void EnableLoadSourceListView()
+        {
+            ButtonEnable(button_LoadSourceListView, true);
+        }
+
+
+        private void UpdateLayoutSourceListView()
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => UpdateLayoutSourceListView()));
+            }
+            else
+            {
+                panel_SourceListView.Height = 0;
+                int PositionTop = 0;
+                int ctrlIndex = 0;
+                foreach (SourceInfo ctrl in panel_SourceListView.Controls)
+                {
+                    ctrl.Top = PositionTop;
+                    ctrl.Index = ctrlIndex;
+                    PositionTop += ctrl.Height;
+
+                    ctrlIndex++;
+                }
+                panel_SourceListView.Height = PositionTop;
+            }
+        }
+
+        private void UpdateSourceListView()
+        {
+            string[] Lines = textBox_SourceList.Text.Replace("\r\n", "\n").Trim('\n').Split('\n');
+
+            panel_SourceListView.Controls.Clear();
+
+            int TopPosition = 0;
+            int ctrlIndex = 0;
+            foreach (var Line in Lines)
+            {
+                if (Line == "" || Line[0] == '#' || Line.Split('\t').Length < 3) continue;
+                SourceInfo SourceInfo = new SourceInfo(ctrlIndex, Line); ctrlIndex++;
+                SourceInfo.Top = TopPosition;
+                SourceInfo.DeleteThis = (Action<int>)((int x) => DeleteSourceListView(x));
+                SourceInfo.LoadThis = (Action)(() => EnableLoadSourceListView());
+
+                TopPosition += SourceInfo.Height;
+                panel_SourceListView.Controls.Add(SourceInfo);
+            }
+
+            if (panel_SourceListView.Controls.Count == 0)
+            {
+                SourceInfo SourceInfo = new SourceInfo(ctrlIndex, "", "", ""); ctrlIndex++;
+                SourceInfo.Top = TopPosition;
+                SourceInfo.DeleteThis = (Action<int>)((int x) => DeleteSourceListView(x));
+                SourceInfo.LoadThis = (Action)(() => EnableLoadSourceListView());
+
+                TopPosition += SourceInfo.Height;
+                panel_SourceListView.Controls.Add(SourceInfo);
+            }
+
+            panel_SourceListView.Height = TopPosition;
+        }
+
+        private void UpdateSourceListText()
+        {
+            List<string> Lines = new List<string>();
+
+            foreach (var ctrl in panel_SourceListView.Controls)
+            {
+                Lines.Add(ctrl.ToString());
+            }
+            textBox_SourceList.Text = string.Join("\r\n", Lines.ToArray());
+        }
+
+        private string SourceInfoViewToString()
+        {
+            List<string> Lines = new List<string>();
+            foreach (var ctrl in panel_SourceListView.Controls)
+            {
+                if (ctrl is SourceInfo)
+                {
+                    Lines.Add(((SourceInfo)ctrl).ToString());
+                }
+            }
+            return string.Join("\r\n", Lines.ToArray());
+        }
+
+
+
         //===================
         // Event
         //===================
@@ -388,6 +532,10 @@ namespace SocketReceiverBase
 
             panel_ServerListView.Height = 0;
             UpdateServerListView();
+
+            panel_SourceListView.Height = 0;
+            UpdateSourceListView();
+
 
             tcpClt = new TcpSocketClient();
 
@@ -521,11 +669,11 @@ namespace SocketReceiverBase
 
         private void tabControl_ServerInfo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControl_ServerInfo.SelectedTab == tabPage_View)
+            if (tabControl_ServerInfo.SelectedTab == tabPage_ServerView)
             {
-                UpdateLayoutServerLisView();
+                UpdateLayoutServerListView();
             }
-            else if (tabControl_ServerInfo.SelectedTab == tabPage_List)
+            else if (tabControl_ServerInfo.SelectedTab == tabPage_ServerList)
             {
                 textBox_ServerList.Text = ServerInfoViewToString();
             }
@@ -537,7 +685,7 @@ namespace SocketReceiverBase
 
             ServerInfo ctrl = new ServerInfo(ctrlIndex);
             ctrl.Top = panel_ServerListView.Height;
-            ctrl.DeleteThis = (Action<int>)((int x) => DeleteServerLisView(x));
+            ctrl.DeleteThis = (Action<int>)((int x) => DeleteServerListView(x));
             ctrl.LoadThis = (Action)(() => EnableLoadServerListView());
 
             panel_ServerListView.Controls.Add(ctrl);
@@ -554,5 +702,40 @@ namespace SocketReceiverBase
             }
             ButtonEnable(button_LoadServerListView, false);
         }
+
+        private void tabControl_SourceInfo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl_SourceInfo.SelectedTab == tabPage_SourceView)
+            {
+                UpdateLayoutSourceListView();
+            }
+            else if (tabControl_SourceInfo.SelectedTab == tabPage_SourceList)
+            {
+                textBox_SourceList.Text = SourceInfoViewToString();
+            }
+        }
+
+        private void button_AddSourceList_Click(object sender, EventArgs e)
+        {
+            int ctrlIndex = panel_SourceListView.Controls.Count;
+
+            SourceInfo ctrl = new SourceInfo(ctrlIndex);
+            ctrl.Top = panel_SourceListView.Height;
+            ctrl.DeleteThis = (Action<int>)((int x) => DeleteSourceListView(x));
+            ctrl.LoadThis = (Action)(() => EnableLoadSourceListView());
+
+            panel_SourceListView.Controls.Add(ctrl);
+            panel_SourceListView.Height += ctrl.Height;
+            UpdateSourceListText();
+        }
+
+        private void button_LoadSourceListView_Click(object sender, EventArgs e)
+        {
+            UpdateSourceListText();
+            ButtonEnable(button_LoadSourceListView, false);
+        }
+
+
+
     }
 }

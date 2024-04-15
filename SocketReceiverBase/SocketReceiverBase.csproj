@@ -63,6 +63,12 @@
     <Compile Include="ServerInfo.Designer.cs">
       <DependentUpon>ServerInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="SourceInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SourceInfo.Designer.cs">
+      <DependentUpon>SourceInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="TcpSocketClient.cs" />
     <Compile Include="TcpSocketServer.cs" />
     <Compile Include="WinFormToString.cs" />
@@ -80,6 +86,9 @@
     </Compile>
     <EmbeddedResource Include="ServerInfo.resx">
       <DependentUpon>ServerInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SourceInfo.resx">
+      <DependentUpon>SourceInfo.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

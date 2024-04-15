@@ -10,31 +10,31 @@ using System.Windows.Forms;
 
 using tcpClient;
 
-namespace ServerInfoUserControl
+namespace SourceInfoUserControl
 {
-    public partial class ServerInfo : UserControl
+    public partial class SourceInfo : UserControl
     {
         //===================
         // Constructor
         //===================
-        public ServerInfo(int Index, string ServerName, string Address, int Port)
+        public SourceInfo(int Index, string SourceName, string SaveDirPath, string ModelPath)
         {
             InitializeComponent();
             tcpClt = new TcpSocketClient();
-            ServerInfoUpdate(Index, ServerName, Address, Port);
+            SourceInfoUpdate(Index, SourceName, SaveDirPath, ModelPath);
         }
 
-        public ServerInfo(int Index, string Line = "\t\t")
+        public SourceInfo(int Index, string Line = "\t\t")
         {
             InitializeComponent();
             tcpClt = new TcpSocketClient();
 
             string[] cols = Line.Split('\t');
-            string ServerName = cols[0];
-            string Address = cols[1];
-            int.TryParse(cols[2],out int Port);
+            string SourceName = cols[0];
+            string SaveDirPath = cols[1];
+            string ModelPath = cols[2];
 
-            ServerInfoUpdate(Index, ServerName, Address, Port);
+            SourceInfoUpdate(Index, SourceName, SaveDirPath, ModelPath);
         }
 
         //===================
@@ -47,56 +47,54 @@ namespace ServerInfoUserControl
         public Action<int> DeleteThis;
         public Action LoadThis;
 
-        public string Address
+        public string SaveDirPath
         {
-            get { return textBox_Address.Text; }
+            get { return textBox_SaveDirPath.Text; }
             set
             {
                 if (this.InvokeRequired)
                 {
-                    this.Invoke((Action)(() => Address = value));
+                    this.Invoke((Action)(() => SaveDirPath = value));
                 }
                 else
                 {
-                    textBox_Address.Text = value;
+                    textBox_SaveDirPath.Text = value;
                 }
             }
         }
 
-        public int Port
+        public string ModelPath
         {
             get
             {
-                int b = -1;
-                if (!int.TryParse(textBox_Port.Text, out b)) { b = -1; };
-                return b;
+                return textBox_ModelPath.Text;
             }
             set
             {
                 if (this.InvokeRequired)
                 {
-                    this.Invoke((Action)(() => Port = value));
+                    this.Invoke((Action)(() => ModelPath = value));
                 }
                 else
                 {
-                    textBox_Port.Text = value.ToString();
+                    textBox_ModelPath.Text = value;
                 }
             }
         }
 
-        public string ServerName
+        public string SourceName
         {
-            get { return textBox_ServerName.Text; }
+            get { return textBox_SourceName.Text; }
             set
             {
                 if (this.InvokeRequired)
                 {
-                    this.Invoke((Action)(() => ServerName = value));
+                    this.Invoke((Action)(() => SourceName = value));
                 }
                 else
                 {
-                    groupBox_ServerInfo.Text = value;
-                    textBox_ServerName.Text = value;
+                    groupBox_SourceInfo.Text = value;
+                    textBox_SourceName.Text = value;
                 }
             }
         }
@@ -126,39 +124,31 @@ namespace ServerInfoUserControl
         // Member function
         //===================
 
-        public void ServerInfoUpdate(int Index, string ServerName, string Address, int Port)
+        public void SourceInfoUpdate(int Index, string SourceName, string SaveDirPath, string ModelPath)
         {
-            this.Height = 70;
+            this.Height = 80;
 
-            this.ServerName = ServerName;
-            this.Address = Address;
-            this.Port = Port;
+            this.SourceName = SourceName;
+            this.SaveDirPath = SaveDirPath;
+            this.ModelPath = ModelPath;
             this.Index = Index;
 
         }
 
         public override string ToString()
         {
-            return ServerName + "\t" + Address + "\t" + Port.ToString();
+            return SourceName + "\t" + SaveDirPath + "\t" + ModelPath.ToString();
         }
 
-        public async void SendMessage(string request)
-        {
-            if (Port >= 1024)
-            {
-                LatestAnswer = "Connecting...";
-                LatestAnswer = await tcpClt.StartClient(Address, Port, request, "UTF8");
-                if (LatestAnswer == "") { TimeOutCount++; } else { TimeOutCount = 0; }
-            }
-        }
+
 
         //===================
         // Event
         //===================
-        private void ServerInfo_Load(object sender, EventArgs e)
+        private void SourceInfo_Load(object sender, EventArgs e)
         {
-            this.groupBox_ServerInfo.Height = 68;
-            this.panel_Frame.Height = 45;
+            this.groupBox_SourceInfo.Height = 78;
+            this.panel_Frame.Height = 55;
             this.panel.Top = 0;
         }
 
@@ -166,7 +156,7 @@ namespace ServerInfoUserControl
         {
             if (button_Shift.Text == ">")
             {
-                this.panel.Top = -45;
+                this.panel.Top = -55;
                 button_Shift.Text = "<";
             }
             else
@@ -181,20 +171,20 @@ namespace ServerInfoUserControl
             DeleteThis(Index);
         }
 
-        private void textBox_Address_TextChanged(object sender, EventArgs e)
+        private void textBox_SaveDirPath_TextChanged(object sender, EventArgs e)
         {
             if (LoadThis != null) LoadThis();
         }
 
-        private void textBox_Port_TextChanged(object sender, EventArgs e)
+        private void textBox_ModelPath_TextChanged(object sender, EventArgs e)
         {
             if (LoadThis != null) LoadThis();
         }
 
-        private void textBox_ServerName_TextChanged(object sender, EventArgs e)
+        private void textBox_SourceName_TextChanged(object sender, EventArgs e)
         {
             if (LoadThis != null) LoadThis();
-            groupBox_ServerInfo.Text = textBox_ServerName.Text;
+            groupBox_SourceInfo.Text = textBox_SourceName.Text;
         }
     }
 }
