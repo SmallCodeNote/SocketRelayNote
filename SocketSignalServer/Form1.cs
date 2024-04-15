@@ -61,7 +61,6 @@ namespace SocketSignalServer
         Bitmap icon_voiceON;
         Bitmap icon_voiceOFF;
 
-
         TcpSocketServer tcpSrv;
         int portNumber;
         List<ClientData> clientList;
@@ -251,6 +250,8 @@ namespace SocketSignalServer
                         colQuery = col.Query().ToList();
                     }
 
+                    tcpSrv.ResponceMessage = "DatabaseAlive";
+
                     dataset = colQuery.OrderByDescending(x => x.connectTime).ToList();
 
                     foreach (MessageItemView messageItemView in panel_StatusList.Controls)
@@ -269,6 +270,7 @@ namespace SocketSignalServer
                 {
                     if (retryCount == _retryCountMax - 1)
                     {
+                        tcpSrv.ResponceMessage = "DatabaseLocked";
                         Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
                         Debug.WriteLine(ex.ToString());
                         break;
@@ -386,20 +388,24 @@ namespace SocketSignalServer
                             {
                                 Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
 
-
                                 ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
+
                                 if (col.FindById(key) == null)
                                 {
                                     col.Insert(key, socketMessage);
                                 }
+
                             }
+
+                            tcpSrv.ResponceMessage = "DatabaseAlive";
                             break;
                         }
                         catch (Exception ex)
                         {
                             if (retryCount == _retryCountMax - 1)
                             {
-                                Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
+                                tcpSrv.ResponceMessage = "DatabaseLocked";
+                                Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
                                 Debug.WriteLine(ex.ToString());
                                 break;
                             }
@@ -429,10 +435,13 @@ namespace SocketSignalServer
                         Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
 
                         ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
+
                         dataset = col.Query()
                                 .Where(x => !x.check)
                                 .OrderByDescending(x => x.connectTime).ToArray();
+
                     }
+                    tcpSrv.ResponceMessage = "DatabaseAlive";
 
                     foreach (var target in clientList)
                     {
@@ -443,13 +452,13 @@ namespace SocketSignalServer
                             noticeTransmitter.AddNotice(target, latestNoticeRecord);
                         }
                     }
-
                     break;
                 }
                 catch (Exception ex)
                 {
                     if (retryCount == _retryCountMax - 1)
                     {
+                        tcpSrv.ResponceMessage = "DatabaseLocked";
                         Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
                         Debug.WriteLine(ex.ToString());
                         break;
@@ -479,13 +488,16 @@ namespace SocketSignalServer
                         Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
 
                         var col = litedb.GetCollection<SocketMessage>("table_Message");
+
                         dataset0 = col.Query()
                                 .Where(x => x.status != "Timeout")
                                 .OrderByDescending(x => x.connectTime).ToArray();
                         dataset1 = col.Query()
                             .Where(x => x.status == "Timeout" && !x.check)
                             .OrderByDescending(x => x.connectTime).ToArray();
+
                     }
+                    tcpSrv.ResponceMessage = "DatabaseAlive";
 
                     foreach (var clientTarget in clientList)
                     {
@@ -520,6 +532,7 @@ namespace SocketSignalServer
                 {
                     if (retryCount == _retryCountMax - 1)
                     {
+                        tcpSrv.ResponceMessage = "DatabaseLocked";
                         Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
                         Debug.WriteLine(ex.ToString());
                         break;
@@ -541,13 +554,14 @@ namespace SocketSignalServer
                 WinFormStringCnv.setControlFromString(this, File.ReadAllText(paramFilename));
             }
 
+            RefreshDuplexSystemView();
+
             DebugOutDirPathReset(textBox_DebugOutDirPath.Text);
             checkBox_voiceOffSwitch_CheckedChanged();
 
             ClientListInitialize();
             AddressListInitialize();
             SchedulerInitialize();
-            RefreshDuplexSystemView();
 
             timer_DebugFilepathUpdate.Start();
             timer_DuplexActiveListUpdate.Start();
@@ -621,7 +635,7 @@ namespace SocketSignalServer
         }
 
 
-        private void timer_CheckQueue_Tick(object sender, EventArgs e)
+        private async void timer_CheckQueue_Tick(object sender, EventArgs e)
         {
             timer_CheckQueue.Stop();
 
@@ -629,8 +643,8 @@ namespace SocketSignalServer
 
             if ((tcpSrv.LastReceiveTime - LastCheckTime).TotalSeconds > 0 && tcpSrv.ReceivedSocketQueue.Count > 0)
             {
-                addNewDataFromServerQueueToDataBase();
-                checkNoticeDataFromDataBase_and_AddNotice();
+                await Task.Run(() => addNewDataFromServerQueueToDataBase());
+                await Task.Run(() => checkNoticeDataFromDataBase_and_AddNotice());
 
                 LastCheckTime = DateTime.Now;
             }
@@ -716,6 +730,7 @@ namespace SocketSignalServer
                         var col = litedb.GetCollection<SocketMessage>("table_Message");
                         query = col.Query().OrderBy(x => x.connectTime, 0).ToList().Take(50).ToList();
                     }
+                    tcpSrv.ResponceMessage = "DatabaseAlive";
 
                     if (query.Count() > 0)
                     {
@@ -735,13 +750,16 @@ namespace SocketSignalServer
                 {
                     if (retryCount == _retryCountMax - 1)
                     {
+                        tcpSrv.ResponceMessage = "DatabaseLocked";
                         Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
                         Debug.WriteLine(ex.ToString());
+
                         break;
                     }
                     Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
                 }
             }
+
         }
 
         private void button_LogReload_Click(object sender, EventArgs e)
@@ -783,9 +801,9 @@ namespace SocketSignalServer
             _LiteDBconnectionString.Filename = dbFilename;
             _LiteDBconnectionString.Connection = ConnectionType.Shared;
 
-            try
+            using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
             {
-                using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+                try
                 {
                     Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name);
 
@@ -795,12 +813,16 @@ namespace SocketSignalServer
                         ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
                         col.Insert(socketMessage.Key(), socketMessage);
                     }
+
+                }
+                catch (Exception ex)
+                {
+                    tcpSrv.ResponceMessage = "DatabaseLocked";
+                    Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
+
                 }
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " EX:" + ex.ToString());
-            }
+            tcpSrv.ResponceMessage = "DatabaseAlive";
         }
 
         private void button_BreakupDatabasefile_Click(object sender, EventArgs e)
@@ -916,9 +938,9 @@ namespace SocketSignalServer
             textBox_DebugOutDirPath.Text = "{ExecutablePath}";
         }
 
-        private void timer_DebugFilepathUpdate_Tick(object sender, EventArgs e)
+        private async void timer_DebugFilepathUpdate_Tick(object sender, EventArgs e)
         {
-            DebugOutFilenameReset(textBox_DebugOutDirPath.Text);
+            await Task.Run(() => DebugOutFilenameReset(textBox_DebugOutDirPath.Text));
         }
 
         private void toolStripDropDownButton_VoiceSwitch_Click(object sender, EventArgs e)
@@ -933,11 +955,11 @@ namespace SocketSignalServer
             }
         }
 
-        private void timer_checkTimeout_Tick(object sender, EventArgs e)
+        private async void timer_checkTimeout_Tick(object sender, EventArgs e)
         {
             timer_checkTimeout.Stop();
 
-            checkTimeoutFromDataBase_and_AddNotice();
+            await Task.Run(() => checkTimeoutFromDataBase_and_AddNotice());
 
             if (button_Start.Text != "ServerStart")
             {
@@ -993,39 +1015,42 @@ namespace SocketSignalServer
             ButtonEnable(button_LoadDuplexSystemView, false);
         }
 
-        private void timer_DuplexActiveListUpdate_Tick(object sender, EventArgs e)
+        private async void timer_DuplexActiveListUpdate_Tick(object sender, EventArgs e)
         {
-            List<Task> taskList = new List<Task>();
-
-            foreach (DuplexActiveView ctrl in panel_DuplexSystemView.Controls)
+            await Task.Run(() =>
             {
-                ctrl.askAlive();
-            }
+                List<Task> taskList = new List<Task>();
 
-            bool activeAlive = false;
+                foreach (DuplexActiveView ctrl in panel_DuplexSystemView.Controls)
+                {
+                    ctrl.askAlive();
+                }
 
-            foreach (DuplexActiveView ctrl in panel_DuplexSystemView.Controls)
-            {
-                activeAlive = activeAlive || ctrl.Alive;
-            }
+                bool activeAlive = false;
 
-            noticeTransmitter.isActive = !activeAlive;
+                foreach (DuplexActiveView ctrl in panel_DuplexSystemView.Controls)
+                {
+                    activeAlive = activeAlive || ctrl.Alive;
+                }
 
-            if (activeAlive)
-            {
-                toolStripStatusLabel2.Text = "StandbyMode(ActiveAlive)";
-                toolStripDropDownButton_Class.Image = Properties.Resources.Standby048;
-            }
-            else if(!activeAlive && panel_DuplexSystemView.Controls.Count>0)
-            {
-                toolStripStatusLabel2.Text = "ActiveMode(ActiveDown)";
-                toolStripDropDownButton_Class.Image = Properties.Resources.Active048;
-            }
-            else
-            {
-                toolStripStatusLabel2.Text = "ActiveMode";
-                toolStripDropDownButton_Class.Image = Properties.Resources.Active048;
-            }
+                noticeTransmitter.isActive = !activeAlive;
+
+                if (activeAlive)
+                {
+                    toolStripStatusLabel2.Text = "StandbyMode(ActiveAlive)";
+                    toolStripDropDownButton_Class.Image = Properties.Resources.Standby048;
+                }
+                else if (!activeAlive && panel_DuplexSystemView.Controls.Count > 0)
+                {
+                    toolStripStatusLabel2.Text = "ActiveMode(ActiveDown)";
+                    toolStripDropDownButton_Class.Image = Properties.Resources.Active048;
+                }
+                else
+                {
+                    toolStripStatusLabel2.Text = "ActiveMode";
+                    toolStripDropDownButton_Class.Image = Properties.Resources.Active048;
+                }
+            });
         }
 
         private void textBox_DuplexActiveListCheckInterval_TextChanged(object sender, EventArgs e)

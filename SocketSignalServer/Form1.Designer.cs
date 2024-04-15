@@ -106,13 +106,13 @@
             this.textBox_queueList = new System.Windows.Forms.TextBox();
             this.timer_CheckQueue = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripDropDownButton_Class = new System.Windows.Forms.ToolStripDropDownButton();
+            this.toolStripDropDownButton_VoiceSwitch = new System.Windows.Forms.ToolStripDropDownButton();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer_DebugFilepathUpdate = new System.Windows.Forms.Timer(this.components);
             this.timer_checkTimeout = new System.Windows.Forms.Timer(this.components);
             this.timer_DuplexActiveListUpdate = new System.Windows.Forms.Timer(this.components);
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripDropDownButton_VoiceSwitch = new System.Windows.Forms.ToolStripDropDownButton();
-            this.toolStripDropDownButton_Class = new System.Windows.Forms.ToolStripDropDownButton();
             this.panel_StatusListFrame.SuspendLayout();
             this.tabControl_Top.SuspendLayout();
             this.tabPage_Status.SuspendLayout();
@@ -253,7 +253,7 @@
             this.tabControl_DuplexSystemView.Multiline = true;
             this.tabControl_DuplexSystemView.Name = "tabControl_DuplexSystemView";
             this.tabControl_DuplexSystemView.SelectedIndex = 0;
-            this.tabControl_DuplexSystemView.Size = new System.Drawing.Size(312, 119);
+            this.tabControl_DuplexSystemView.Size = new System.Drawing.Size(390, 119);
             this.tabControl_DuplexSystemView.TabIndex = 12;
             this.tabControl_DuplexSystemView.SelectedIndexChanged += new System.EventHandler(this.tabControl_DuplexSystemView_SelectedIndexChanged);
             // 
@@ -263,7 +263,7 @@
             this.tabPage_DuplexSystemView.Location = new System.Drawing.Point(4, 4);
             this.tabPage_DuplexSystemView.Name = "tabPage_DuplexSystemView";
             this.tabPage_DuplexSystemView.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_DuplexSystemView.Size = new System.Drawing.Size(286, 111);
+            this.tabPage_DuplexSystemView.Size = new System.Drawing.Size(364, 111);
             this.tabPage_DuplexSystemView.TabIndex = 0;
             this.tabPage_DuplexSystemView.Text = "View";
             this.tabPage_DuplexSystemView.UseVisualStyleBackColor = true;
@@ -275,14 +275,14 @@
             this.panel_DuplexSystemViewFrame.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel_DuplexSystemViewFrame.Location = new System.Drawing.Point(3, 3);
             this.panel_DuplexSystemViewFrame.Name = "panel_DuplexSystemViewFrame";
-            this.panel_DuplexSystemViewFrame.Size = new System.Drawing.Size(280, 105);
+            this.panel_DuplexSystemViewFrame.Size = new System.Drawing.Size(358, 105);
             this.panel_DuplexSystemViewFrame.TabIndex = 0;
             // 
             // panel_DuplexSystemView
             // 
             this.panel_DuplexSystemView.Location = new System.Drawing.Point(0, 0);
             this.panel_DuplexSystemView.Name = "panel_DuplexSystemView";
-            this.panel_DuplexSystemView.Size = new System.Drawing.Size(260, 55);
+            this.panel_DuplexSystemView.Size = new System.Drawing.Size(340, 55);
             this.panel_DuplexSystemView.TabIndex = 0;
             // 
             // tabPage_DuplexSystemText
@@ -909,11 +909,39 @@
             this.statusStrip1.TabIndex = 5;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // toolStripDropDownButton_Class
+            // 
+            this.toolStripDropDownButton_Class.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripDropDownButton_Class.Image = global::SocketSignalServer.Properties.Resources.Active048;
+            this.toolStripDropDownButton_Class.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton_Class.Name = "toolStripDropDownButton_Class";
+            this.toolStripDropDownButton_Class.ShowDropDownArrow = false;
+            this.toolStripDropDownButton_Class.Size = new System.Drawing.Size(24, 24);
+            this.toolStripDropDownButton_Class.Text = "toolStripDropDownButton1";
+            // 
+            // toolStripDropDownButton_VoiceSwitch
+            // 
+            this.toolStripDropDownButton_VoiceSwitch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripDropDownButton_VoiceSwitch.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripDropDownButton_VoiceSwitch.Image = global::SocketSignalServer.Properties.Resources.VoiceON048;
+            this.toolStripDropDownButton_VoiceSwitch.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton_VoiceSwitch.Name = "toolStripDropDownButton_VoiceSwitch";
+            this.toolStripDropDownButton_VoiceSwitch.ShowDropDownArrow = false;
+            this.toolStripDropDownButton_VoiceSwitch.Size = new System.Drawing.Size(24, 24);
+            this.toolStripDropDownButton_VoiceSwitch.Text = "toolStripDropDownButton1";
+            this.toolStripDropDownButton_VoiceSwitch.Click += new System.EventHandler(this.toolStripDropDownButton_VoiceSwitch_Click);
+            // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(16, 21);
             this.toolStripStatusLabel1.Text = "...";
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(16, 21);
+            this.toolStripStatusLabel2.Text = "...";
             // 
             // timer_DebugFilepathUpdate
             // 
@@ -929,34 +957,6 @@
             // 
             this.timer_DuplexActiveListUpdate.Interval = 10000;
             this.timer_DuplexActiveListUpdate.Tick += new System.EventHandler(this.timer_DuplexActiveListUpdate_Tick);
-            // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(16, 21);
-            this.toolStripStatusLabel2.Text = "...";
-            // 
-            // toolStripDropDownButton_VoiceSwitch
-            // 
-            this.toolStripDropDownButton_VoiceSwitch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripDropDownButton_VoiceSwitch.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripDropDownButton_VoiceSwitch.Image = global::SocketSignalServer.Properties.Resources.VoiceON048;
-            this.toolStripDropDownButton_VoiceSwitch.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton_VoiceSwitch.Name = "toolStripDropDownButton_VoiceSwitch";
-            this.toolStripDropDownButton_VoiceSwitch.ShowDropDownArrow = false;
-            this.toolStripDropDownButton_VoiceSwitch.Size = new System.Drawing.Size(24, 24);
-            this.toolStripDropDownButton_VoiceSwitch.Text = "toolStripDropDownButton1";
-            this.toolStripDropDownButton_VoiceSwitch.Click += new System.EventHandler(this.toolStripDropDownButton_VoiceSwitch_Click);
-            // 
-            // toolStripDropDownButton_Class
-            // 
-            this.toolStripDropDownButton_Class.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripDropDownButton_Class.Image = global::SocketSignalServer.Properties.Resources.Active048;
-            this.toolStripDropDownButton_Class.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton_Class.Name = "toolStripDropDownButton_Class";
-            this.toolStripDropDownButton_Class.ShowDropDownArrow = false;
-            this.toolStripDropDownButton_Class.Size = new System.Drawing.Size(24, 24);
-            this.toolStripDropDownButton_Class.Text = "toolStripDropDownButton1";
             // 
             // Form1
             // 

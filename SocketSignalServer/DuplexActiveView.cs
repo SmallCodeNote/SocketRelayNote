@@ -55,6 +55,16 @@ namespace SocketSignalServer
         public bool Alive { get { return button_Status.BackColor != Color.Red; } set { if (value) { button_Status.BackColor = Color.YellowGreen; } else { button_Status.BackColor = Color.Red; } } }
         public int Index;
 
+        public string LastMessage
+        {
+            set
+            {
+                if (this.InvokeRequired) { this.Invoke((Action)(() => LastMessage = value)); }
+                else { label_LastMessage.Text = value; }
+            }
+            get { return label_LastMessage.Text; }
+        }
+
         public Action<int> DeleteThis;
         public Action LoadThis;
 
@@ -79,7 +89,7 @@ namespace SocketSignalServer
         {
             try
             {
-                LoadThis();
+                if(LoadThis!=null) LoadThis();
             }
             catch
             {
@@ -90,7 +100,7 @@ namespace SocketSignalServer
         {
             try
             {
-                LoadThis();
+                if (LoadThis != null) LoadThis();
             }
             catch
             {
@@ -110,8 +120,10 @@ namespace SocketSignalServer
         private async void _askAlive()
         {
             string result = await tcpClient.StartClient(Address, Port, "askAlive", "UTF8");
-            if (result == "") { Alive = false; } else { Alive = true; }
+            LastMessage = result;
+            if (result == "" || result.IndexOf("DatabaseLocked") >= 0) { Alive = false; } else { Alive = true; }
             _askNow = false;
+
         }
 
     }

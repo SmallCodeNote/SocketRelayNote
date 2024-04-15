@@ -92,24 +92,51 @@ namespace SocketSignalServer
                             var backupQueryList = resultQueryList.Where(x => x.connectTime < fileTime1 && x.connectTime >= fileTime0);
                             try
                             {
-                                using (LiteDatabase litedbBackup = new LiteDatabase(backupFilePath))
+                                for (int retryCount2 = 0; retryCount2 < _retryCountMax; retryCount2++)
                                 {
-                                    Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
-
-                                    var colbk = litedbBackup.GetCollection<SocketMessage>(TableName);
-                                    foreach (SocketMessage skm in backupQueryList)
+                                    using (LiteDatabase litedbBackup = new LiteDatabase(backupFilePath))
                                     {
-                                        if (colbk.FindById(skm.Key()) == null)
+                                        Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
+
+                                        var colbk = litedbBackup.GetCollection<SocketMessage>(TableName);
+
+                                        if (!litedb.BeginTrans())
                                         {
-                                            colbk.Insert(skm.Key(), skm);
+                                            Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
+                                            continue;
                                         }
-                                        col.Delete(skm.Key());
+
+                                        try
+                                        {
+                                            foreach (SocketMessage skm in backupQueryList)
+                                            {
+                                                if (colbk.FindById(skm.Key()) == null)
+                                                {
+                                                    colbk.Insert(skm.Key(), skm);
+                                                }
+                                                col.Delete(skm.Key());
+                                            }
+
+                                            if (!litedb.Commit())
+                                            {
+                                                litedb.Rollback();
+                                                Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
+                                                continue;
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            litedb.Rollback();
+                                            Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " " + ex.ToString());
+                                            Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
+                                        }
                                     }
                                 }
                             }
                             catch (Exception ex)
                             {
                                 Debug.WriteLine(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " " + ex.ToString());
+                                Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
                             }
 
                             fileTime0 = fileTime1;

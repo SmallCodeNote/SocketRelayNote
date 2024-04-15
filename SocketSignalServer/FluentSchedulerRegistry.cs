@@ -178,38 +178,70 @@ namespace SocketSignalServer
                         using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
                         {
                             Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
-
                             ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
+
                             dataset =
                                    col.Query().Where(x => x.status == targetStatusName && !x.check)
                                               .OrderByDescending(x => x.connectTime).ToArray();
                             datasetOnce = col.Query().Where(x => x.status == targetStatusName && !x.check && x.checkStyle == "Once").ToArray();
+
                         }
 
                         foreach (var targetClient in clientList)
                         {
                             //get Latest unchecked message 
                             var latestTargetClientRecord_haveTargetStatusName = dataset.Where(x => x.clientName == targetClient.clientName).FirstOrDefault();
-                            
+
                             if (latestTargetClientRecord_haveTargetStatusName != null)
                             {
                                 noticeTransmitter.AddNotice(targetClient, latestTargetClientRecord_haveTargetStatusName);
                             }
-                            
+
                             //style==Once Message check update
                             records.AddRange(datasetOnce.Where(x => x.clientName == targetClient.clientName).ToList());
                         }
 
-                        using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+                        for (int retryCount2 = 0; retryCount2 < _retryCountMax; retryCount2++)
                         {
-                            Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
-
-                            ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
-
-                            foreach (var record in records)
+                            try
                             {
-                                record.check = true;
-                                col.Update(record.Key(), record);
+                                using (LiteDatabase litedb = new LiteDatabase(_LiteDBconnectionString))
+                                {
+                                    Debug.WriteLine("OpenLiteDB\t" + GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: " + retryCount.ToString());
+
+                                    ILiteCollection<SocketMessage> col = litedb.GetCollection<SocketMessage>("table_Message");
+
+                                    if (!litedb.BeginTrans())
+                                    {
+                                        Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
+                                        continue;
+                                    }
+
+                                    foreach (var record in records)
+                                    {
+                                        record.check = true;
+                                        col.Update(record.Key(), record);
+                                    }
+
+                                    if (!litedb.Commit())
+                                    {
+                                        litedb.Rollback();
+                                        Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
+                                        continue;
+                                    }
+
+                                    break;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                if (retryCount2 == _retryCountMax - 1)
+                                {
+                                    Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " retry: reachMAX " + retryCount.ToString());
+                                    Debug.WriteLine(ex.ToString());
+                                    break;
+                                }
+                                Thread.Sleep((int)(_retryWait * (random.NextDouble() + 0.5)));
                             }
                         }
 
