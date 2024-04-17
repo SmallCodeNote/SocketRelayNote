@@ -17,24 +17,30 @@ namespace SourceInfoUserControl
         //===================
         // Constructor
         //===================
-        public SourceInfo(int Index, string SourceName, string SaveDirPath, string ModelPath)
+        public SourceInfo(int Index, string SourceName, string SaveDirPath, string ModelPath, string LastCheckTimeString = "")
         {
             InitializeComponent();
             tcpClt = new TcpSocketClient();
             SourceInfoUpdate(Index, SourceName, SaveDirPath, ModelPath);
+            if (LastCheckTimeString == "") { LastCheckTime = DateTime.Now.AddHours(-1); }
+            else if (DateTime.TryParse(LastCheckTimeString, out DateTime dateTime)) { LastCheckTime = dateTime; }
+
         }
 
-        public SourceInfo(int Index, string Line = "\t\t")
+        public SourceInfo(int Index, string Line = "\t\t\t")
         {
             InitializeComponent();
             tcpClt = new TcpSocketClient();
 
             string[] cols = Line.Split('\t');
-            string SourceName = cols[0];
-            string SaveDirPath = cols[1];
-            string ModelPath = cols[2];
+            string SourceName = cols.Length > 0 ? cols[0] : "";
+            string SaveDirPath = cols.Length > 1 ? cols[1] : "";
+            string ModelPath = cols.Length > 2 ? cols[2] : "";
+            string LastCheckTimeString = cols.Length > 3 ? cols[3] : "";
 
-            SourceInfoUpdate(Index, SourceName, SaveDirPath, ModelPath);
+            SourceInfoUpdate(Index, SourceName, SaveDirPath, ModelPath, LastCheckTimeString);
+
+            if(LastCheckTimeString =="") LastCheckTime = DateTime.Now.AddHours(-1);
         }
 
         //===================
@@ -46,6 +52,13 @@ namespace SourceInfoUserControl
 
         public Action<int> DeleteThis;
         public Action LoadThis;
+
+        private DateTime _LastCheckTime;
+        public DateTime LastCheckTime
+        {
+            get { return _LastCheckTime; }
+            set { _LastCheckTime = value; textBox_LastCheckTime.Text = value.ToString("yyyy/MM/dd HH:mm:ss"); }
+        }
 
         public string SaveDirPath
         {
@@ -124,7 +137,7 @@ namespace SourceInfoUserControl
         // Member function
         //===================
 
-        public void SourceInfoUpdate(int Index, string SourceName, string SaveDirPath, string ModelPath)
+        public void SourceInfoUpdate(int Index, string SourceName, string SaveDirPath, string ModelPath, string LastCheckTimeString = "")
         {
             this.Height = 80;
 
@@ -133,14 +146,14 @@ namespace SourceInfoUserControl
             this.ModelPath = ModelPath;
             this.Index = Index;
 
+            if (DateTime.TryParse(LastCheckTimeString, out DateTime datetime)) { this.LastCheckTime = datetime; }
+
         }
 
         public override string ToString()
         {
-            return SourceName + "\t" + SaveDirPath + "\t" + ModelPath.ToString();
+            return SourceName + "\t" + SaveDirPath + "\t" + ModelPath.ToString() + "\t" + LastCheckTime.ToString("yyyy/MM/dd HH:mm:ss");
         }
-
-
 
         //===================
         // Event
@@ -185,6 +198,14 @@ namespace SourceInfoUserControl
         {
             if (LoadThis != null) LoadThis();
             groupBox_SourceInfo.Text = textBox_SourceName.Text;
+        }
+
+        private void textBox_LastCheckTime_TextChanged(object sender, EventArgs e)
+        {
+            if (DateTime.TryParse(textBox_LastCheckTime.Text, out DateTime dateTime))
+            {
+                _LastCheckTime = dateTime;
+            }
         }
     }
 }

@@ -93,6 +93,7 @@
             this.tabPage_SourceList = new System.Windows.Forms.TabPage();
             this.label16 = new System.Windows.Forms.Label();
             this.textBox_SourceList = new System.Windows.Forms.TextBox();
+            this.timer_FileCheck = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -728,6 +729,11 @@
             this.textBox_SourceList.TabIndex = 0;
             this.textBox_SourceList.WordWrap = false;
             // 
+            // timer_FileCheck
+            // 
+            this.timer_FileCheck.Interval = 10000;
+            this.timer_FileCheck.Tick += new System.EventHandler(this.timer_FileCheck_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -833,6 +839,7 @@
         private System.Windows.Forms.TabPage tabPage_SourceList;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox textBox_SourceList;
+        private System.Windows.Forms.Timer timer_FileCheck;
     }
 }
 

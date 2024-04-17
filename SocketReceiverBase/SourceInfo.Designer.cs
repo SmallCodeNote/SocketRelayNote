@@ -40,7 +40,9 @@
             this.button_Shift = new System.Windows.Forms.Button();
             this.panel_Frame = new System.Windows.Forms.Panel();
             this.panel = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.textBox_LastCheckTime = new System.Windows.Forms.TextBox();
             this.textBox_SourceName = new System.Windows.Forms.TextBox();
             this.groupBox_SourceInfo.SuspendLayout();
             this.panel_Frame.SuspendLayout();
@@ -154,8 +156,10 @@
             // panel
             // 
             this.panel.Controls.Add(this.label2);
+            this.panel.Controls.Add(this.label3);
             this.panel.Controls.Add(this.label4);
             this.panel.Controls.Add(this.label1);
+            this.panel.Controls.Add(this.textBox_LastCheckTime);
             this.panel.Controls.Add(this.textBox_SourceName);
             this.panel.Controls.Add(this.textBox_SaveDirPath);
             this.panel.Controls.Add(this.textBox_ModelPath);
@@ -163,6 +167,15 @@
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(335, 107);
             this.panel.TabIndex = 0;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(8, 80);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(84, 12);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "LastCheckTime";
             // 
             // label4
             // 
@@ -172,6 +185,14 @@
             this.label4.Size = new System.Drawing.Size(34, 12);
             this.label4.TabIndex = 0;
             this.label4.Text = "Name";
+            // 
+            // textBox_LastCheckTime
+            // 
+            this.textBox_LastCheckTime.Location = new System.Drawing.Point(98, 80);
+            this.textBox_LastCheckTime.Name = "textBox_LastCheckTime";
+            this.textBox_LastCheckTime.Size = new System.Drawing.Size(152, 19);
+            this.textBox_LastCheckTime.TabIndex = 2;
+            this.textBox_LastCheckTime.TextChanged += new System.EventHandler(this.textBox_LastCheckTime_TextChanged);
             // 
             // textBox_SourceName
             // 
@@ -213,5 +234,7 @@
         private System.Windows.Forms.Button button_Shift;
         private System.Windows.Forms.Label label_LatestAnswerTime;
         private System.Windows.Forms.Button button_DeleteThis;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBox_LastCheckTime;
     }
 }

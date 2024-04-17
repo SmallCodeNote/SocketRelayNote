@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PathSearchClass
@@ -132,12 +133,29 @@ namespace PathSearchClass
             return newerFiles.ToArray();
         }
 
-        public static string CreateDateDir(string directoryPath, int daysOffset = 0)
+        public static string CreateDateDir(string directoryPath, DateTime specifiedTime, int daysOffset = 0)
         {
             try
             {
-                DateTime n = DateTime.Now.AddDays(-daysOffset);
+                DateTime n = specifiedTime.AddDays(-daysOffset);
                 string targetPath = Path.Combine(directoryPath, n.ToString("yyyy"), n.ToString("yyyyMM"), n.ToString("yyyyMMdd"));
+                if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
+                return targetPath;
+            }
+            catch { return ""; }
+        }
+
+        public static string CreateDateDir(string directoryPath, int daysOffset = 0)
+        {
+            return CreateDateDir(directoryPath, DateTime.Now, daysOffset);
+        }
+
+        public static string CreateMonthDir(string directoryPath, DateTime specifiedTime, int monthsOffset = 0)
+        {
+            try
+            {
+                DateTime n = specifiedTime.AddMonths((int)(-monthsOffset));
+                string targetPath = Path.Combine(directoryPath, n.ToString("yyyy"), n.ToString("yyyyMM"));
                 if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
                 return targetPath;
             }
@@ -146,10 +164,15 @@ namespace PathSearchClass
 
         public static string CreateMonthDir(string directoryPath, int monthsOffset = 0)
         {
+            return CreateMonthDir(directoryPath, DateTime.Now, monthsOffset);
+        }
+
+        public static string CreateYearDir(string directoryPath, DateTime specifiedTime, int yearsOffset = 0)
+        {
             try
             {
-                DateTime n = DateTime.Now.AddMonths((int)(-monthsOffset));
-                string targetPath = Path.Combine(directoryPath, n.ToString("yyyy"), n.ToString("yyyyMM"));
+                DateTime n = specifiedTime.AddYears((int)-yearsOffset);
+                string targetPath = Path.Combine(directoryPath, n.ToString("yyyy"));
                 if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
                 return targetPath;
             }
@@ -158,14 +181,61 @@ namespace PathSearchClass
 
         public static string CreateYearDir(string directoryPath, int yearsOffset = 0)
         {
-            try
+            return CreateYearDir(directoryPath, DateTime.Now, yearsOffset);
+        }
+
+
+        public static string[] NewerFilesFromDateDirectory(string directoryPath, DateTime specifiedTime, int daysOffset = 0, string searchPattern = "*.*")
+        {
+            List<string> targetDirectorys = new List<string>();
+            List<string> targetFiles = new List<string>();
+
+            string lastDir = "";
+            for (int i = 0; i <= daysOffset; i++)
             {
-                DateTime n = DateTime.Now.AddYears((int)-yearsOffset);
-                string targetPath = Path.Combine(directoryPath, n.ToString("yyyy"));
-                if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
-                return targetPath;
+                DateTime n = specifiedTime.AddDays((int)-i);
+                lastDir = CreateDateDir(directoryPath, n);
+                targetDirectorys.Add(lastDir);
             }
-            catch { return ""; }
+
+            foreach (string targetDirectory in targetDirectorys)
+            {
+                if (targetDirectory != lastDir)
+                {
+                    targetFiles.AddRange(Directory.EnumerateFiles(targetDirectory));
+                }
+                else
+                {
+                    var listFiles = Directory.EnumerateFiles(targetDirectory);
+
+                    foreach (var targetFile in listFiles)
+                    {
+                        if (GetCreateTimeFromFilePath(targetFile) > specifiedTime) { targetFiles.Add(targetFile); }
+                    }
+                }
+            }
+            return targetFiles.ToArray();
+        }
+
+        public static DateTime GetCreateTimeFromFilePath(string filePath)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+
+            Match match = Regex.Match(fileName, @"\d{8}_\d{6}");
+            if (match.Success)
+            {
+                DateTime createTime = DateTime.ParseExact(match.Value, "yyyyMMdd_HHmmss", null);
+                return createTime;
+            }
+
+            match = Regex.Match(fileName, @"\d{14}");
+            if (match.Success)
+            {
+                DateTime createTime = DateTime.ParseExact(match.Value, "yyyyMMddHHmmss", null);
+                return createTime;
+            }
+
+            return DateTime.MinValue;
         }
     }
 }

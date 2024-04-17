@@ -15,6 +15,7 @@ using tcpServer;
 using tcpClient;
 using ServerInfoUserControl;
 using SourceInfoUserControl;
+using PathSearchClass;
 
 namespace SocketReceiverBase
 {
@@ -340,7 +341,7 @@ namespace SocketReceiverBase
         {
             List<string> Lines = new List<string>();
 
-            foreach(var ctrl in panel_ServerListView.Controls)
+            foreach (var ctrl in panel_ServerListView.Controls)
             {
                 Lines.Add(ctrl.ToString());
             }
@@ -736,6 +737,25 @@ namespace SocketReceiverBase
         }
 
 
+        private void timer_FileCheck_Tick(object sender, EventArgs e)
+        {
+            foreach (var ctrl in panel_SourceListView.Controls)
+            {
+                if (ctrl is SourceInfo)
+                {
+                    SourceInfo sourceInfo = (SourceInfo)ctrl;
+                    string[] FilePaths = PathSearch.NewerFilesFromDateDirectory(sourceInfo.SaveDirPath, sourceInfo.LastCheckTime, searchPattern: "*.csv");
 
+                    Array.Sort(FilePaths);
+                    sourceInfo.LastCheckTime = PathSearch.GetCreateTimeFromFilePath(FilePaths[FilePaths.Length - 1]);
+
+
+
+
+
+                }
+
+            }
+        }
     }
 }
