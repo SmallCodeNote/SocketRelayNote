@@ -37,13 +37,16 @@
             this.groupBox_SourceInfo = new System.Windows.Forms.GroupBox();
             this.button_DeleteThis = new System.Windows.Forms.Button();
             this.label_LatestAnswerTime = new System.Windows.Forms.Label();
-            this.button_Shift = new System.Windows.Forms.Button();
+            this.button_ShiftUp = new System.Windows.Forms.Button();
             this.panel_Frame = new System.Windows.Forms.Panel();
             this.panel = new System.Windows.Forms.Panel();
+            this.label5 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.textBox_Parameter = new System.Windows.Forms.TextBox();
             this.textBox_LastCheckTime = new System.Windows.Forms.TextBox();
             this.textBox_SourceName = new System.Windows.Forms.TextBox();
+            this.button_ShiftDown = new System.Windows.Forms.Button();
             this.groupBox_SourceInfo.SuspendLayout();
             this.panel_Frame.SuspendLayout();
             this.panel.SuspendLayout();
@@ -102,15 +105,16 @@
             // 
             // groupBox_SourceInfo
             // 
+            this.groupBox_SourceInfo.Controls.Add(this.button_ShiftDown);
             this.groupBox_SourceInfo.Controls.Add(this.button_DeleteThis);
             this.groupBox_SourceInfo.Controls.Add(this.button_Lamp);
             this.groupBox_SourceInfo.Controls.Add(this.label_LatestAnswerTime);
-            this.groupBox_SourceInfo.Controls.Add(this.button_Shift);
+            this.groupBox_SourceInfo.Controls.Add(this.button_ShiftUp);
             this.groupBox_SourceInfo.Controls.Add(this.panel_Frame);
             this.groupBox_SourceInfo.Controls.Add(this.label_LatestAnswer);
             this.groupBox_SourceInfo.Location = new System.Drawing.Point(0, 0);
             this.groupBox_SourceInfo.Name = "groupBox_SourceInfo";
-            this.groupBox_SourceInfo.Size = new System.Drawing.Size(400, 166);
+            this.groupBox_SourceInfo.Size = new System.Drawing.Size(400, 272);
             this.groupBox_SourceInfo.TabIndex = 5;
             this.groupBox_SourceInfo.TabStop = false;
             this.groupBox_SourceInfo.Text = "SourceName";
@@ -135,38 +139,49 @@
             this.label_LatestAnswerTime.TabIndex = 0;
             this.label_LatestAnswerTime.Text = "...";
             // 
-            // button_Shift
+            // button_ShiftUp
             // 
-            this.button_Shift.Location = new System.Drawing.Point(3, 28);
-            this.button_Shift.Name = "button_Shift";
-            this.button_Shift.Size = new System.Drawing.Size(18, 32);
-            this.button_Shift.TabIndex = 1;
-            this.button_Shift.Text = ">";
-            this.button_Shift.UseVisualStyleBackColor = true;
-            this.button_Shift.Click += new System.EventHandler(this.button_Shift_Click);
+            this.button_ShiftUp.Location = new System.Drawing.Point(3, 28);
+            this.button_ShiftUp.Name = "button_ShiftUp";
+            this.button_ShiftUp.Size = new System.Drawing.Size(18, 21);
+            this.button_ShiftUp.TabIndex = 1;
+            this.button_ShiftUp.Text = ">";
+            this.button_ShiftUp.UseVisualStyleBackColor = true;
+            this.button_ShiftUp.Click += new System.EventHandler(this.button_Shift_Click);
             // 
             // panel_Frame
             // 
             this.panel_Frame.Controls.Add(this.panel);
             this.panel_Frame.Location = new System.Drawing.Point(27, 28);
             this.panel_Frame.Name = "panel_Frame";
-            this.panel_Frame.Size = new System.Drawing.Size(335, 132);
+            this.panel_Frame.Size = new System.Drawing.Size(335, 214);
             this.panel_Frame.TabIndex = 0;
             // 
             // panel
             // 
             this.panel.Controls.Add(this.label2);
+            this.panel.Controls.Add(this.label5);
             this.panel.Controls.Add(this.label3);
             this.panel.Controls.Add(this.label4);
             this.panel.Controls.Add(this.label1);
+            this.panel.Controls.Add(this.textBox_Parameter);
             this.panel.Controls.Add(this.textBox_LastCheckTime);
             this.panel.Controls.Add(this.textBox_SourceName);
             this.panel.Controls.Add(this.textBox_SaveDirPath);
             this.panel.Controls.Add(this.textBox_ModelPath);
             this.panel.Location = new System.Drawing.Point(0, 0);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(335, 107);
+            this.panel.Size = new System.Drawing.Size(335, 152);
             this.panel.TabIndex = 0;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(8, 110);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(57, 12);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Parameter";
             // 
             // label3
             // 
@@ -186,11 +201,19 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Name";
             // 
+            // textBox_Parameter
+            // 
+            this.textBox_Parameter.Location = new System.Drawing.Point(10, 125);
+            this.textBox_Parameter.Name = "textBox_Parameter";
+            this.textBox_Parameter.Size = new System.Drawing.Size(314, 19);
+            this.textBox_Parameter.TabIndex = 2;
+            this.textBox_Parameter.TextChanged += new System.EventHandler(this.textBox_Parameter_TextChanged);
+            // 
             // textBox_LastCheckTime
             // 
             this.textBox_LastCheckTime.Location = new System.Drawing.Point(98, 80);
             this.textBox_LastCheckTime.Name = "textBox_LastCheckTime";
-            this.textBox_LastCheckTime.Size = new System.Drawing.Size(152, 19);
+            this.textBox_LastCheckTime.Size = new System.Drawing.Size(139, 19);
             this.textBox_LastCheckTime.TabIndex = 2;
             this.textBox_LastCheckTime.TextChanged += new System.EventHandler(this.textBox_LastCheckTime_TextChanged);
             // 
@@ -202,13 +225,23 @@
             this.textBox_SourceName.TabIndex = 2;
             this.textBox_SourceName.TextChanged += new System.EventHandler(this.textBox_SourceName_TextChanged);
             // 
+            // button_ShiftDown
+            // 
+            this.button_ShiftDown.Location = new System.Drawing.Point(3, 51);
+            this.button_ShiftDown.Name = "button_ShiftDown";
+            this.button_ShiftDown.Size = new System.Drawing.Size(18, 21);
+            this.button_ShiftDown.TabIndex = 6;
+            this.button_ShiftDown.Text = "<";
+            this.button_ShiftDown.UseVisualStyleBackColor = true;
+            this.button_ShiftDown.Click += new System.EventHandler(this.button_ShiftDown_Click);
+            // 
             // SourceInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupBox_SourceInfo);
             this.Name = "SourceInfo";
-            this.Size = new System.Drawing.Size(400, 214);
+            this.Size = new System.Drawing.Size(400, 296);
             this.Load += new System.EventHandler(this.SourceInfo_Load);
             this.groupBox_SourceInfo.ResumeLayout(false);
             this.panel_Frame.ResumeLayout(false);
@@ -231,10 +264,13 @@
         private System.Windows.Forms.Panel panel;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBox_SourceName;
-        private System.Windows.Forms.Button button_Shift;
+        private System.Windows.Forms.Button button_ShiftUp;
         private System.Windows.Forms.Label label_LatestAnswerTime;
         private System.Windows.Forms.Button button_DeleteThis;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBox_LastCheckTime;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox textBox_Parameter;
+        private System.Windows.Forms.Button button_ShiftDown;
     }
 }

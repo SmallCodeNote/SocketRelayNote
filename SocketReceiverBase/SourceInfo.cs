@@ -17,17 +17,17 @@ namespace SourceInfoUserControl
         //===================
         // Constructor
         //===================
-        public SourceInfo(int Index, string SourceName, string SaveDirPath, string ModelPath, string LastCheckTimeString = "")
+        public SourceInfo(int Index, string SourceName, string SaveDirPath, string ModelPath, string LastCheckTimeString = "", string Parameter = "")
         {
             InitializeComponent();
             tcpClt = new TcpSocketClient();
-            SourceInfoUpdate(Index, SourceName, SaveDirPath, ModelPath);
+            SourceInfoUpdate(Index, SourceName, SaveDirPath, ModelPath, LastCheckTimeString, Parameter);
             if (LastCheckTimeString == "") { LastCheckTime = DateTime.Now.AddHours(-1); }
             else if (DateTime.TryParse(LastCheckTimeString, out DateTime dateTime)) { LastCheckTime = dateTime; }
 
         }
 
-        public SourceInfo(int Index, string Line = "\t\t\t")
+        public SourceInfo(int Index, string Line = "\t\t\t\t")
         {
             InitializeComponent();
             tcpClt = new TcpSocketClient();
@@ -37,10 +37,11 @@ namespace SourceInfoUserControl
             string SaveDirPath = cols.Length > 1 ? cols[1] : "";
             string ModelPath = cols.Length > 2 ? cols[2] : "";
             string LastCheckTimeString = cols.Length > 3 ? cols[3] : "";
+            string Parameter = cols.Length > 4 ? cols[4] : "";
 
-            SourceInfoUpdate(Index, SourceName, SaveDirPath, ModelPath, LastCheckTimeString);
+            SourceInfoUpdate(Index, SourceName, SaveDirPath, ModelPath, LastCheckTimeString, Parameter);
 
-            if(LastCheckTimeString =="") LastCheckTime = DateTime.Now.AddHours(-1);
+            if (LastCheckTimeString == "") LastCheckTime = DateTime.Now.AddHours(-1);
         }
 
         //===================
@@ -60,6 +61,22 @@ namespace SourceInfoUserControl
             set { _LastCheckTime = value; textBox_LastCheckTime.Text = value.ToString("yyyy/MM/dd HH:mm:ss"); }
         }
 
+        public string Parameter
+        {
+            get { return textBox_Parameter.Text; }
+            set
+            {
+                if (this.InvokeRequired)
+                {
+                    this.Invoke((Action)(() => Parameter = value));
+                }
+                else
+                {
+                    textBox_Parameter.Text = value;
+                }
+
+            }
+        }
         public string SaveDirPath
         {
             get { return textBox_SaveDirPath.Text; }
@@ -137,7 +154,7 @@ namespace SourceInfoUserControl
         // Member function
         //===================
 
-        public void SourceInfoUpdate(int Index, string SourceName, string SaveDirPath, string ModelPath, string LastCheckTimeString = "")
+        public void SourceInfoUpdate(int Index, string SourceName, string SaveDirPath, string ModelPath, string LastCheckTimeString = "", string Parameter = "")
         {
             this.Height = 80;
 
@@ -148,11 +165,12 @@ namespace SourceInfoUserControl
 
             if (DateTime.TryParse(LastCheckTimeString, out DateTime datetime)) { this.LastCheckTime = datetime; }
 
+            this.Parameter = Parameter;
         }
 
         public override string ToString()
         {
-            return SourceName + "\t" + SaveDirPath + "\t" + ModelPath.ToString() + "\t" + LastCheckTime.ToString("yyyy/MM/dd HH:mm:ss");
+            return SourceName + "\t" + SaveDirPath + "\t" + ModelPath.ToString() + "\t" + LastCheckTime.ToString("yyyy/MM/dd HH:mm:ss") + "\t" + Parameter;
         }
 
         //===================
@@ -167,18 +185,28 @@ namespace SourceInfoUserControl
 
         private void button_Shift_Click(object sender, EventArgs e)
         {
-            if (button_Shift.Text == ">")
+            if (this.panel.Top == 0)
             {
                 this.panel.Top = -55;
-                button_Shift.Text = "<";
             }
-            else
+            else if (this.panel.Top == -55)
             {
-                this.panel.Top = 0;
-                button_Shift.Text = ">";
+                this.panel.Top = -110;
             }
         }
 
+        private void button_ShiftDown_Click(object sender, EventArgs e)
+        {
+            if (this.panel.Top == -55)
+            {
+                this.panel.Top = 0;
+            }
+            else if (this.panel.Top == -110)
+            {
+                this.panel.Top = -55;
+            }
+
+        }
         private void button_DeleteThis_Click(object sender, EventArgs e)
         {
             DeleteThis(Index);
@@ -206,6 +234,11 @@ namespace SourceInfoUserControl
             {
                 _LastCheckTime = dateTime;
             }
+        }
+
+        private void textBox_Parameter_TextChanged(object sender, EventArgs e)
+        {
+            Parameter = textBox_Parameter.Text;
         }
     }
 }
