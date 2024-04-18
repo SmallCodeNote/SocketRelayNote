@@ -29,8 +29,9 @@ namespace SocketReceiverBase
             InitializeComponent();
             thisExeDirPath = Path.GetDirectoryName(Application.ExecutablePath);
 
-            tcpSrv = new TcpSocketServer();
-            tcpClt = new TcpSocketClient();
+            tcpSrv_LockFunctionListener = new TcpSocketServer();
+            tcpClt_JudgmentReporter = new TcpSocketClient();
+
             LockReleaseTime = DateTime.Now;
         }
 
@@ -39,53 +40,21 @@ namespace SocketReceiverBase
         //===================
         string thisExeDirPath;
 
-        TcpSocketServer tcpSrv;
-        TcpSocketClient tcpClt;
+        TcpSocketServer tcpSrv_LockFunctionListener;
+        TcpSocketClient tcpClt_JudgmentReporter;
 
         /// <summary>
         /// Free,Lock
         /// </summary>
-        string RunMode = "Free";
-
-        /// <summary>
-        /// OK,NG,Error
-        /// </summary>
-        string StatusMode = "OK";
+        string LockFunctionStatus = "Free";
 
         public string LockSignalSourceName = "";
-
         public DateTime LockReleaseTime;
         public DateTime LockTime;
-
-        DateTime LastCheckTime;
-
+        public DateTime LastCheckTime;
         public bool Locked { get { return DateTime.Now < LockReleaseTime; } }
 
-        public bool OK
-        {
-
-            get
-            {
-                return button_StatusChange.BackColor == Color.YellowGreen;
-            }
-            set
-            {
-                if (value)
-                {
-                    button_StatusChange.BackColor = Color.YellowGreen;
-                    StatusMode = "OK";
-                }
-                else
-                {
-                    button_StatusChange.BackColor = Color.Red;
-                    StatusMode = "NG";
-                }
-
-                tcpSrv.ResponceMessage = RunMode + "\t" + StatusMode;
-            }
-        }
-
-        public int PortNumberSrv
+        public int PortNumber_LockFunctionSrv
         {
             get
             {
@@ -96,6 +65,37 @@ namespace SocketReceiverBase
             set
             {
                 textBox_PortNumber.Text = value.ToString();
+            }
+        }
+
+        /// <summary>
+        /// OK,NG,Error
+        /// </summary>
+        public string JudgmentResultString = "OK";
+
+        /// <summary>
+        /// true : OK , false : NG
+        /// </summary>
+        public bool JudgmentFlag
+        {
+            get
+            {
+                return button_JudgmentResult.BackColor == Color.YellowGreen;
+            }
+            set
+            {
+                if (value)
+                {
+                    button_JudgmentResult.BackColor = Color.YellowGreen;
+                    JudgmentResultString = "OK";
+                }
+                else
+                {
+                    button_JudgmentResult.BackColor = Color.Red;
+                    JudgmentResultString = "NG";
+                }
+
+                tcpSrv_LockFunctionListener.ResponceMessage = LockFunctionStatus + "\t" + JudgmentResultString;
             }
         }
 
@@ -162,10 +162,48 @@ namespace SocketReceiverBase
         //===================
         // Member function
         //===================
-        public void LockClient(int Minutes)
+        public void LockClient(double Minutes)
         {
             LockTime = DateTime.Now;
-            LockReleaseTime = DateTime.Now + new TimeSpan(0, Minutes, 0);
+            LockReleaseTime = DateTime.Now.AddMinutes(Minutes);
+        }
+
+        private void LockStatusUpdate()
+        {
+            if (this.InvokeRequired) { this.Invoke((Action)(() => LockStatusUpdate())); }
+            else
+            {
+                if (DateTime.Now > LockReleaseTime)
+                {
+                    label_LockedFrom.Text = "- Release -";
+                    label_LockedTime.Text = "- Release -";
+                    label_ResetTime.Text = "- Release -";
+                    button_Lock.Text = "";
+                    button_Lock.BackColor = Color.YellowGreen;
+                }
+                else
+                {
+                    label_LockedFrom.Text = LockSignalSourceName;
+                    label_LockedTime.Text = LockTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    label_ResetTime.Text = LockReleaseTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    label_RemainingTime.Text = getElapsedTimeString(LockReleaseTime - DateTime.Now);
+
+                    button_Lock.Text = "";
+                    button_Lock.BackColor = Color.Gray;
+                }
+            }
+        }
+
+        public string getElapsedTimeString(TimeSpan elapsedTime)
+        {
+            if (elapsedTime.TotalDays >= 365) { return (elapsedTime.TotalDays / 365.2425).ToString("0") + " year"; }
+            if (elapsedTime.TotalDays >= 30) { return (elapsedTime.TotalDays / 30.436875).ToString("0") + " month"; }
+            if (elapsedTime.TotalDays >= 7) { return (elapsedTime.TotalDays / 7).ToString("0") + " week"; }
+            if (elapsedTime.TotalDays >= 1) { return (elapsedTime.TotalDays / 7).ToString("0") + " day"; }
+            if (elapsedTime.TotalHours >= 1) { return (elapsedTime.TotalHours).ToString("0") + " hour"; }
+            if (elapsedTime.TotalMinutes >= 1) { return (elapsedTime.TotalMinutes).ToString("0") + " minute"; }
+            if (elapsedTime.TotalSeconds >= 1) { return (elapsedTime.TotalSeconds).ToString("0") + " sec."; }
+            return "now";
         }
 
         private void ButtonEnable(Button button, bool enable)
@@ -189,41 +227,6 @@ namespace SocketReceiverBase
             }
         }
 
-        private void LabelUpdate()
-        {
-            if (DateTime.Now > LockReleaseTime)
-            {
-                label_LockedFrom.Text = "- Release -";
-                label_LockedTime.Text = "- Release -";
-                label_ResetTime.Text = "- Release -";
-                button_Lock.Text = "";
-                button_Lock.BackColor = Color.YellowGreen;
-            }
-            else
-            {
-                label_LockedFrom.Text = LockSignalSourceName;
-                label_LockedTime.Text = LockTime.ToString("yyyy/MM/dd HH:mm:ss");
-                label_ResetTime.Text = LockReleaseTime.ToString("yyyy/MM/dd HH:mm:ss");
-                label_RemainingTime.Text = getElapsedTimeString(LockReleaseTime - DateTime.Now);
-
-                button_Lock.Text = "";
-                button_Lock.BackColor = Color.Gray;
-            }
-        }
-
-        public string getElapsedTimeString(TimeSpan elapsedTime)
-        {
-            if (elapsedTime.TotalDays >= 365) { return (elapsedTime.TotalDays / 365.2425).ToString("0") + " year"; }
-            if (elapsedTime.TotalDays >= 30) { return (elapsedTime.TotalDays / 30.436875).ToString("0") + " month"; }
-            if (elapsedTime.TotalDays >= 7) { return (elapsedTime.TotalDays / 7).ToString("0") + " week"; }
-            if (elapsedTime.TotalDays >= 1) { return (elapsedTime.TotalDays / 7).ToString("0") + " day"; }
-            if (elapsedTime.TotalHours >= 1) { return (elapsedTime.TotalHours).ToString("0") + " hour"; }
-            if (elapsedTime.TotalMinutes >= 1) { return (elapsedTime.TotalMinutes).ToString("0") + " minute"; }
-            if (elapsedTime.TotalSeconds >= 1) { return (elapsedTime.TotalSeconds).ToString("0") + " sec."; }
-            return "now";
-        }
-
-
         //ServerList Set================================
 
         private void DeleteServerListView(int targetIndex)
@@ -237,48 +240,16 @@ namespace SocketReceiverBase
                 if (targetIndex < panel_ServerListView.Controls.Count)
                 {
                     panel_ServerListView.Controls.RemoveAt(targetIndex);
-                    UpdateServerListText();
+                    textBox_ServerList.Text = ServerInfoViewToString();
                     UpdateLayoutServerListView();
                 }
             }
         }
-        private void RefreshServerListView()
-        {
 
-            if (this.InvokeRequired)
-            {
-                this.Invoke((Action)(() => RefreshServerListView()));
-            }
-            else
-            {
-                panel_ServerListView.Controls.Clear();
-                panel_ServerListView.Height = 0;
-
-                string[] Lines = textBox_ServerList.Text.Replace("\r\n", "\n").Trim('\n').Split('\n');
-                int PositionTop = 0;
-                int ctrlIndex = 0;
-
-
-                foreach (var Line in Lines)
-                {
-                    if (Line == "") continue;
-                    var ctrl = new ServerInfo(ctrlIndex, Line);
-                    ctrl.DeleteThis = (Action<int>)((int x) => DeleteServerListView(x));
-                    ctrl.LoadThis = (Action)(() => EnableLoadServerListView());
-                    ctrl.Top = PositionTop;
-                    PositionTop += ctrl.Height;
-                    panel_ServerListView.Controls.Add(ctrl);
-
-                    ctrlIndex++;
-                }
-                panel_ServerListView.Height = PositionTop;
-            }
-        }
         private void EnableLoadServerListView()
         {
             ButtonEnable(button_LoadServerListView, true);
         }
-
 
         private void UpdateLayoutServerListView()
         {
@@ -289,63 +260,48 @@ namespace SocketReceiverBase
             else
             {
                 panel_ServerListView.Height = 0;
-                int PositionTop = 0;
                 int ctrlIndex = 0;
+
                 foreach (ServerInfo ctrl in panel_ServerListView.Controls)
                 {
-                    ctrl.Top = PositionTop;
+                    ctrl.Top = panel_ServerListView.Height;
                     ctrl.Index = ctrlIndex;
-                    PositionTop += ctrl.Height;
-
                     ctrlIndex++;
+
+                    panel_ServerListView.Height += ctrl.Height;
                 }
-                panel_ServerListView.Height = PositionTop;
             }
         }
 
         private void UpdateServerListView()
         {
-            string[] Lines = textBox_ServerList.Text.Replace("\r\n", "\n").Trim('\n').Split('\n');
-
             panel_ServerListView.Controls.Clear();
-
-            int TopPosition = 0;
+            panel_ServerListView.Height = 0;
             int ctrlIndex = 0;
+
+            string[] Lines = textBox_ServerList.Text.Replace("\r\n", "\n").Trim('\n').Split('\n');
             foreach (var Line in Lines)
             {
                 if (Line == "" || Line[0] == '#' || Line.Split('\t').Length < 3) continue;
                 ServerInfo serverInfo = new ServerInfo(ctrlIndex, Line); ctrlIndex++;
-                serverInfo.Top = TopPosition;
-                serverInfo.DeleteThis = (Action<int>)((int x) => DeleteServerListView(x));
-                serverInfo.LoadThis = (Action)(() => EnableLoadServerListView());
-
-                TopPosition += serverInfo.Height;
-                panel_ServerListView.Controls.Add(serverInfo);
+                AddServerInfoToPanel(panel_ServerListView, serverInfo);
             }
 
             if (panel_ServerListView.Controls.Count == 0)
             {
                 ServerInfo serverInfo = new ServerInfo(ctrlIndex, "", "", -1); ctrlIndex++;
-                serverInfo.Top = TopPosition;
-                serverInfo.DeleteThis = (Action<int>)((int x) => DeleteServerListView(x));
-                serverInfo.LoadThis = (Action)(() => EnableLoadServerListView());
-
-                TopPosition += serverInfo.Height;
-                panel_ServerListView.Controls.Add(serverInfo);
+                AddServerInfoToPanel(panel_ServerListView, serverInfo);
             }
-
-            panel_ServerListView.Height = TopPosition;
         }
 
-        private void UpdateServerListText()
+        private void AddServerInfoToPanel(Panel panel, ServerInfo serverInfo)
         {
-            List<string> Lines = new List<string>();
+            serverInfo.Top = panel.Height;
+            serverInfo.DeleteThis = (Action<int>)((int x) => DeleteServerListView(x));
+            serverInfo.LoadThis = (Action)(() => EnableLoadServerListView());
 
-            foreach (var ctrl in panel_ServerListView.Controls)
-            {
-                Lines.Add(ctrl.ToString());
-            }
-            textBox_ServerList.Text = string.Join("\r\n", Lines.ToArray());
+            panel.Height += serverInfo.Height;
+            panel.Controls.Add(serverInfo);
         }
 
         private string ServerInfoViewToString()
@@ -372,8 +328,8 @@ namespace SocketReceiverBase
             }
         }
 
-
         //SourceList Set================================
+
         private void DeleteSourceListView(int targetIndex)
         {
             if (this.InvokeRequired)
@@ -385,48 +341,16 @@ namespace SocketReceiverBase
                 if (targetIndex < panel_SourceListView.Controls.Count)
                 {
                     panel_SourceListView.Controls.RemoveAt(targetIndex);
-                    UpdateSourceListText();
+                    textBox_SourceList.Text = SourceInfoViewToString();
                     UpdateLayoutSourceListView();
                 }
             }
         }
-        private void RefreshSourceListView()
-        {
-
-            if (this.InvokeRequired)
-            {
-                this.Invoke((Action)(() => RefreshSourceListView()));
-            }
-            else
-            {
-                panel_SourceListView.Controls.Clear();
-                panel_SourceListView.Height = 0;
-
-                string[] Lines = textBox_SourceList.Text.Replace("\r\n", "\n").Trim('\n').Split('\n');
-                int PositionTop = 0;
-                int ctrlIndex = 0;
-
-
-                foreach (var Line in Lines)
-                {
-                    if (Line == "") continue;
-                    var ctrl = new SourceInfo(ctrlIndex, Line);
-                    ctrl.DeleteThis = (Action<int>)((int x) => DeleteSourceListView(x));
-                    ctrl.LoadThis = (Action)(() => EnableLoadSourceListView());
-                    ctrl.Top = PositionTop;
-                    PositionTop += ctrl.Height;
-                    panel_SourceListView.Controls.Add(ctrl);
-
-                    ctrlIndex++;
-                }
-                panel_SourceListView.Height = PositionTop;
-            }
-        }
+        
         private void EnableLoadSourceListView()
         {
             ButtonEnable(button_LoadSourceListView, true);
         }
-
 
         private void UpdateLayoutSourceListView()
         {
@@ -462,38 +386,27 @@ namespace SocketReceiverBase
             foreach (var Line in Lines)
             {
                 if (Line == "" || Line[0] == '#' || Line.Split('\t').Length < 3) continue;
-                SourceInfo SourceInfo = new SourceInfo(ctrlIndex, Line); ctrlIndex++;
-                SourceInfo.Top = TopPosition;
-                SourceInfo.DeleteThis = (Action<int>)((int x) => DeleteSourceListView(x));
-                SourceInfo.LoadThis = (Action)(() => EnableLoadSourceListView());
-
-                TopPosition += SourceInfo.Height;
-                panel_SourceListView.Controls.Add(SourceInfo);
+                SourceInfo sourceInfo = new SourceInfo(ctrlIndex, Line); ctrlIndex++;
+                AddSourceInfoToPanel(panel_SourceListView, sourceInfo);
             }
 
             if (panel_SourceListView.Controls.Count == 0)
             {
-                SourceInfo SourceInfo = new SourceInfo(ctrlIndex, "", "", ""); ctrlIndex++;
-                SourceInfo.Top = TopPosition;
-                SourceInfo.DeleteThis = (Action<int>)((int x) => DeleteSourceListView(x));
-                SourceInfo.LoadThis = (Action)(() => EnableLoadSourceListView());
-
-                TopPosition += SourceInfo.Height;
-                panel_SourceListView.Controls.Add(SourceInfo);
+                SourceInfo sourceInfo = new SourceInfo(ctrlIndex, "", "", ""); ctrlIndex++;
+                AddSourceInfoToPanel(panel_SourceListView, sourceInfo);
             }
 
             panel_SourceListView.Height = TopPosition;
         }
 
-        private void UpdateSourceListText()
+        private void AddSourceInfoToPanel(Panel panel, SourceInfo sourceInfo)
         {
-            List<string> Lines = new List<string>();
+            sourceInfo.Top = panel.Height;
+            sourceInfo.DeleteThis = (Action<int>)((int x) => DeleteServerListView(x));
+            sourceInfo.LoadThis = (Action)(() => EnableLoadServerListView());
 
-            foreach (var ctrl in panel_SourceListView.Controls)
-            {
-                Lines.Add(ctrl.ToString());
-            }
-            textBox_SourceList.Text = string.Join("\r\n", Lines.ToArray());
+            panel.Height += sourceInfo.Height;
+            panel.Controls.Add(sourceInfo);
         }
 
         private string SourceInfoViewToString()
@@ -509,6 +422,43 @@ namespace SocketReceiverBase
             return string.Join("\r\n", Lines.ToArray());
         }
 
+        public void sendMessageOK()
+        {
+            string request =
+                ClientName + "\t" +
+                StatusOK + "\t" +
+                MessageOK + "\t" +
+                ParameterOK + "\t" +
+                CheckStyleOK;
+
+            SendMessageForServers(request);
+
+        }
+
+        public void sendMessageNG()
+        {
+            string request = "";
+
+            if (Locked)
+            {
+                request =
+                    ClientName + "\t" +
+                    StatusOK + "\t" +
+                    MessageNG + "\t" +
+                    ParameterNG + "\t" +
+                    CheckStyleNG;
+            }
+            else
+            {
+                request =
+                    ClientName + "\t" +
+                    StatusNG + "\t" +
+                    MessageNG + "\t" +
+                    ParameterNG + "\t" +
+                    CheckStyleNG;
+            }
+            SendMessageForServers(request);
+        }
 
 
         //===================
@@ -537,13 +487,10 @@ namespace SocketReceiverBase
             panel_SourceListView.Height = 0;
             UpdateSourceListView();
 
-
-            tcpClt = new TcpSocketClient();
-
-            timer_UpdateQueue.Start();
-            timer_ServerInfoUpdate.Start();
+            timer_LockFunctionListenerQueueUpdate.Start();
             timer_SendMessage.Start();
-            tcpSrv.StartListening(PortNumberSrv, "UTF8");
+
+            tcpSrv_LockFunctionListener.StartListening(PortNumber_LockFunctionSrv, "UTF8");
 
         }
 
@@ -565,35 +512,20 @@ namespace SocketReceiverBase
             }
         }
 
-        private void button_StatusChange_Click(object sender, EventArgs e)
+        private void timer_LockFunctionListenerQueueUpdate_Tick(object sender, EventArgs e)
         {
-            OK = !OK;
-        }
-
-        private void button_StatusChange_EnabledChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void timer_LabelUpdate_Tick_Tick(object sender, EventArgs e)
-        {
-            LabelUpdate();
-        }
-
-        private void timer_UpdateQueue_Tick(object sender, EventArgs e)
-        {
-            timer_UpdateQueue.Stop();
+            timer_LockFunctionListenerQueueUpdate.Stop();
             //============
             // New data check from Queue
             //============
-            if ((tcpSrv.LastReceiveTime - LastCheckTime).TotalSeconds > 0 && tcpSrv.ReceivedSocketQueue.Count > 0)
+            if ((tcpSrv_LockFunctionListener.LastReceiveTime - LastCheckTime).TotalSeconds > 0 && tcpSrv_LockFunctionListener.ReceivedSocketQueue.Count > 0)
             {
                 string receivedSocketMessage = "";
 
                 //============
                 // ReadQueue 
                 //============
-                while (tcpSrv.ReceivedSocketQueue.TryDequeue(out receivedSocketMessage))
+                while (tcpSrv_LockFunctionListener.ReceivedSocketQueue.TryDequeue(out receivedSocketMessage))
                 {
                     Debug.WriteLine(receivedSocketMessage);
                     if (receivedSocketMessage.IndexOf("Lock") >= 0)
@@ -614,65 +546,53 @@ namespace SocketReceiverBase
                 }
                 LastCheckTime = DateTime.Now;
             }
-            timer_UpdateQueue.Start();
+
+            LockStatusUpdate();
+            timer_LockFunctionListenerQueueUpdate.Start();
         }
 
+        int timer_SendMessage_Count = 0;
+        bool timer_SendMessage_LastJudgmentFlag = true;
         private void timer_SendMessage_Tick(object sender, EventArgs e)
         {
             timer_SendMessage.Stop();
-            if (OK)
+
+            if (timer_SendMessage_LastJudgmentFlag != JudgmentFlag)
             {
-                OK = true;
+                timer_SendMessage_Count = 0;
+            };
 
-                string request =
-                    ClientName + "\t" +
-                    StatusOK + "\t" +
-                    MessageOK + "\t" +
-                    ParameterOK + "\t" +
-                    CheckStyleOK;
-
-                SendMessageForServers(request);
-            }
-            else
+            if (JudgmentFlag && timer_SendMessage_Count < 0)
             {
-                OK = false;
-                string request = "";
-
-                if (Locked)
-                {
-                    request =
-                        ClientName + "\t" +
-                        StatusOK + "\t" +
-                        MessageNG + "\t" +
-                        ParameterNG + "\t" +
-                        CheckStyleNG;
-                }
-                else
-                {
-                    request =
-                        ClientName + "\t" +
-                        StatusNG + "\t" +
-                        MessageNG + "\t" +
-                        ParameterNG + "\t" +
-                        CheckStyleNG;
-
-                }
-                SendMessageForServers(request);
+                sendMessageOK();
+                if (!int.TryParse(textBox_IntervalOK.Text, out timer_SendMessage_Count)) { timer_SendMessage_Count = 300; }
             }
+            else if (!JudgmentFlag && timer_SendMessage_Count < 0)
+            {
+                sendMessageNG();
+                if (!int.TryParse(textBox_IntervalNG.Text, out timer_SendMessage_Count)) { timer_SendMessage_Count = 10; }
+            }
+
+            timer_SendMessage_Count--;
             timer_SendMessage.Start();
+        }
+
+        private void button_JudgmentResult_Click(object sender, EventArgs e)
+        {
+            JudgmentFlag = !JudgmentFlag;
         }
 
         private void button_Restrart_Click(object sender, EventArgs e)
         {
-            tcpSrv.StopListening();
-            tcpSrv.StartListening(PortNumberSrv, "UTF8");
+            tcpSrv_LockFunctionListener.StopListening();
+            tcpSrv_LockFunctionListener.StartListening(PortNumber_LockFunctionSrv, "UTF8");
         }
 
         private void tabControl_ServerInfo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (tabControl_ServerInfo.SelectedTab == tabPage_ServerView)
             {
-                UpdateLayoutServerListView();
+                UpdateServerListView();
             }
             else if (tabControl_ServerInfo.SelectedTab == tabPage_ServerList)
             {
@@ -691,16 +611,12 @@ namespace SocketReceiverBase
 
             panel_ServerListView.Controls.Add(ctrl);
             panel_ServerListView.Height += ctrl.Height;
-            UpdateServerListText();
+            textBox_ServerList.Text = ServerInfoViewToString();
         }
 
         private void button_LoadServerListView_Click(object sender, EventArgs e)
         {
-            UpdateServerListText();
-            if (int.TryParse(textBox_ServerInfoCheckInterval.Text, out int b))
-            {
-                timer_ServerInfoUpdate.Interval = b * 1000;
-            }
+            textBox_ServerList.Text = ServerInfoViewToString();
             ButtonEnable(button_LoadServerListView, false);
         }
 
@@ -727,15 +643,14 @@ namespace SocketReceiverBase
 
             panel_SourceListView.Controls.Add(ctrl);
             panel_SourceListView.Height += ctrl.Height;
-            UpdateSourceListText();
+            textBox_SourceList.Text = SourceInfoViewToString();
         }
 
         private void button_LoadSourceListView_Click(object sender, EventArgs e)
         {
-            UpdateSourceListText();
+            textBox_SourceList.Text = SourceInfoViewToString();
             ButtonEnable(button_LoadSourceListView, false);
         }
-
 
         private void timer_FileCheck_Tick(object sender, EventArgs e)
         {
@@ -746,15 +661,13 @@ namespace SocketReceiverBase
                     SourceInfo sourceInfo = (SourceInfo)ctrl;
                     string[] FilePaths = PathSearch.NewerFilesFromDateDirectory(sourceInfo.SaveDirPath, sourceInfo.LastCheckTime, searchPattern: "*.csv");
 
-                    Array.Sort(FilePaths);
-                    sourceInfo.LastCheckTime = PathSearch.GetCreateTimeFromFilePath(FilePaths[FilePaths.Length - 1]);
-
-
-
-
+                    if (FilePaths.Length > 0)
+                    {
+                        Array.Sort(FilePaths);
+                        sourceInfo.LastCheckTime = PathSearch.GetCreateTimeFromFilePath(FilePaths[FilePaths.Length - 1]);
+                    }
 
                 }
-
             }
         }
     }

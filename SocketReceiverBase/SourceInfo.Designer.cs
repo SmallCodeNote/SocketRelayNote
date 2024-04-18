@@ -35,6 +35,7 @@
             this.label_LatestAnswer = new System.Windows.Forms.Label();
             this.button_Lamp = new System.Windows.Forms.Button();
             this.groupBox_SourceInfo = new System.Windows.Forms.GroupBox();
+            this.button_ShiftDown = new System.Windows.Forms.Button();
             this.button_DeleteThis = new System.Windows.Forms.Button();
             this.label_LatestAnswerTime = new System.Windows.Forms.Label();
             this.button_ShiftUp = new System.Windows.Forms.Button();
@@ -46,7 +47,6 @@
             this.textBox_Parameter = new System.Windows.Forms.TextBox();
             this.textBox_LastCheckTime = new System.Windows.Forms.TextBox();
             this.textBox_SourceName = new System.Windows.Forms.TextBox();
-            this.button_ShiftDown = new System.Windows.Forms.Button();
             this.groupBox_SourceInfo.SuspendLayout();
             this.panel_Frame.SuspendLayout();
             this.panel.SuspendLayout();
@@ -119,6 +119,16 @@
             this.groupBox_SourceInfo.TabStop = false;
             this.groupBox_SourceInfo.Text = "SourceName";
             // 
+            // button_ShiftDown
+            // 
+            this.button_ShiftDown.Location = new System.Drawing.Point(3, 51);
+            this.button_ShiftDown.Name = "button_ShiftDown";
+            this.button_ShiftDown.Size = new System.Drawing.Size(18, 21);
+            this.button_ShiftDown.TabIndex = 6;
+            this.button_ShiftDown.Text = "<";
+            this.button_ShiftDown.UseVisualStyleBackColor = true;
+            this.button_ShiftDown.Click += new System.EventHandler(this.button_ShiftDown_Click);
+            // 
             // button_DeleteThis
             // 
             this.button_DeleteThis.Location = new System.Drawing.Point(376, 0);
@@ -186,7 +196,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 80);
+            this.label3.Location = new System.Drawing.Point(8, 83);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(84, 12);
             this.label3.TabIndex = 0;
@@ -211,7 +221,7 @@
             // 
             // textBox_LastCheckTime
             // 
-            this.textBox_LastCheckTime.Location = new System.Drawing.Point(98, 80);
+            this.textBox_LastCheckTime.Location = new System.Drawing.Point(98, 76);
             this.textBox_LastCheckTime.Name = "textBox_LastCheckTime";
             this.textBox_LastCheckTime.Size = new System.Drawing.Size(139, 19);
             this.textBox_LastCheckTime.TabIndex = 2;
@@ -224,16 +234,6 @@
             this.textBox_SourceName.Size = new System.Drawing.Size(204, 19);
             this.textBox_SourceName.TabIndex = 2;
             this.textBox_SourceName.TextChanged += new System.EventHandler(this.textBox_SourceName_TextChanged);
-            // 
-            // button_ShiftDown
-            // 
-            this.button_ShiftDown.Location = new System.Drawing.Point(3, 51);
-            this.button_ShiftDown.Name = "button_ShiftDown";
-            this.button_ShiftDown.Size = new System.Drawing.Size(18, 21);
-            this.button_ShiftDown.TabIndex = 6;
-            this.button_ShiftDown.Text = "<";
-            this.button_ShiftDown.UseVisualStyleBackColor = true;
-            this.button_ShiftDown.Click += new System.EventHandler(this.button_ShiftDown_Click);
             // 
             // SourceInfo
             // 
