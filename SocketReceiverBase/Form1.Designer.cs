@@ -198,7 +198,7 @@
             this.groupBox_LockStatusView.Controls.Add(this.label_LockedTime);
             this.groupBox_LockStatusView.Location = new System.Drawing.Point(202, 12);
             this.groupBox_LockStatusView.Name = "groupBox_LockStatusView";
-            this.groupBox_LockStatusView.Size = new System.Drawing.Size(452, 76);
+            this.groupBox_LockStatusView.Size = new System.Drawing.Size(236, 76);
             this.groupBox_LockStatusView.TabIndex = 5;
             this.groupBox_LockStatusView.TabStop = false;
             this.groupBox_LockStatusView.Text = "LockFunctionStatus";

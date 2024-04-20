@@ -361,27 +361,25 @@ namespace SocketReceiverBase
             else
             {
                 panel_SourceListView.Height = 0;
-                int PositionTop = 0;
+
                 int ctrlIndex = 0;
                 foreach (SourceInfo ctrl in panel_SourceListView.Controls)
                 {
-                    ctrl.Top = PositionTop;
+                    ctrl.Top = panel_SourceListView.Height;
                     ctrl.Index = ctrlIndex;
-                    PositionTop += ctrl.Height;
+                    panel_SourceListView.Height += ctrl.Height;
 
                     ctrlIndex++;
                 }
-                panel_SourceListView.Height = PositionTop;
             }
         }
 
         private void UpdateSourceListView()
         {
             string[] Lines = textBox_SourceList.Text.Replace("\r\n", "\n").Trim('\n').Split('\n');
-
             panel_SourceListView.Controls.Clear();
+            panel_SourceListView.Height = 0;
 
-            int TopPosition = 0;
             int ctrlIndex = 0;
             foreach (var Line in Lines)
             {
@@ -395,18 +393,16 @@ namespace SocketReceiverBase
                 SourceInfo sourceInfo = new SourceInfo(ctrlIndex, "", "", ""); ctrlIndex++;
                 AddSourceInfoToPanel(panel_SourceListView, sourceInfo);
             }
-
-            panel_SourceListView.Height = TopPosition;
         }
 
-        private void AddSourceInfoToPanel(Panel panel, SourceInfo sourceInfo)
+        private void AddSourceInfoToPanel(Panel panel, SourceInfo ctrl)
         {
-            sourceInfo.Top = panel.Height;
-            sourceInfo.DeleteThis = (Action<int>)((int x) => DeleteServerListView(x));
-            sourceInfo.LoadThis = (Action)(() => EnableLoadServerListView());
+            ctrl.Top = panel.Height;
+            ctrl.DeleteThis = (Action<int>)((int x) => DeleteSourceListView(x));
+            ctrl.LoadThis = (Action)(() => EnableLoadSourceListView());
 
-            panel.Height += sourceInfo.Height;
-            panel.Controls.Add(sourceInfo);
+            panel.Height += ctrl.Height;
+            panel.Controls.Add(ctrl);
         }
 
         private string SourceInfoViewToString()
@@ -432,7 +428,6 @@ namespace SocketReceiverBase
                 CheckStyleOK;
 
             SendMessageForServers(request);
-
         }
 
         public void sendMessageNG()
@@ -460,7 +455,6 @@ namespace SocketReceiverBase
             SendMessageForServers(request);
         }
 
-
         //===================
         // Event
         //===================
@@ -484,7 +478,7 @@ namespace SocketReceiverBase
             panel_ServerListView.Height = 0;
             UpdateServerListView();
 
-            panel_SourceListView.Height = 0;
+            
             UpdateSourceListView();
 
             timer_LockFunctionListenerQueueUpdate.Start();
@@ -537,11 +531,15 @@ namespace SocketReceiverBase
                             LockTime = DateTime.Now;
                             LockReleaseTime = DateTime.Now + new TimeSpan(0, Minutes, 0);
                         }
+
+                        if (cols.Length > 3 )
+                        {
+                            LockSignalSourceName = cols[3];
+                        }
                     }
                     else if (receivedSocketMessage.IndexOf("Release") >= 0)
                     {
                         LockReleaseTime = DateTime.Now;
-
                     }
                 }
                 LastCheckTime = DateTime.Now;
@@ -557,9 +555,9 @@ namespace SocketReceiverBase
         {
             timer_SendMessage.Stop();
 
-            if (timer_SendMessage_LastJudgmentFlag != JudgmentFlag)
+            if (timer_SendMessage_LastJudgmentFlag != JudgmentFlag && !JudgmentFlag)
             {
-                timer_SendMessage_Count = 0;
+                timer_SendMessage_Count = -1;
             };
 
             if (JudgmentFlag && timer_SendMessage_Count < 0)
@@ -624,7 +622,7 @@ namespace SocketReceiverBase
         {
             if (tabControl_SourceInfo.SelectedTab == tabPage_SourceView)
             {
-                UpdateLayoutSourceListView();
+                UpdateSourceListView();
             }
             else if (tabControl_SourceInfo.SelectedTab == tabPage_SourceList)
             {
