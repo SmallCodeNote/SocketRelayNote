@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using tcpClient;
+using UserControlPanelViewSet;
 
 namespace ServerInfoUserControl
 {
-    public partial class ServerInfo : UserControl
+    public partial class ServerInfo : UserControl, IPanelChildUserControl
     {
         //===================
         // Constructor
@@ -32,9 +33,15 @@ namespace ServerInfoUserControl
             string[] cols = Line.Split('\t');
             string ServerName = cols[0];
             string Address = cols[1];
-            int.TryParse(cols[2],out int Port);
+            int.TryParse(cols[2], out int Port);
 
             ServerInfoUpdate(Index, ServerName, Address, Port);
+        }
+
+        public ServerInfo()
+        {
+            InitializeComponent();
+            tcpClt = new TcpSocketClient();
         }
 
         //===================
@@ -42,10 +49,10 @@ namespace ServerInfoUserControl
         //===================
         TcpSocketClient tcpClt;
         public int TimeOutCount = 0;
-        public int Index;
+        public int ChildIndex { get; set; }
 
-        public Action<int> DeleteThis;
-        public Action LoadThis;
+        public Action<int> DeleteThis { get; set; }
+        public Action ControlContentsChanged { get; set; }
 
         public string Address
         {
@@ -125,15 +132,37 @@ namespace ServerInfoUserControl
         //===================
         // Member function
         //===================
+        public void ParamSetFromString(string Line)
+        {
+            List<string> cols = new List<string>(Line.Split('\t'));
+            if (cols[0] == this.GetType().Name) { cols.RemoveAt(0); }
 
-        public void ServerInfoUpdate(int Index, string ServerName, string Address, int Port)
+            if (cols.Count > 0) this.ServerName = cols[0];
+            if (cols.Count > 1) this.Address = cols[1];
+            if (cols.Count > 2) this.Port = int.Parse(cols[2]);
+        }
+
+        public IPanelChildUserControl Clone()
+        {
+            ServerInfo childControl = new ServerInfo(this.ChildIndex, this.Name, this.Address, this.Port);
+            return childControl;
+        }
+
+        public IPanelChildUserControl New(string Line)
+        {
+            ServerInfo childControl = new ServerInfo(0, Line);
+            return childControl;
+        }
+
+
+        public void ServerInfoUpdate(int ChildIndex, string ServerName, string Address, int Port)
         {
             this.Height = 70;
 
             this.ServerName = ServerName;
             this.Address = Address;
             this.Port = Port;
-            this.Index = Index;
+            this.ChildIndex = ChildIndex;
 
         }
 
@@ -178,22 +207,23 @@ namespace ServerInfoUserControl
 
         private void button_DeleteThis_Click(object sender, EventArgs e)
         {
-            DeleteThis(Index);
+            if (ControlContentsChanged != null) ControlContentsChanged();
+            DeleteThis(ChildIndex);
         }
 
         private void textBox_Address_TextChanged(object sender, EventArgs e)
         {
-            if (LoadThis != null) LoadThis();
+            if (ControlContentsChanged != null) ControlContentsChanged();
         }
 
         private void textBox_Port_TextChanged(object sender, EventArgs e)
         {
-            if (LoadThis != null) LoadThis();
+            if (ControlContentsChanged != null) ControlContentsChanged();
         }
 
         private void textBox_ServerName_TextChanged(object sender, EventArgs e)
         {
-            if (LoadThis != null) LoadThis();
+            if (ControlContentsChanged != null)ControlContentsChanged();
             groupBox_ServerInfo.Text = textBox_ServerName.Text;
         }
     }

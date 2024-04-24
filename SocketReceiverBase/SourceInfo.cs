@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using tcpClient;
+using UserControlPanelViewSet;
 
 namespace SourceInfoUserControl
 {
-    public partial class SourceInfo : UserControl
+    public partial class SourceInfo : UserControl, IPanelChildUserControl
     {
         //===================
         // Constructor
@@ -44,15 +45,21 @@ namespace SourceInfoUserControl
             if (LastCheckTimeString == "") LastCheckTime = DateTime.Now.AddHours(-1);
         }
 
+        public SourceInfo()
+        {
+            InitializeComponent();
+            tcpClt = new TcpSocketClient();
+        }
+
         //===================
         // Member variable
         //===================
         TcpSocketClient tcpClt;
         public int TimeOutCount = 0;
-        public int Index;
+        public int ChildIndex { get; set; }
 
-        public Action<int> DeleteThis;
-        public Action LoadThis;
+        public Action<int> DeleteThis { get; set; }
+        public Action ControlContentsChanged { get; set; }
 
         private DateTime _LastCheckTime;
         public DateTime LastCheckTime
@@ -161,7 +168,7 @@ namespace SourceInfoUserControl
             this.SourceName = SourceName;
             this.SaveDirPath = SaveDirPath;
             this.ModelPath = ModelPath;
-            this.Index = Index;
+            this.ChildIndex = Index;
 
             if (DateTime.TryParse(LastCheckTimeString, out DateTime datetime)) { this.LastCheckTime = datetime; }
 
@@ -172,6 +179,35 @@ namespace SourceInfoUserControl
         {
             return SourceName + "\t" + SaveDirPath + "\t" + ModelPath.ToString() + "\t" + LastCheckTime.ToString("yyyy/MM/dd HH:mm:ss") + "\t" + Parameter;
         }
+
+
+        public void ParamSetFromString(string Line)
+        {
+            List<string> cols = new List<string>(Line.Split('\t'));
+            if (cols[0] == this.GetType().Name) { cols.RemoveAt(0); }
+
+            if (cols.Count > 0) this.SourceName = cols[0];
+            if (cols.Count > 1) this.SaveDirPath = cols[1];
+            if (cols.Count > 2) this.ModelPath = cols[2];
+            if (cols.Count > 3) this.LastCheckTime = DateTime.Parse( cols[3]);
+            if (cols.Count > 4) this.Parameter = cols[4];
+            
+        }
+
+
+        public IPanelChildUserControl Clone()
+        {
+            SourceInfo childControl = new SourceInfo(this.ChildIndex, this.SourceName, this.SaveDirPath, this.ModelPath, this.LastCheckTime.ToString("yyyy/MM/dd HH:mm:ss"), this.Parameter);
+            return childControl;
+        }
+
+        public IPanelChildUserControl New(string Line)
+        {
+            SourceInfo childControl = new SourceInfo(0, Line);
+            return childControl;
+        }
+
+
 
         //===================
         // Event
@@ -209,22 +245,23 @@ namespace SourceInfoUserControl
         }
         private void button_DeleteThis_Click(object sender, EventArgs e)
         {
-            DeleteThis(Index);
+            if (ControlContentsChanged != null) ControlContentsChanged();
+            DeleteThis(ChildIndex);
         }
 
         private void textBox_SaveDirPath_TextChanged(object sender, EventArgs e)
         {
-            if (LoadThis != null) LoadThis();
+            if (ControlContentsChanged != null) ControlContentsChanged();
         }
 
         private void textBox_ModelPath_TextChanged(object sender, EventArgs e)
         {
-            if (LoadThis != null) LoadThis();
+            if (ControlContentsChanged != null) ControlContentsChanged();
         }
 
         private void textBox_SourceName_TextChanged(object sender, EventArgs e)
         {
-            if (LoadThis != null) LoadThis();
+            if (ControlContentsChanged != null) ControlContentsChanged();
             groupBox_SourceInfo.Text = textBox_SourceName.Text;
         }
 

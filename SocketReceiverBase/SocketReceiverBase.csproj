@@ -72,6 +72,7 @@
     </Compile>
     <Compile Include="TcpSocketClient.cs" />
     <Compile Include="TcpSocketServer.cs" />
+    <Compile Include="UserControlPanelView.cs" />
     <Compile Include="WinFormToString.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

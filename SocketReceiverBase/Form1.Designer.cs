@@ -68,7 +68,6 @@
             this.tabControl_ServerInfo = new System.Windows.Forms.TabControl();
             this.tabPage_ServerView = new System.Windows.Forms.TabPage();
             this.panel_ServerListFrame = new System.Windows.Forms.Panel();
-            this.panel_ServerListView = new System.Windows.Forms.Panel();
             this.tabPage_ServerList = new System.Windows.Forms.TabPage();
             this.label3 = new System.Windows.Forms.Label();
             this.textBox_ServerList = new System.Windows.Forms.TextBox();
@@ -87,7 +86,6 @@
             this.tabControl_SourceInfo = new System.Windows.Forms.TabControl();
             this.tabPage_SourceView = new System.Windows.Forms.TabPage();
             this.panel_SourceListFrame = new System.Windows.Forms.Panel();
-            this.panel_SourceListView = new System.Windows.Forms.Panel();
             this.tabPage_SourceList = new System.Windows.Forms.TabPage();
             this.label16 = new System.Windows.Forms.Label();
             this.textBox_SourceList = new System.Windows.Forms.TextBox();
@@ -100,7 +98,6 @@
             this.groupBox2.SuspendLayout();
             this.tabControl_ServerInfo.SuspendLayout();
             this.tabPage_ServerView.SuspendLayout();
-            this.panel_ServerListFrame.SuspendLayout();
             this.tabPage_ServerList.SuspendLayout();
             this.tabControl_Main.SuspendLayout();
             this.tabPage_ServerSetting.SuspendLayout();
@@ -109,7 +106,6 @@
             this.tabPage1.SuspendLayout();
             this.tabControl_SourceInfo.SuspendLayout();
             this.tabPage_SourceView.SuspendLayout();
-            this.panel_SourceListFrame.SuspendLayout();
             this.tabPage_SourceList.SuspendLayout();
             this.groupBox_LockPortSetting.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -453,19 +449,11 @@
             // panel_ServerListFrame
             // 
             this.panel_ServerListFrame.AutoScroll = true;
-            this.panel_ServerListFrame.Controls.Add(this.panel_ServerListView);
             this.panel_ServerListFrame.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel_ServerListFrame.Location = new System.Drawing.Point(3, 3);
             this.panel_ServerListFrame.Name = "panel_ServerListFrame";
             this.panel_ServerListFrame.Size = new System.Drawing.Size(551, 310);
             this.panel_ServerListFrame.TabIndex = 0;
-            // 
-            // panel_ServerListView
-            // 
-            this.panel_ServerListView.Location = new System.Drawing.Point(0, 0);
-            this.panel_ServerListView.Name = "panel_ServerListView";
-            this.panel_ServerListView.Size = new System.Drawing.Size(548, 147);
-            this.panel_ServerListView.TabIndex = 0;
             // 
             // tabPage_ServerList
             // 
@@ -671,19 +659,11 @@
             // panel_SourceListFrame
             // 
             this.panel_SourceListFrame.AutoScroll = true;
-            this.panel_SourceListFrame.Controls.Add(this.panel_SourceListView);
             this.panel_SourceListFrame.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel_SourceListFrame.Location = new System.Drawing.Point(3, 3);
             this.panel_SourceListFrame.Name = "panel_SourceListFrame";
             this.panel_SourceListFrame.Size = new System.Drawing.Size(551, 310);
             this.panel_SourceListFrame.TabIndex = 0;
-            // 
-            // panel_SourceListView
-            // 
-            this.panel_SourceListView.Location = new System.Drawing.Point(0, 0);
-            this.panel_SourceListView.Name = "panel_SourceListView";
-            this.panel_SourceListView.Size = new System.Drawing.Size(548, 147);
-            this.panel_SourceListView.TabIndex = 0;
             // 
             // tabPage_SourceList
             // 
@@ -779,7 +759,6 @@
             this.groupBox2.PerformLayout();
             this.tabControl_ServerInfo.ResumeLayout(false);
             this.tabPage_ServerView.ResumeLayout(false);
-            this.panel_ServerListFrame.ResumeLayout(false);
             this.tabPage_ServerList.ResumeLayout(false);
             this.tabPage_ServerList.PerformLayout();
             this.tabControl_Main.ResumeLayout(false);
@@ -793,7 +772,6 @@
             this.tabPage1.PerformLayout();
             this.tabControl_SourceInfo.ResumeLayout(false);
             this.tabPage_SourceView.ResumeLayout(false);
-            this.panel_SourceListFrame.ResumeLayout(false);
             this.tabPage_SourceList.ResumeLayout(false);
             this.tabPage_SourceList.PerformLayout();
             this.groupBox_LockPortSetting.ResumeLayout(false);
@@ -845,7 +823,6 @@
         private System.Windows.Forms.TabControl tabControl_ServerInfo;
         private System.Windows.Forms.TabPage tabPage_ServerView;
         private System.Windows.Forms.Panel panel_ServerListFrame;
-        private System.Windows.Forms.Panel panel_ServerListView;
         private System.Windows.Forms.TabPage tabPage_ServerList;
         private System.Windows.Forms.TextBox textBox_ServerList;
         private System.Windows.Forms.Label label15;
@@ -863,7 +840,6 @@
         private System.Windows.Forms.TabControl tabControl_SourceInfo;
         private System.Windows.Forms.TabPage tabPage_SourceView;
         private System.Windows.Forms.Panel panel_SourceListFrame;
-        private System.Windows.Forms.Panel panel_SourceListView;
         private System.Windows.Forms.TabPage tabPage_SourceList;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox textBox_SourceList;
