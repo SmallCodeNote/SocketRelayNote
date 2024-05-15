@@ -108,62 +108,112 @@ namespace SocketReceiverBase
         public string ClientName
         {
             get { return textBox_clientName.Text; }
-            set { textBox_clientName.Text = value; }
+            set {
+                if (textBox_clientName.InvokeRequired) { textBox_clientName.Invoke(((Action)(() => ClientName = value))); }
+                else { textBox_clientName.Text = value; }
+            }
         }
 
         public string MessageOK
         {
             get { return textBox_MessageOK.Text; }
-            set { textBox_MessageOK.Text = value; }
+            set
+            {
+                if (textBox_MessageOK.InvokeRequired) { textBox_MessageOK.Invoke((Action)(() => MessageOK = value)); }
+                else { textBox_MessageOK.Text = value; }
+            }
         }
 
         public string MessageNG
         {
             get { return textBox_MessageNG.Text; }
-            set { textBox_MessageNG.Text = value; }
+            set
+            {
+                if (textBox_MessageNG.InvokeRequired) { textBox_MessageNG.Invoke((Action)(() => MessageNG = value)); }
+                else { textBox_MessageNG.Text = value; }
+            }
         }
+
         public string StatusNG
         {
             get { return textBox_StatusNG.Text; }
-            set { textBox_StatusNG.Text = value; }
+            set
+            {
+                if (textBox_StatusNG.InvokeRequired) { textBox_StatusNG.Invoke((Action)(() => StatusNG = value)); }
+                else { textBox_StatusNG.Text = value; }
+            }
         }
+
         public string ParameterNG
         {
             get { return textBox_ParameterNG.Text; }
-            set { textBox_ParameterNG.Text = value; }
+            set
+            {
+                if (textBox_ParameterNG.InvokeRequired) { textBox_ParameterNG.Invoke((Action)(() => ParameterNG = value)); }
+                else { textBox_ParameterNG.Text = value; }
+            }
         }
+
         public string CheckStyleNG
         {
             get { return textBox_CheckStyleNG.Text; }
-            set { textBox_CheckStyleNG.Text = value; }
+            set
+            {
+                if (textBox_CheckStyleNG.InvokeRequired) { textBox_CheckStyleNG.Invoke((Action)(() => CheckStyleNG = value)); }
+                else { textBox_CheckStyleNG.Text = value; }
+            }
         }
+
         public string StatusOK
         {
             get { return textBox_StatusOK.Text; }
-            set { textBox_StatusOK.Text = value; }
+            set
+            {
+                if (textBox_StatusOK.InvokeRequired) { textBox_StatusOK.Invoke((Action)(() => StatusOK = value)); }
+                else { textBox_StatusOK.Text = value; }
+            }
         }
+
         public string ParameterOK
         {
             get { return textBox_ParameterOK.Text; }
-            set { textBox_ParameterOK.Text = value; }
+            set
+            {
+                if (textBox_ParameterOK.InvokeRequired) { textBox_ParameterOK.Invoke((Action)(() => ParameterOK = value)); }
+                else { textBox_ParameterOK.Text = value; }
+            }
         }
+
         public string CheckStyleOK
         {
             get { return textBox_CheckStyleOK.Text; }
-            set { textBox_CheckStyleOK.Text = value; }
+            set
+            {
+                if (textBox_CheckStyleOK.InvokeRequired) { textBox_CheckStyleOK.Invoke((Action)(() => CheckStyleOK = value)); }
+                else { textBox_CheckStyleOK.Text = value; }
+            }
         }
 
         public int IntervalOK
         {
             get { return int.Parse(textBox_IntervalOK.Text); }
-            set { textBox_IntervalOK.Text = value.ToString(); }
+            set
+            {
+                if (textBox_IntervalOK.InvokeRequired) { textBox_IntervalOK.Invoke((Action)(() => IntervalOK = value)); }
+                else { textBox_IntervalOK.Text = value.ToString(); }
+            }
         }
 
         public int IntervalNG
         {
             get { return int.Parse(textBox_IntervalNG.Text); }
-            set { textBox_IntervalNG.Text = value.ToString(); }
+            set
+            {
+                if (textBox_IntervalNG.InvokeRequired) { textBox_IntervalNG.Invoke((Action)(() => IntervalNG = value)); }
+                else { textBox_IntervalNG.Text = value.ToString(); }
+            }
         }
+
 
         //===================
         // Member function
@@ -233,6 +283,36 @@ namespace SocketReceiverBase
             }
         }
 
+        private void DebugOutFilenameReset(string targetDir)
+        {
+            if (targetDir == "{ExecutablePath}") { targetDir = Path.GetDirectoryName(Application.ExecutablePath); }
+            if (Directory.Exists(targetDir))
+            {
+                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd"), DateTime.Now.ToString("yyyyMMdd_HHmm").Substring(0, 12) + "0.txt");
+                if (!Directory.Exists(Path.GetDirectoryName(outFilename))) { Directory.CreateDirectory(Path.GetDirectoryName(outFilename)); };
+
+                DefaultTraceListener dtl = (DefaultTraceListener)Debug.Listeners["Default"];
+                if (dtl.LogFileName != outFilename) { dtl.LogFileName = outFilename; };
+            }
+        }
+
+        private void DebugOutDirPathReset(string targetDir)
+        {
+            if (targetDir == "{ExecutablePath}") { targetDir = Path.GetDirectoryName(Application.ExecutablePath); }
+            if (Directory.Exists(targetDir))
+            {
+                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd"), DateTime.Now.ToString("yyyyMMdd_HHmm").Substring(0, 12) + "0.txt");
+                if (!Directory.Exists(Path.GetDirectoryName(outFilename))) { Directory.CreateDirectory(Path.GetDirectoryName(outFilename)); };
+
+                DefaultTraceListener dtl = (DefaultTraceListener)Debug.Listeners["Default"];
+                dtl.LogFileName = outFilename;
+            }
+            else if (textBox_DebugOutDirPath.Text.Length > 1)
+            {
+                MessageBox.Show("DebugOutDirPath Not Found.\r\n[" + textBox_DebugOutDirPath.Text + "]", "Directory Not Found.", MessageBoxButtons.OK);
+            }
+        }
+
         //ServerList Set================================
 
         private void EnableLoadServerListView()
@@ -253,7 +333,6 @@ namespace SocketReceiverBase
         {
             ButtonEnable(button_LoadSourceListView, true);
         }
-
 
         public void sendMessageOK()
         {
@@ -482,6 +561,21 @@ namespace SocketReceiverBase
                     }
                 }
             }
+        }
+
+        private async void timer_DebugFilepathUpdate_Tick(object sender, EventArgs e)
+        {
+            await Task.Run(() => DebugOutFilenameReset(textBox_DebugOutDirPath.Text));
+        }
+
+        private void button_DebugOutDirPathReset_Click(object sender, EventArgs e)
+        {
+            DebugOutDirPathReset(textBox_DebugOutDirPath.Text);
+        }
+
+        private void label_DebugOutDirPath_Key_Click(object sender, EventArgs e)
+        {
+            textBox_DebugOutDirPath.Text = label_DebugOutDirPath_Key.Text;
         }
     }
 }

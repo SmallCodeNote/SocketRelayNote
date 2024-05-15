@@ -93,6 +93,12 @@
             this.groupBox_LockPortSetting = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.tabPage_System = new System.Windows.Forms.TabPage();
+            this.textBox_DebugOutDirPath = new System.Windows.Forms.TextBox();
+            this.timer_DebugFilepathUpdate = new System.Windows.Forms.Timer(this.components);
+            this.label5 = new System.Windows.Forms.Label();
+            this.button_DebugOutDirPathReset = new System.Windows.Forms.Button();
+            this.label_DebugOutDirPath_Key = new System.Windows.Forms.Label();
             this.groupBox_LockStatusView.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -109,6 +115,7 @@
             this.tabPage_SourceList.SuspendLayout();
             this.groupBox_LockPortSetting.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.tabPage_System.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_JudgmentResult
@@ -504,6 +511,7 @@
             this.tabControl_Main.Controls.Add(this.tabPage_ServerSetting);
             this.tabControl_Main.Controls.Add(this.tabPage_MessageSetting);
             this.tabControl_Main.Controls.Add(this.tabPage1);
+            this.tabControl_Main.Controls.Add(this.tabPage_System);
             this.tabControl_Main.Location = new System.Drawing.Point(12, 94);
             this.tabControl_Main.Multiline = true;
             this.tabControl_Main.Name = "tabControl_Main";
@@ -736,6 +744,62 @@
             this.label4.TabIndex = 1;
             this.label4.Text = "Result";
             // 
+            // tabPage_System
+            // 
+            this.tabPage_System.Controls.Add(this.label_DebugOutDirPath_Key);
+            this.tabPage_System.Controls.Add(this.button_DebugOutDirPathReset);
+            this.tabPage_System.Controls.Add(this.label5);
+            this.tabPage_System.Controls.Add(this.textBox_DebugOutDirPath);
+            this.tabPage_System.Location = new System.Drawing.Point(4, 4);
+            this.tabPage_System.Name = "tabPage_System";
+            this.tabPage_System.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_System.Size = new System.Drawing.Size(617, 381);
+            this.tabPage_System.TabIndex = 3;
+            this.tabPage_System.Text = "System";
+            this.tabPage_System.UseVisualStyleBackColor = true;
+            // 
+            // textBox_DebugOutDirPath
+            // 
+            this.textBox_DebugOutDirPath.Location = new System.Drawing.Point(15, 37);
+            this.textBox_DebugOutDirPath.Name = "textBox_DebugOutDirPath";
+            this.textBox_DebugOutDirPath.Size = new System.Drawing.Size(573, 19);
+            this.textBox_DebugOutDirPath.TabIndex = 0;
+            // 
+            // timer_DebugFilepathUpdate
+            // 
+            this.timer_DebugFilepathUpdate.Interval = 1000;
+            this.timer_DebugFilepathUpdate.Tick += new System.EventHandler(this.timer_DebugFilepathUpdate_Tick);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(13, 22);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(93, 12);
+            this.label5.TabIndex = 1;
+            this.label5.Text = "DebugOutDirPath";
+            // 
+            // button_DebugOutDirPathReset
+            // 
+            this.button_DebugOutDirPathReset.Location = new System.Drawing.Point(113, 19);
+            this.button_DebugOutDirPathReset.Margin = new System.Windows.Forms.Padding(2);
+            this.button_DebugOutDirPathReset.Name = "button_DebugOutDirPathReset";
+            this.button_DebugOutDirPathReset.Size = new System.Drawing.Size(47, 19);
+            this.button_DebugOutDirPathReset.TabIndex = 7;
+            this.button_DebugOutDirPathReset.Text = "Reset";
+            this.button_DebugOutDirPathReset.UseVisualStyleBackColor = true;
+            this.button_DebugOutDirPathReset.Click += new System.EventHandler(this.button_DebugOutDirPathReset_Click);
+            // 
+            // label_DebugOutDirPath_Key
+            // 
+            this.label_DebugOutDirPath_Key.AutoSize = true;
+            this.label_DebugOutDirPath_Key.Location = new System.Drawing.Point(190, 22);
+            this.label_DebugOutDirPath_Key.Name = "label_DebugOutDirPath_Key";
+            this.label_DebugOutDirPath_Key.Size = new System.Drawing.Size(90, 12);
+            this.label_DebugOutDirPath_Key.TabIndex = 8;
+            this.label_DebugOutDirPath_Key.Text = "{ExecutablePath}";
+            this.label_DebugOutDirPath_Key.Click += new System.EventHandler(this.label_DebugOutDirPath_Key_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -778,6 +842,8 @@
             this.groupBox_LockPortSetting.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.tabPage_System.ResumeLayout(false);
+            this.tabPage_System.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -848,6 +914,12 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox_MessageNG;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TabPage tabPage_System;
+        private System.Windows.Forms.TextBox textBox_DebugOutDirPath;
+        private System.Windows.Forms.Timer timer_DebugFilepathUpdate;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button button_DebugOutDirPathReset;
+        private System.Windows.Forms.Label label_DebugOutDirPath_Key;
     }
 }
 
