@@ -562,6 +562,30 @@ namespace SocketSignalServer
             }
         }
 
+
+        private void statusStripUpdate(bool activeAlive)
+        {
+            if (this.InvokeRequired) { this.Invoke((Action)(() => statusStripUpdate(activeAlive))); }
+            else
+            {
+                if (activeAlive)
+                {
+                    toolStripStatusLabel2.Text = "StandbyMode(ActiveAlive)";
+                    toolStripDropDownButton_Class.Image = Properties.Resources.Standby048;
+                }
+                else if (!activeAlive && panel_DuplexSystemView.Controls.Count > 0)
+                {
+                    toolStripStatusLabel2.Text = "ActiveMode(ActiveDown)";
+                    toolStripDropDownButton_Class.Image = Properties.Resources.Active048;
+                }
+                else
+                {
+                    toolStripStatusLabel2.Text = "ActiveMode";
+                    toolStripDropDownButton_Class.Image = Properties.Resources.Active048;
+                }
+            }
+        }
+
         //===================
         // Event
         //===================
@@ -676,24 +700,33 @@ namespace SocketSignalServer
             }
 
             //checkTimeoutFromDataBase_and_AddNotice();
+            toolStripStatusLabel1_Update();
 
-            if (button_Start.Text != "ServerStart")
+        }
+
+        private void toolStripStatusLabel1_Update()
+        {
+            if (this.InvokeRequired) { this.Invoke((Action)(() => toolStripStatusLabel1_Update())); }
+            else
             {
-                toolStripStatusLabel1.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-
-                if (tcpSrv.ListeningRun)
+                if (button_Start.Text != "ServerStart")
                 {
-                    toolStripStatusLabel1.Text += " / TCP Listening Run";
+                    toolStripStatusLabel1.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+
+                    if (tcpSrv.ListeningRun)
+                    {
+                        toolStripStatusLabel1.Text += " / TCP Listening Run";
+                    }
+                    else
+                    {
+                        toolStripStatusLabel1.Text += " / TCP Listening Stop";
+                    }
+                    if (!timer_CheckQueue.Enabled) timer_CheckQueue.Start();
                 }
                 else
                 {
-                    toolStripStatusLabel1.Text += " / TCP Listening Stop";
+                    toolStripStatusLabel1.Text = "Stop TCP Listener.";
                 }
-                timer_CheckQueue.Start();
-            }
-            else
-            {
-                toolStripStatusLabel1.Text = "Stop TCP Listener.";
             }
         }
 
@@ -885,14 +918,25 @@ namespace SocketSignalServer
         private void checkBox_voiceOffSwitch_CheckedChanged(object sender = null, EventArgs e = null)
         {
             noticeTransmitter.voiceOFF = checkBox_voiceOffSwitch.Checked;
+            toolStripDropDownButton_VoiceSwitch_Update();
+        }
 
-            if (checkBox_voiceOffSwitch.Checked)
+        private void toolStripDropDownButton_VoiceSwitch_Update()
+        {
+            if (this.InvokeRequired)
             {
-                toolStripDropDownButton_VoiceSwitch.Image = icon_voiceOFF;
+                this.Invoke((Action)(() => toolStripDropDownButton_VoiceSwitch_Update()));
             }
             else
             {
-                toolStripDropDownButton_VoiceSwitch.Image = icon_voiceON;
+                if (noticeTransmitter.voiceOFF)
+                {
+                    toolStripDropDownButton_VoiceSwitch.Image = icon_voiceOFF;
+                }
+                else
+                {
+                    toolStripDropDownButton_VoiceSwitch.Image = icon_voiceON;
+                }
             }
         }
 
@@ -1054,23 +1098,11 @@ namespace SocketSignalServer
 
                 noticeTransmitter.isActive = !activeAlive;
 
-                if (activeAlive)
-                {
-                    toolStripStatusLabel2.Text = "StandbyMode(ActiveAlive)";
-                    toolStripDropDownButton_Class.Image = Properties.Resources.Standby048;
-                }
-                else if (!activeAlive && panel_DuplexSystemView.Controls.Count > 0)
-                {
-                    toolStripStatusLabel2.Text = "ActiveMode(ActiveDown)";
-                    toolStripDropDownButton_Class.Image = Properties.Resources.Active048;
-                }
-                else
-                {
-                    toolStripStatusLabel2.Text = "ActiveMode";
-                    toolStripDropDownButton_Class.Image = Properties.Resources.Active048;
-                }
+                statusStripUpdate(activeAlive);
+
             });
         }
+
 
         private void textBox_DuplexActiveListCheckInterval_TextChanged(object sender, EventArgs e)
         {
