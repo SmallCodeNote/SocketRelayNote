@@ -72,6 +72,26 @@ namespace SocketSignalServer
 
         ConnectionString _LiteDBconnectionString;
 
+        public string queueList
+        {
+            set
+            {
+                if (this.InvokeRequired)
+                {
+                    this.Invoke((Action)(() => queueList = value));
+                }
+                else
+                {
+                    textBox_queueList.Text = value;
+                }
+            }
+            get
+            {
+                return textBox_queueList.Text;
+            }
+        }
+
+
         /// <summary>
         /// database open retry period in second.
         /// </summary>
@@ -414,7 +434,7 @@ namespace SocketSignalServer
                     }
                 }
             }
-            textBox_queueList.Text += "\t" + string.Join("\r\n\t", queueList.ToArray());
+            this.queueList += "\t" + string.Join("\r\n\t", queueList.ToArray());
         }
 
         private void checkNoticeDataFromDataBase_and_AddNotice()
@@ -634,12 +654,11 @@ namespace SocketSignalServer
             }
         }
 
-
         private async void timer_CheckQueue_Tick(object sender, EventArgs e)
         {
             timer_CheckQueue.Stop();
 
-            textBox_queueList.Text = DateTime.Now.ToString("HH:mm:ss") + "\t" + tcpSrv.ReceivedSocketQueue.Count.ToString() + "\r\n";
+            queueList = DateTime.Now.ToString("HH:mm:ss") + "\t" + tcpSrv.ReceivedSocketQueue.Count.ToString() + "\r\n";
 
             if ((tcpSrv.LastReceiveTime - LastCheckTime).TotalSeconds > 0 && tcpSrv.ReceivedSocketQueue.Count > 0)
             {

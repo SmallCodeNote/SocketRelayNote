@@ -291,7 +291,7 @@
             this.tabPage_DuplexSystemText.Location = new System.Drawing.Point(4, 4);
             this.tabPage_DuplexSystemText.Name = "tabPage_DuplexSystemText";
             this.tabPage_DuplexSystemText.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_DuplexSystemText.Size = new System.Drawing.Size(286, 111);
+            this.tabPage_DuplexSystemText.Size = new System.Drawing.Size(364, 111);
             this.tabPage_DuplexSystemText.TabIndex = 1;
             this.tabPage_DuplexSystemText.Text = "Text";
             this.tabPage_DuplexSystemText.UseVisualStyleBackColor = true;
@@ -303,7 +303,7 @@
             this.textBox_DuplexActiveList.Multiline = true;
             this.textBox_DuplexActiveList.Name = "textBox_DuplexActiveList";
             this.textBox_DuplexActiveList.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox_DuplexActiveList.Size = new System.Drawing.Size(280, 105);
+            this.textBox_DuplexActiveList.Size = new System.Drawing.Size(358, 105);
             this.textBox_DuplexActiveList.TabIndex = 10;
             this.textBox_DuplexActiveList.WordWrap = false;
             // 
@@ -745,6 +745,7 @@
             this.button_DebugOutDirPathReset.TabIndex = 6;
             this.button_DebugOutDirPathReset.Text = "Reset";
             this.button_DebugOutDirPathReset.UseVisualStyleBackColor = true;
+            this.button_DebugOutDirPathReset.Click += new System.EventHandler(this.button_DebugOutDirPathReset_Click);
             // 
             // textBox_PostTime
             // 
