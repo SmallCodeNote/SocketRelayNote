@@ -129,14 +129,24 @@ namespace SocketSignalServer
 
         private void DebugOutFilenameReset(string targetDir)
         {
-            if (targetDir == "{ExecutablePath}") { targetDir = Path.GetDirectoryName(Application.ExecutablePath); }
-            if (Directory.Exists(targetDir))
+            string outFilename = "";
+            try
             {
-                string outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd"), DateTime.Now.ToString("yyyyMMdd_HHmm").Substring(0, 12) + "0.txt");
-                if (!Directory.Exists(Path.GetDirectoryName(outFilename))) { Directory.CreateDirectory(Path.GetDirectoryName(outFilename)); };
+                if (targetDir == "{ExecutablePath}") { targetDir = Path.GetDirectoryName(Application.ExecutablePath); }
+                if (Directory.Exists(targetDir))
+                {
+                    outFilename = Path.Combine(targetDir, DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("yyyyMM"), DateTime.Now.ToString("yyyyMMdd"), DateTime.Now.ToString("yyyyMMdd_HHmm").Substring(0, 12) + "0.txt");
+                    if (!Directory.Exists(Path.GetDirectoryName(outFilename))) { Directory.CreateDirectory(Path.GetDirectoryName(outFilename)); };
 
-                DefaultTraceListener dtl = (DefaultTraceListener)Debug.Listeners["Default"];
-                if (dtl.LogFileName != outFilename) { dtl.LogFileName = outFilename; };
+                    DefaultTraceListener dtl = (DefaultTraceListener)Debug.Listeners["Default"];
+                    if (dtl.LogFileName != outFilename) { dtl.LogFileName = outFilename; };
+                }
+            }
+            catch (Exception ex)
+            {
+                tcpSrv.ResponceMessage = "DebugOutFilenameReset False";
+                Debug.Write(GetType().Name + "::" + System.Reflection.MethodBase.GetCurrentMethod().Name + " filename " + outFilename);
+                Debug.WriteLine(ex.ToString());
             }
         }
 
@@ -381,7 +391,6 @@ namespace SocketSignalServer
                 string[] cols = receivedSocketMessage.Split('\t');
                 string dbFilename = textBox_DataBaseFilePath.Text;
 
-                //if (cols.Length >= 4 && File.Exists(dbFilename))
                 if (cols.Length >= 4)
                 {
                     DateTime connectTime;
